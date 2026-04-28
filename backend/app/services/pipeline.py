@@ -1,4 +1,3 @@
-import asyncio
 import logging
 
 from app.models.schemas import JobResponse, JobStatus
@@ -28,8 +27,8 @@ async def run_pipeline(job: JobResponse, filepath: str, jobs: dict[str, JobRespo
         jobs[job.id] = job
 
         full_directed_text = "\n\n".join(directed_chunks)
-        output_path = f"output/{job.id}.wav"
-        await narrate_text(full_directed_text, output_path)
+        output_path = f"output/{job.id}.mp3"
+        await narrate_text(full_directed_text, output_path, voice=job.voice)
 
         job.status = JobStatus.COMPLETED
         job.progress = 1.0

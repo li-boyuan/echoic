@@ -11,20 +11,17 @@ class JobStatus(str, Enum):
     FAILED = "failed"
 
 
-class JobCreate(BaseModel):
-    filename: str
-
-
 class JobResponse(BaseModel):
     id: str
     filename: str
     status: JobStatus
     progress: float = 0.0
+    voice: str = "Kore"
     error: str | None = None
     audio_url: str | None = None
 
 
-class DirectedChunk(BaseModel):
-    index: int
-    original_text: str
-    directed_text: str
+class VoiceOption(BaseModel):
+    id: str
+    name: str
+    description: str

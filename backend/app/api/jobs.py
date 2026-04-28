@@ -3,7 +3,8 @@ from pathlib import Path
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import FileResponse
 
-from app.models.schemas import JobResponse, JobStatus
+from app.models.schemas import JobResponse, JobStatus, VoiceOption
+from app.services.narrator import AVAILABLE_VOICES
 
 router = APIRouter()
 
@@ -24,8 +25,15 @@ async def get_audio(job_id: str):
     if not job or job.status != JobStatus.COMPLETED:
         raise HTTPException(404, "Audio not ready")
 
-    audio_path = Path(f"output/{job_id}.wav")
-    if not audio_path.exists():
-        raise HTTPException(404, "Audio file not found")
+    for ext in (".mp3", ".wav"):
+        audio_path = Path(f"output/{job_id}{ext}")
+        if audio_path.exists():
+            media_type = "audio/mpeg" if ext == ".mp3" else "audio/wav"
+            return FileResponse(audio_path, media_type=media_type, filename=f"{job.filename}{ext}")
 
-    return FileResponse(audio_path, media_type="audio/wav", filename=f"{job.filename}.wav")
+    raise HTTPException(404, "Audio file not found")
+
+
+@router.get("/voices", response_model=list[VoiceOption])
+async def list_voices():
+    return AVAILABLE_VOICES
