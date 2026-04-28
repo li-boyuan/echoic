@@ -1,7 +1,13 @@
+import wave
+
 from google import genai
 from google.genai import types
 
 from app.config import settings
+
+SAMPLE_RATE = 24000
+SAMPLE_WIDTH = 2  # 16-bit
+CHANNELS = 1
 
 
 async def narrate_text(directed_text: str, output_path: str) -> str:
@@ -19,9 +25,12 @@ async def narrate_text(directed_text: str, output_path: str) -> str:
         ),
     )
 
-    audio_data = response.candidates[0].content.parts[0].inline_data.data
+    pcm_data = response.candidates[0].content.parts[0].inline_data.data
 
-    with open(output_path, "wb") as f:
-        f.write(audio_data)
+    with wave.open(output_path, "wb") as wf:
+        wf.setnchannels(CHANNELS)
+        wf.setsampwidth(SAMPLE_WIDTH)
+        wf.setframerate(SAMPLE_RATE)
+        wf.writeframes(pcm_data)
 
     return output_path

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 
 type JobStatus = "idle" | "uploading" | "pending" | "directing" | "narrating" | "completed" | "failed";
 
@@ -9,7 +9,38 @@ export default function Home() {
   const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [jobId, setJobId] = useState<string | null>(null);
+  const [audioUrl, setAudioUrl] = useState<string | null>(null);
+  const [progress, setProgress] = useState(0);
   const [dragOver, setDragOver] = useState(false);
+  const pollRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    if (!jobId || status === "idle" || status === "completed" || status === "failed") {
+      if (pollRef.current) clearInterval(pollRef.current);
+      return;
+    }
+
+    pollRef.current = setInterval(async () => {
+      try {
+        const res = await fetch(`/api/jobs/${jobId}`);
+        if (!res.ok) return;
+        const job = await res.json();
+        setProgress(job.progress);
+
+        if (job.status === "directing") setStatus("directing");
+        else if (job.status === "narrating") setStatus("narrating");
+        else if (job.status === "completed") {
+          setStatus("completed");
+          setAudioUrl(job.audio_url);
+        } else if (job.status === "failed") {
+          setStatus("failed");
+          setError(job.error || "Processing failed");
+        }
+      } catch {}
+    }, 2000);
+
+    return () => { if (pollRef.current) clearInterval(pollRef.current); };
+  }, [jobId, status]);
 
   const handleFile = useCallback((f: File) => {
     const ext = f.name.split(".").pop()?.toLowerCase();
@@ -112,19 +143,41 @@ export default function Home() {
               {status === "directing" && "Analyzing text & adding direction..."}
               {status === "narrating" && "Generating audio..."}
             </p>
-            {jobId && <p className="text-xs text-zinc-600">Job: {jobId}</p>}
+            <div className="w-full bg-zinc-800 rounded-full h-2 max-w-xs mx-auto">
+              <div
+                className="bg-blue-600 h-2 rounded-full transition-all duration-500"
+                style={{ width: `${Math.round(progress * 100)}%` }}
+              />
+            </div>
+            <p className="text-xs text-zinc-600">{Math.round(progress * 100)}%</p>
           </div>
         )}
 
         {status === "completed" && (
-          <div className="text-center py-12 space-y-4">
-            <p className="text-2xl">Done!</p>
-            <button
-              onClick={() => { setStatus("idle"); setFile(null); setJobId(null); }}
-              className="px-6 py-2.5 bg-zinc-800 hover:bg-zinc-700 rounded-lg font-medium transition-colors"
-            >
-              Convert another
-            </button>
+          <div className="text-center py-12 space-y-6">
+            <p className="text-2xl font-semibold">Your audiobook is ready</p>
+            {audioUrl && (
+              <audio controls className="mx-auto" src={audioUrl}>
+                Your browser does not support the audio element.
+              </audio>
+            )}
+            <div className="flex gap-3 justify-center">
+              {audioUrl && (
+                <a
+                  href={audioUrl}
+                  download
+                  className="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 rounded-lg font-medium transition-colors"
+                >
+                  Download
+                </a>
+              )}
+              <button
+                onClick={() => { setStatus("idle"); setFile(null); setJobId(null); setAudioUrl(null); setProgress(0); }}
+                className="px-6 py-2.5 bg-zinc-800 hover:bg-zinc-700 rounded-lg font-medium transition-colors"
+              >
+                Convert another
+              </button>
+            </div>
           </div>
         )}
 
