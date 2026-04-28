@@ -7,7 +7,7 @@ class Settings(BaseSettings):
     upload_dir: str = "uploads"
     output_dir: str = "output"
     max_file_size_mb: int = 50
-    allowed_origins: list[str] = ["http://localhost:3000"]
+    allowed_origins: list[str] = ["http://localhost:3000", "https://echoic.studio"]
 
     model_config = {"env_file": ".env"}
 

@@ -305,7 +305,7 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="border-t border-zinc-800 py-6 px-4 text-center text-xs text-zinc-600">
-        Echoic — AI-powered audiobook generation
+        echoic.studio — AI-powered audiobook generation
       </footer>
     </main>
   );
