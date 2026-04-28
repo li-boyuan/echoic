@@ -1,10 +1,14 @@
+import asyncio
 import base64
+import logging
 import re
 import wave
 
 import httpx
 
 from app.config import settings
+
+logger = logging.getLogger(__name__)
 
 SAMPLE_RATE = 24000
 SAMPLE_WIDTH = 2
@@ -28,47 +32,10 @@ def _clean_for_tts(text: str) -> str:
     return text.strip()
 
 
-def _is_multi_speaker(text: str) -> bool:
-    return bool(re.search(r"^(Narrator|Character):", text, re.MULTILINE))
-
-
-async def narrate_text(
-    directed_text: str,
-    output_path: str,
-    voice: str = "Kore",
-    character_voice: str = "Aoede",
-) -> str:
-    clean_text = _clean_for_tts(directed_text)
-    if not clean_text:
-        raise ValueError("No text to narrate after cleaning")
-
-    if _is_multi_speaker(clean_text):
-        pcm_data = await _generate_multi_speaker(clean_text, voice, character_voice)
-    else:
-        pcm_data = await _generate_single_speaker(clean_text, voice)
-
-    wav_path = output_path.rsplit(".", 1)[0] + ".wav"
-    with wave.open(wav_path, "wb") as wf:
-        wf.setnchannels(CHANNELS)
-        wf.setsampwidth(SAMPLE_WIDTH)
-        wf.setframerate(SAMPLE_RATE)
-        wf.writeframes(pcm_data)
-
-    if output_path.endswith(".mp3") and _has_mp3_support():
-        from pydub import AudioSegment
-        import os
-
-        audio = AudioSegment.from_wav(wav_path)
-        audio.export(output_path, format="mp3", bitrate="192k")
-        os.remove(wav_path)
-        return output_path
-
-    return wav_path
-
-
-async def _generate_multi_speaker(
+async def generate_segment_audio(
     text: str, narrator_voice: str, character_voice: str
 ) -> bytes:
+    """Generate audio for a single segment with Narrator + Character voices."""
     url = f"{API_URL}?key={settings.gemini_api_key}"
 
     payload = {
@@ -96,43 +63,61 @@ async def _generate_multi_speaker(
         },
     }
 
-    async with httpx.AsyncClient(timeout=120) as client:
-        resp = await client.post(url, json=payload)
-        data = resp.json()
+    for attempt in range(5):
+        async with httpx.AsyncClient(timeout=120) as client:
+            resp = await client.post(url, json=payload)
+            data = resp.json()
 
-    if "error" in data:
-        raise RuntimeError(f"{data['error']['code']} {data['error']['message']}")
+        if "error" in data:
+            code = data["error"]["code"]
+            if code == 429 and attempt < 4:
+                wait = 15 * (attempt + 1)
+                logger.warning("Rate limited, retrying in %ds (attempt %d)", wait, attempt + 1)
+                await asyncio.sleep(wait)
+                continue
+            raise RuntimeError(f"{code} {data['error']['message']}")
 
-    audio_b64 = data["candidates"][0]["content"]["parts"][0]["inlineData"]["data"]
-    return base64.b64decode(audio_b64)
+        audio_b64 = data["candidates"][0]["content"]["parts"][0]["inlineData"]["data"]
+        return base64.b64decode(audio_b64)
+
+    raise RuntimeError("Max retries exceeded for TTS generation")
 
 
-async def _generate_single_speaker(text: str, voice: str) -> bytes:
-    from google import genai
-    from google.genai import types
+def stitch_audio(pcm_chunks: list[bytes], output_path: str) -> str:
+    """Combine multiple PCM audio chunks into a single WAV file."""
+    wav_path = output_path.rsplit(".", 1)[0] + ".wav"
+    with wave.open(wav_path, "wb") as wf:
+        wf.setnchannels(CHANNELS)
+        wf.setsampwidth(SAMPLE_WIDTH)
+        wf.setframerate(SAMPLE_RATE)
+        for chunk in pcm_chunks:
+            wf.writeframes(chunk)
 
-    narration_prompt = (
-        "Read the following text as a professional audiobook narrator. "
-        "Perform dialogue expressively: match the emotion described. "
-        "Narration should be calm; dialogue should be dramatic.\n\n"
-        + text
-    )
+    if output_path.endswith(".mp3") and _has_mp3_support():
+        from pydub import AudioSegment
+        import os
 
-    client = genai.Client(api_key=settings.gemini_api_key)
-    response = await client.aio.models.generate_content(
-        model="gemini-2.5-flash-preview-tts",
-        contents=narration_prompt,
-        config=types.GenerateContentConfig(
-            response_modalities=["AUDIO"],
-            speech_config=types.SpeechConfig(
-                voice_config=types.VoiceConfig(
-                    prebuilt_voice_config=types.PrebuiltVoiceConfig(voice_name=voice)
-                )
-            ),
-        ),
-    )
+        audio = AudioSegment.from_wav(wav_path)
+        audio.export(output_path, format="mp3", bitrate="192k")
+        os.remove(wav_path)
+        return output_path
 
-    return response.candidates[0].content.parts[0].inline_data.data
+    return wav_path
+
+
+async def narrate_text(
+    directed_text: str,
+    output_path: str,
+    voice: str = "Kore",
+    character_voice: str = "Aoede",
+) -> str:
+    """Simple single-segment narration (backward compatible)."""
+    clean_text = _clean_for_tts(directed_text)
+    if not clean_text:
+        raise ValueError("No text to narrate after cleaning")
+
+    pcm_data = await generate_segment_audio(clean_text, voice, character_voice)
+    return stitch_audio([pcm_data], output_path)
 
 
 def _has_mp3_support() -> bool:

@@ -3,27 +3,31 @@ import anthropic
 from app.config import settings
 
 DIRECTOR_SYSTEM = """You are an audiobook director preparing text for a multi-speaker TTS system.
-Your job is to split text into speaker-tagged lines for two speakers: Narrator and Character.
+Your job is to split text into speaker-tagged lines, identifying each character by name.
 
 Rules:
-- Every line must start with either "Narrator: " or "Character: "
+- Every line must start with a speaker tag: "Narrator: " or "CharacterName: "
 - Narrator reads all non-dialogue text (descriptions, narration, attributions like "she said")
-- Character reads all dialogue (the actual words characters speak, WITHOUT quotation marks)
-- Strip quotation marks from Character lines — the TTS will speak them directly
+- Each character gets their own tag using their name (e.g., "Harry: ", "Aunt Petunia: ", "Hagrid: ")
+- Use consistent character names throughout — don't switch between "Petunia" and "Aunt Petunia"
+- Strip quotation marks from character lines — the TTS will speak them directly
 - Keep attribution phrases ("he said", "she screeched") as Narrator lines AFTER the dialogue
 - Preserve the original text — don't add, remove, or rewrite words
 - Spell out abbreviations and numbers (e.g., "Dr." → "Doctor", "3" → "three")
 - Add ellipses (...) for dramatic pauses within a line
 - Each line should be a natural speaking unit — don't make lines too long
+- If you can't identify who is speaking, use "Character: " as fallback
 
 Example input:
-"Get out!" she screamed. Harry backed away slowly. "Please," he whispered.
+"Get out!" she screamed. Harry backed away slowly. "Please," he whispered. Hagrid stepped through the door. "I'm not leaving without Harry," he said firmly.
 
 Example output:
-Character: Get out!
+Aunt Petunia: Get out!
 Narrator: she screamed. Harry backed away slowly.
-Character: Please...
-Narrator: he whispered.
+Harry: Please...
+Narrator: he whispered. Hagrid stepped through the door.
+Hagrid: I'm not leaving without Harry.
+Narrator: he said firmly.
 
 Return ONLY the tagged lines, nothing else."""
 
