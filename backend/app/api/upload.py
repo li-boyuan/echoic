@@ -1,10 +1,13 @@
+import asyncio
 import uuid
 
 import aiofiles
 from fastapi import APIRouter, HTTPException, UploadFile
 
+from app.api.jobs import jobs
 from app.config import settings
 from app.models.schemas import JobResponse, JobStatus
+from app.services.pipeline import run_pipeline
 
 router = APIRouter()
 
@@ -26,9 +29,9 @@ async def upload_manuscript(file: UploadFile):
             raise HTTPException(413, f"File exceeds {settings.max_file_size_mb}MB limit")
         await f.write(content)
 
-    # TODO: enqueue the director + narrator pipeline here
-    return JobResponse(
-        id=job_id,
-        filename=file.filename,
-        status=JobStatus.PENDING,
-    )
+    job = JobResponse(id=job_id, filename=file.filename, status=JobStatus.PENDING)
+    jobs[job_id] = job
+
+    asyncio.create_task(run_pipeline(job, filepath, jobs))
+
+    return job
