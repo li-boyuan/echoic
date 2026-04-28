@@ -2,18 +2,30 @@ import anthropic
 
 from app.config import settings
 
-DIRECTOR_SYSTEM = """You are an audiobook director. Your job is to analyze text and add
-prosody/emotion tags that will guide a TTS narrator to deliver a natural, engaging reading.
+DIRECTOR_SYSTEM = """You are an audiobook director preparing text for a multi-speaker TTS system.
+Your job is to split text into speaker-tagged lines for two speakers: Narrator and Character.
 
 Rules:
-- Wrap emotional cues in brackets: [softly], [excitedly], [with authority]
-- Add [pause] for dramatic beats or scene transitions
-- Add [slowly] or [quickly] for pacing changes
-- Keep the original text intact — only insert tags, never rewrite
-- For dialogue, add character-appropriate tags: [gruffly], [whispering], [cheerfully]
-- Don't over-tag. Most sentences need zero tags. Only add them where they improve delivery.
+- Every line must start with either "Narrator: " or "Character: "
+- Narrator reads all non-dialogue text (descriptions, narration, attributions like "she said")
+- Character reads all dialogue (the actual words characters speak, WITHOUT quotation marks)
+- Strip quotation marks from Character lines — the TTS will speak them directly
+- Keep attribution phrases ("he said", "she screeched") as Narrator lines AFTER the dialogue
+- Preserve the original text — don't add, remove, or rewrite words
+- Spell out abbreviations and numbers (e.g., "Dr." → "Doctor", "3" → "three")
+- Add ellipses (...) for dramatic pauses within a line
+- Each line should be a natural speaking unit — don't make lines too long
 
-Return ONLY the tagged text, nothing else."""
+Example input:
+"Get out!" she screamed. Harry backed away slowly. "Please," he whispered.
+
+Example output:
+Character: Get out!
+Narrator: she screamed. Harry backed away slowly.
+Character: Please...
+Narrator: he whispered.
+
+Return ONLY the tagged lines, nothing else."""
 
 
 async def direct_text(text: str) -> str:

@@ -15,6 +15,7 @@ export default function Home() {
   const [dragOver, setDragOver] = useState(false);
   const [voices, setVoices] = useState<Voice[]>([]);
   const [selectedVoice, setSelectedVoice] = useState("Kore");
+  const [characterVoice, setCharacterVoice] = useState("Aoede");
   const pollRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -73,6 +74,7 @@ export default function Home() {
       const formData = new FormData();
       formData.append("file", file);
       formData.append("voice", selectedVoice);
+      formData.append("character_voice", characterVoice);
 
       const res = await fetch("/api/upload", { method: "POST", body: formData });
       if (!res.ok) {
@@ -117,25 +119,46 @@ export default function Home() {
 
           {status === "idle" && (
             <div className="space-y-6">
-              {/* Voice Selector */}
+              {/* Voice Selectors */}
               {voices.length > 0 && (
-                <div className="space-y-2">
-                  <label className="text-sm text-zinc-400 block">Narrator voice</label>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                    {voices.map((v) => (
-                      <button
-                        key={v.id}
-                        onClick={() => setSelectedVoice(v.id)}
-                        className={`px-4 py-3 rounded-xl text-left transition-all ${
-                          selectedVoice === v.id
-                            ? "bg-blue-600/20 border-2 border-blue-500 text-blue-300"
-                            : "bg-zinc-900 border-2 border-zinc-800 hover:border-zinc-600 text-zinc-300"
-                        }`}
-                      >
-                        <div className="font-medium text-sm">{v.name}</div>
-                        <div className="text-xs text-zinc-500 mt-0.5">{v.description}</div>
-                      </button>
-                    ))}
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <label className="text-sm text-zinc-400 block">Narrator voice</label>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                      {voices.map((v) => (
+                        <button
+                          key={v.id}
+                          onClick={() => setSelectedVoice(v.id)}
+                          className={`px-4 py-3 rounded-xl text-left transition-all ${
+                            selectedVoice === v.id
+                              ? "bg-blue-600/20 border-2 border-blue-500 text-blue-300"
+                              : "bg-zinc-900 border-2 border-zinc-800 hover:border-zinc-600 text-zinc-300"
+                          }`}
+                        >
+                          <div className="font-medium text-sm">{v.name}</div>
+                          <div className="text-xs text-zinc-500 mt-0.5">{v.description}</div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm text-zinc-400 block">Character voice</label>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                      {voices.map((v) => (
+                        <button
+                          key={v.id}
+                          onClick={() => setCharacterVoice(v.id)}
+                          className={`px-4 py-3 rounded-xl text-left transition-all ${
+                            characterVoice === v.id
+                              ? "bg-violet-600/20 border-2 border-violet-500 text-violet-300"
+                              : "bg-zinc-900 border-2 border-zinc-800 hover:border-zinc-600 text-zinc-300"
+                          }`}
+                        >
+                          <div className="font-medium text-sm">{v.name}</div>
+                          <div className="text-xs text-zinc-500 mt-0.5">{v.description}</div>
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </div>
               )}
