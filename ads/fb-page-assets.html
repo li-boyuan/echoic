@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body { margin: 0; padding: 40px; background: #f0f0f0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+    .label { text-align: center; color: #666; font-size: 12px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+    .hint { text-align: center; color: #999; font-size: 11px; margin-bottom: 24px; }
+    .center { display: flex; justify-content: center; margin-bottom: 48px; }
+
+    /* Profile Picture: 480x480 (Facebook displays at 170x170) */
+    .profile-pic {
+      width: 480px;
+      height: 480px;
+      background: #18181b;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .profile-pic .letter {
+      font-size: 220px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #60a5fa, #a78bfa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      line-height: 1;
+      margin-top: -10px;
+    }
+    .profile-pic .ring {
+      position: absolute;
+      inset: 8px;
+      border-radius: 50%;
+      border: 3px solid rgba(96, 165, 250, 0.3);
+    }
+
+    /* Cover Photo: 820x312 */
+    .cover-photo {
+      width: 820px;
+      height: 312px;
+      background: linear-gradient(135deg, #18181b 0%, #1e1b2e 50%, #18181b 100%);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 60px;
+      position: relative;
+      overflow: hidden;
+    }
+    .cover-photo .bg-glow {
+      position: absolute;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(59,130,246,0.12) 0%, transparent 70%);
+      top: -100px;
+      right: 100px;
+    }
+    .cover-photo .bg-glow-2 {
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(167,139,250,0.1) 0%, transparent 70%);
+      bottom: -100px;
+      left: 100px;
+    }
+    .cover-left {
+      position: relative;
+      z-index: 1;
+    }
+    .cover-left h1 {
+      font-size: 48px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #60a5fa, #a78bfa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin: 0 0 8px;
+    }
+    .cover-left p {
+      color: #a1a1aa;
+      font-size: 18px;
+      margin: 0 0 4px;
+    }
+    .cover-left .sub {
+      color: #52525b;
+      font-size: 14px;
+    }
+    .cover-right {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .cover-step {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(39, 39, 42, 0.8);
+      padding: 10px 16px;
+      border-radius: 10px;
+      border: 1px solid #3f3f46;
+    }
+    .cover-step .num {
+      width: 24px;
+      height: 24px;
+      background: #3b82f6;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 12px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .cover-step .text {
+      color: #d4d4d8;
+      font-size: 13px;
+    }
+    .cover-step .text strong {
+      color: #f4f4f5;
+    }
+  </style>
+</head>
+<body>
+
+<!-- PROFILE PICTURE -->
+<p class="label">Profile Picture (480x480)</p>
+<p class="hint">Screenshot this circle — Facebook crops it to a circle anyway</p>
+<div class="center">
+  <div class="profile-pic">
+    <div class="ring"></div>
+    <div class="letter">E</div>
+  </div>
+</div>
+
+<!-- COVER PHOTO -->
+<p class="label">Cover Photo (820x312)</p>
+<p class="hint">Screenshot this rectangle exactly</p>
+<div class="center">
+  <div class="cover-photo">
+    <div class="bg-glow"></div>
+    <div class="bg-glow-2"></div>
+    <div class="cover-left">
+      <h1>Echoic</h1>
+      <p>Manuscripts in. Audiobooks out.</p>
+      <p class="sub">echoic.studio</p>
+    </div>
+    <div class="cover-right">
+      <div class="cover-step">
+        <div class="num">1</div>
+        <div class="text"><strong>Upload</strong> your manuscript</div>
+      </div>
+      <div class="cover-step">
+        <div class="num">2</div>
+        <div class="text"><strong>AI casts</strong> character voices</div>
+      </div>
+      <div class="cover-step">
+        <div class="num">3</div>
+        <div class="text"><strong>Download</strong> your audiobook</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

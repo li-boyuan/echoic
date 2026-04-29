@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { width: 1080px; height: 1080px; overflow: hidden; }
+
+    .card {
+      width: 1080px;
+      height: 1080px;
+      background: linear-gradient(160deg, #18181b 0%, #1a1a2e 50%, #18181b 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 80px;
+      position: relative;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    .glow {
+      position: absolute;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(59,130,246,0.15) 0%, transparent 70%);
+      top: -200px;
+      right: -100px;
+      animation: pulse 4s ease-in-out infinite;
+    }
+    .glow2 {
+      position: absolute;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(167,139,250,0.1) 0%, transparent 70%);
+      bottom: -200px;
+      left: -100px;
+      animation: pulse 4s ease-in-out 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.7; }
+      50% { transform: scale(1.2); opacity: 1; }
+    }
+
+    @keyframes fadeUp {
+      0% { opacity: 0; transform: translateY(30px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeIn {
+      0% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+
+    @keyframes strikethrough {
+      0% { width: 0; }
+      100% { width: 100%; }
+    }
+
+    @keyframes scaleIn {
+      0% { opacity: 0; transform: scale(0.8); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    /* Scene 1: Logo (0-2s) */
+    .logo {
+      font-size: 96px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #60a5fa, #a78bfa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      position: absolute;
+      opacity: 0;
+      animation: fadeUp 0.8s ease-out 0.3s forwards;
+    }
+
+    /* Scene 2: Problem (2-5s) */
+    .scene-problem {
+      position: absolute;
+      text-align: center;
+      opacity: 0;
+      animation: fadeIn 0.5s ease-out 2.5s forwards;
+    }
+    .scene-problem .q {
+      color: #f4f4f5;
+      font-size: 44px;
+      font-weight: 700;
+      line-height: 1.3;
+      margin-bottom: 32px;
+    }
+    .scene-problem .old-price {
+      color: #ef4444;
+      font-size: 64px;
+      font-weight: 800;
+      position: relative;
+      display: inline-block;
+    }
+    .scene-problem .old-price::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: -4px;
+      height: 4px;
+      background: #ef4444;
+      animation: strikethrough 0.6s ease-out 4s forwards;
+      width: 0;
+    }
+    .scene-problem .label {
+      color: #71717a;
+      font-size: 20px;
+      margin-top: 8px;
+    }
+
+    /* Scene 3: Solution (5-9s) */
+    .scene-solution {
+      position: absolute;
+      text-align: center;
+      opacity: 0;
+      animation: fadeIn 0.5s ease-out 5.5s forwards;
+    }
+    .scene-solution .with {
+      color: #a1a1aa;
+      font-size: 28px;
+      margin-bottom: 16px;
+    }
+    .scene-solution .brand {
+      font-size: 56px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #60a5fa, #a78bfa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 24px;
+    }
+    .scene-solution .new-price {
+      color: #22c55e;
+      font-size: 72px;
+      font-weight: 800;
+      opacity: 0;
+      animation: scaleIn 0.5s ease-out 6.5s forwards;
+    }
+    .scene-solution .per {
+      color: #71717a;
+      font-size: 22px;
+      margin-top: 8px;
+      opacity: 0;
+      animation: fadeIn 0.4s ease-out 7s forwards;
+    }
+
+    /* Scene 4: CTA (9-15s) */
+    .scene-cta {
+      position: absolute;
+      text-align: center;
+      opacity: 0;
+      animation: fadeIn 0.5s ease-out 9s forwards;
+    }
+    .scene-cta .headline {
+      color: #f4f4f5;
+      font-size: 44px;
+      font-weight: 700;
+      line-height: 1.3;
+      margin-bottom: 32px;
+    }
+    .scene-cta .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+    .scene-cta .step {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: rgba(39, 39, 42, 0.8);
+      padding: 16px 24px;
+      border-radius: 14px;
+      border: 1px solid #3f3f46;
+    }
+    .scene-cta .step:nth-child(1) { opacity: 0; animation: fadeUp 0.4s ease-out 9.5s forwards; }
+    .scene-cta .step:nth-child(2) { opacity: 0; animation: fadeUp 0.4s ease-out 10s forwards; }
+    .scene-cta .step:nth-child(3) { opacity: 0; animation: fadeUp 0.4s ease-out 10.5s forwards; }
+    .scene-cta .num {
+      width: 36px; height: 36px;
+      background: #3b82f6;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-size: 16px; font-weight: 700;
+      flex-shrink: 0;
+    }
+    .scene-cta .text { color: #d4d4d8; font-size: 22px; }
+    .scene-cta .text strong { color: #f4f4f5; }
+    .scene-cta .badge {
+      display: inline-block;
+      padding: 18px 48px;
+      background: #3b82f6;
+      color: white;
+      border-radius: 40px;
+      font-size: 28px;
+      font-weight: 600;
+      opacity: 0;
+      animation: scaleIn 0.5s ease-out 11.5s forwards;
+    }
+    .scene-cta .url {
+      color: #71717a;
+      font-size: 22px;
+      margin-top: 16px;
+      opacity: 0;
+      animation: fadeIn 0.4s ease-out 12s forwards;
+    }
+
+    /* Hide scenes after they play */
+    .logo { animation: fadeUp 0.8s ease-out 0.3s forwards, fadeIn 0.4s ease-out 2s reverse forwards; }
+    .scene-problem { animation: fadeIn 0.5s ease-out 2.5s forwards, fadeIn 0.4s ease-out 5s reverse forwards; }
+    .scene-solution { animation: fadeIn 0.5s ease-out 5.5s forwards, fadeIn 0.4s ease-out 8.5s reverse forwards; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="glow"></div>
+    <div class="glow2"></div>
+
+    <!-- Scene 1: Logo -->
+    <div class="logo">Echoic</div>
+
+    <!-- Scene 2: Problem -->
+    <div class="scene-problem">
+      <div class="q">How much does a<br>professional audiobook cost?</div>
+      <div class="old-price">$3,000+</div>
+      <div class="label">Average narrator fee</div>
+    </div>
+
+    <!-- Scene 3: Solution -->
+    <div class="scene-solution">
+      <div class="with">With</div>
+      <div class="brand">Echoic</div>
+      <div class="new-price">$9.99</div>
+      <div class="per">per book · AI-powered · ready in minutes</div>
+    </div>
+
+    <!-- Scene 4: CTA -->
+    <div class="scene-cta">
+      <div class="headline">It's this simple:</div>
+      <div class="steps">
+        <div class="step">
+          <div class="num">1</div>
+          <div class="text"><strong>Upload</strong> your manuscript</div>
+        </div>
+        <div class="step">
+          <div class="num">2</div>
+          <div class="text"><strong>AI casts</strong> character voices</div>
+        </div>
+        <div class="step">
+          <div class="num">3</div>
+          <div class="text"><strong>Download</strong> your audiobook</div>
+        </div>
+      </div>
+      <div class="badge">Try Free</div>
+      <div class="url">echoic.studio</div>
+    </div>
+  </div>
+</body>
+</html>
