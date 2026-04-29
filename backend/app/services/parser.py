@@ -8,6 +8,9 @@ def extract_text(filepath: str) -> str:
         ".pdf": _extract_pdf,
         ".epub": _extract_epub,
         ".docx": _extract_docx,
+        ".mobi": _extract_mobi,
+        ".azw3": _extract_mobi,
+        ".azw": _extract_mobi,
     }
     extractor = extractors.get(path.suffix.lower())
     if not extractor:
@@ -147,6 +150,45 @@ def _extract_docx_fallback(path: Path) -> str:
             "pip install python-docx"
         )
     return "\n\n".join(paragraphs)
+
+
+def _extract_mobi(path: Path) -> str:
+    try:
+        import mobi
+        tempdir, filepath = mobi.extract(str(path))
+        extracted = Path(tempdir)
+        texts = []
+        for f in sorted(extracted.rglob("*.html")) + sorted(extracted.rglob("*.xhtml")):
+            content = f.read_text(encoding="utf-8", errors="ignore")
+            content = __import__("re").sub(r"<[^>]+>", " ", content)
+            content = __import__("re").sub(r"\s+", " ", content).strip()
+            if content and len(content) > 20:
+                texts.append(content)
+        import shutil
+        shutil.rmtree(tempdir, ignore_errors=True)
+        if texts:
+            return "\n\n".join(texts)
+    except ImportError:
+        pass
+    return _extract_mobi_fallback(path)
+
+
+def _extract_mobi_fallback(path: Path) -> str:
+    """Extract text from MOBI/AZW using binary parsing."""
+    import re as re_mod
+    data = path.read_bytes()
+    text_parts = []
+    for match in re_mod.finditer(rb"<[^>]*>([^<]+)</[^>]*>", data):
+        chunk = match.group(1).decode("utf-8", errors="ignore").strip()
+        if len(chunk) > 20:
+            text_parts.append(chunk)
+
+    if not text_parts:
+        raise ValueError(
+            "Could not extract text from Kindle file. The file may be DRM-protected. "
+            "Only DRM-free .mobi/.azw3 files are supported."
+        )
+    return "\n\n".join(text_parts)
 
 
 import re

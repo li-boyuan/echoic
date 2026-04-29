@@ -84,8 +84,8 @@ export default function Studio() {
 
   const handleFile = useCallback((f: File) => {
     const ext = f.name.split(".").pop()?.toLowerCase();
-    if (!["txt", "pdf", "epub", "docx"].includes(ext ?? "")) {
-      setError("Unsupported file type. Please upload .txt, .pdf, .epub, or .docx");
+    if (!["txt", "pdf", "epub", "docx", "mobi", "azw", "azw3"].includes(ext ?? "")) {
+      setError("Unsupported file type. Please upload .txt, .pdf, .epub, .docx, .mobi, .azw3, .mobi, or .azw3");
       return;
     }
     setFile(f);
@@ -237,7 +237,7 @@ export default function Studio() {
                 onClick={() => {
                   const input = document.createElement("input");
                   input.type = "file";
-                  input.accept = ".txt,.pdf,.epub,.docx";
+                  input.accept = ".txt,.pdf,.epub,.docx,.mobi,.azw,.azw3";
                   input.onchange = (e) => {
                     const f = (e.target as HTMLInputElement).files?.[0];
                     if (f) handleFile(f);
@@ -268,7 +268,7 @@ export default function Studio() {
                     <p className="text-zinc-400">
                       Drop your manuscript here, or click to browse
                     </p>
-                    <p className="text-sm text-zinc-600">.txt, .pdf, .epub, .docx</p>
+                    <p className="text-sm text-zinc-600">.txt, .pdf, .epub, .docx, .mobi, .azw3</p>
                   </div>
                 )}
               </div>

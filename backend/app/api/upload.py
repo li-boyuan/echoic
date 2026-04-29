@@ -14,7 +14,7 @@ from app.services.pipeline import run_pipeline
 
 router = APIRouter()
 
-ALLOWED_EXTENSIONS = {".txt", ".pdf", ".epub", ".docx"}
+ALLOWED_EXTENSIONS = {".txt", ".pdf", ".epub", ".docx", ".mobi", ".azw", ".azw3"}
 VALID_VOICE_IDS = {v["id"] for v in AVAILABLE_VOICES}
 
 

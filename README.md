@@ -38,6 +38,7 @@ Upload (.txt/.pdf/.epub/.docx)
 - **PDF** — pypdf with zero-dependency fallback parser
 - **EPUB** — ebooklib with zipfile/HTML fallback parser
 - **DOCX** — python-docx with zipfile/XML fallback parser
+- **MOBI/AZW/AZW3** — Kindle format (DRM-free only) with binary fallback parser
 
 ### Voices
 6 Gemini TTS voices available:
