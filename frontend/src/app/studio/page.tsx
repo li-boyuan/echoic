@@ -34,6 +34,7 @@ export default function Studio() {
   const [cast, setCast] = useState<Cast>({});
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [playingChapter, setPlayingChapter] = useState<number | null>(null);
+  const [downloadFormat, setDownloadFormat] = useState("mp3");
   const pollRef = useRef<NodeJS.Timeout | null>(null);
 
   const voiceName = (id: string) => VOICES.find((v) => v.id === id)?.name || id;
@@ -389,7 +390,7 @@ export default function Studio() {
                                 {playingChapter === ch.index ? "Hide" : "Play"}
                               </button>
                               <a
-                                href={ch.audio_url}
+                                href={`${ch.audio_url}?format=${downloadFormat}`}
                                 download
                                 className="text-xs px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 rounded-md transition-colors"
                               >
@@ -409,22 +410,39 @@ export default function Studio() {
                 </div>
               )}
 
-              <div className="flex gap-3 justify-center">
-                {audioUrl && (
-                  <a
-                    href={audioUrl}
-                    download
-                    className="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 rounded-lg font-medium transition-colors"
+              {/* Format selector + download */}
+              <div className="flex flex-col items-center gap-3">
+                <div className="flex items-center gap-2">
+                  <label className="text-xs text-zinc-500">Format:</label>
+                  <select
+                    value={downloadFormat}
+                    onChange={(e) => setDownloadFormat(e.target.value)}
+                    className="bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-1.5 text-sm text-zinc-200 cursor-pointer"
                   >
-                    {chapters.length > 1 ? "Download Full Audiobook" : "Download"}
-                  </a>
-                )}
-                <button
-                  onClick={reset}
-                  className="px-6 py-2.5 bg-zinc-800 hover:bg-zinc-700 rounded-lg font-medium transition-colors"
-                >
-                  Convert another
-                </button>
+                    <option value="mp3">MP3 — universal</option>
+                    <option value="wav">WAV — uncompressed</option>
+                    <option value="m4a">M4A — Apple devices</option>
+                    <option value="flac">FLAC — lossless</option>
+                    <option value="ogg">OGG — open format</option>
+                  </select>
+                </div>
+                <div className="flex gap-3">
+                  {audioUrl && (
+                    <a
+                      href={`${audioUrl}?format=${downloadFormat}`}
+                      download
+                      className="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 rounded-lg font-medium transition-colors"
+                    >
+                      {chapters.length > 1 ? "Download Full Audiobook" : "Download"}
+                    </a>
+                  )}
+                  <button
+                    onClick={reset}
+                    className="px-6 py-2.5 bg-zinc-800 hover:bg-zinc-700 rounded-lg font-medium transition-colors"
+                  >
+                    Convert another
+                  </button>
+                </div>
               </div>
             </div>
           )}
