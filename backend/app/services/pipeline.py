@@ -33,6 +33,8 @@ async def run_pipeline(job: JobResponse, filepath: str, jobs: dict[str, JobRespo
 
         characters = extract_characters(full_directed)
         voice_map = await assign_voices(characters, job.voice)
+        job.cast = voice_map
+        jobs[job.id] = job
 
         logger.info(
             "Job %s: found %d characters: %s",

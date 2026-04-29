@@ -17,7 +17,7 @@ class JobResponse(BaseModel):
     status: JobStatus
     progress: float = 0.0
     voice: str = "Kore"
-    character_voice: str = "Aoede"
+    cast: dict[str, str] = {}
     error: str | None = None
     audio_url: str | None = None
 

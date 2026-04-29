@@ -4,6 +4,7 @@ import { useState, useCallback, useEffect, useRef } from "react";
 
 type JobStatus = "idle" | "uploading" | "pending" | "directing" | "narrating" | "completed" | "failed";
 type Voice = { id: string; name: string; description: string };
+type Cast = Record<string, string>;
 
 export default function Home() {
   const [status, setStatus] = useState<JobStatus>("idle");
@@ -15,7 +16,7 @@ export default function Home() {
   const [dragOver, setDragOver] = useState(false);
   const [voices, setVoices] = useState<Voice[]>([]);
   const [selectedVoice, setSelectedVoice] = useState("Kore");
-  const [characterVoice, setCharacterVoice] = useState("Aoede");
+  const [cast, setCast] = useState<Cast>({});
   const pollRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -24,6 +25,8 @@ export default function Home() {
       .then(setVoices)
       .catch(() => {});
   }, []);
+
+  const voiceName = (id: string) => voices.find((v) => v.id === id)?.name || id;
 
   useEffect(() => {
     if (!jobId || status === "idle" || status === "completed" || status === "failed") {
@@ -37,12 +40,14 @@ export default function Home() {
         if (!res.ok) return;
         const job = await res.json();
         setProgress(job.progress);
+        if (job.cast && Object.keys(job.cast).length > 0) setCast(job.cast);
 
         if (job.status === "directing") setStatus("directing");
         else if (job.status === "narrating") setStatus("narrating");
         else if (job.status === "completed") {
           setStatus("completed");
           setAudioUrl(job.audio_url);
+          if (job.cast) setCast(job.cast);
         } else if (job.status === "failed") {
           setStatus("failed");
           setError(job.error || "Processing failed");
@@ -74,7 +79,6 @@ export default function Home() {
       const formData = new FormData();
       formData.append("file", file);
       formData.append("voice", selectedVoice);
-      formData.append("character_voice", characterVoice);
 
       const res = await fetch("/api/upload", { method: "POST", body: formData });
       if (!res.ok) {
@@ -98,6 +102,7 @@ export default function Home() {
     setAudioUrl(null);
     setProgress(0);
     setError(null);
+    setCast({});
   };
 
   return (
@@ -113,52 +118,32 @@ export default function Home() {
               Turn any manuscript into a professional audiobook in minutes
             </p>
             <p className="text-sm text-zinc-600">
-              AI reads your text, adds natural emotion and pacing, then narrates it
+              AI reads your text, identifies characters, casts voices, then narrates it
             </p>
           </div>
 
           {status === "idle" && (
             <div className="space-y-6">
-              {/* Voice Selectors */}
+              {/* Narrator Voice Selector */}
               {voices.length > 0 && (
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <label className="text-sm text-zinc-400 block">Narrator voice</label>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                      {voices.map((v) => (
-                        <button
-                          key={v.id}
-                          onClick={() => setSelectedVoice(v.id)}
-                          className={`px-4 py-3 rounded-xl text-left transition-all ${
-                            selectedVoice === v.id
-                              ? "bg-blue-600/20 border-2 border-blue-500 text-blue-300"
-                              : "bg-zinc-900 border-2 border-zinc-800 hover:border-zinc-600 text-zinc-300"
-                          }`}
-                        >
-                          <div className="font-medium text-sm">{v.name}</div>
-                          <div className="text-xs text-zinc-500 mt-0.5">{v.description}</div>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm text-zinc-400 block">Character voice</label>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                      {voices.map((v) => (
-                        <button
-                          key={v.id}
-                          onClick={() => setCharacterVoice(v.id)}
-                          className={`px-4 py-3 rounded-xl text-left transition-all ${
-                            characterVoice === v.id
-                              ? "bg-violet-600/20 border-2 border-violet-500 text-violet-300"
-                              : "bg-zinc-900 border-2 border-zinc-800 hover:border-zinc-600 text-zinc-300"
-                          }`}
-                        >
-                          <div className="font-medium text-sm">{v.name}</div>
-                          <div className="text-xs text-zinc-500 mt-0.5">{v.description}</div>
-                        </button>
-                      ))}
-                    </div>
+                <div className="space-y-2">
+                  <label className="text-sm text-zinc-400 block">Narrator voice</label>
+                  <p className="text-xs text-zinc-600">Character voices are automatically cast by AI</p>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                    {voices.map((v) => (
+                      <button
+                        key={v.id}
+                        onClick={() => setSelectedVoice(v.id)}
+                        className={`px-4 py-3 rounded-xl text-left transition-all ${
+                          selectedVoice === v.id
+                            ? "bg-blue-600/20 border-2 border-blue-500 text-blue-300"
+                            : "bg-zinc-900 border-2 border-zinc-800 hover:border-zinc-600 text-zinc-300"
+                        }`}
+                      >
+                        <div className="font-medium text-sm">{v.name}</div>
+                        <div className="text-xs text-zinc-500 mt-0.5">{v.description}</div>
+                      </button>
+                    ))}
                   </div>
                 </div>
               )}
@@ -236,7 +221,7 @@ export default function Home() {
               <div className="animate-spin h-8 w-8 border-2 border-blue-500 border-t-transparent rounded-full mx-auto" />
               <p className="text-zinc-300 font-medium">
                 {status === "pending" && "Queued..."}
-                {status === "directing" && "Reading & adding emotion cues..."}
+                {status === "directing" && "Reading text & casting characters..."}
                 {status === "narrating" && "Generating audio narration..."}
               </p>
               <div className="w-full bg-zinc-800 rounded-full h-2 max-w-xs mx-auto">
@@ -248,6 +233,24 @@ export default function Home() {
               <p className="text-xs text-zinc-600">
                 {Math.round(progress * 100)}%
               </p>
+
+              {/* Show cast as it's discovered */}
+              {Object.keys(cast).length > 0 && (
+                <div className="mt-6 max-w-sm mx-auto">
+                  <p className="text-xs text-zinc-500 mb-2">Cast</p>
+                  <div className="flex flex-wrap gap-2 justify-center">
+                    {Object.entries(cast).map(([char, voice]) => (
+                      <span
+                        key={char}
+                        className="px-3 py-1.5 bg-zinc-900 border border-zinc-800 rounded-lg text-xs"
+                      >
+                        <span className="text-zinc-300">{char}</span>
+                        <span className="text-zinc-600"> — {voiceName(voice)}</span>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
@@ -255,6 +258,25 @@ export default function Home() {
             <div className="text-center py-12 space-y-6">
               <div className="text-4xl">🎧</div>
               <p className="text-2xl font-semibold">Your audiobook is ready</p>
+
+              {/* Cast list */}
+              {Object.keys(cast).length > 0 && (
+                <div className="max-w-sm mx-auto">
+                  <p className="text-xs text-zinc-500 mb-2">Voice Cast</p>
+                  <div className="flex flex-wrap gap-2 justify-center">
+                    {Object.entries(cast).map(([char, voice]) => (
+                      <span
+                        key={char}
+                        className="px-3 py-1.5 bg-zinc-900 border border-zinc-800 rounded-lg text-xs"
+                      >
+                        <span className="text-zinc-300">{char}</span>
+                        <span className="text-zinc-600"> — {voiceName(voice)}</span>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {audioUrl && (
                 <audio controls className="mx-auto" src={audioUrl}>
                   Your browser does not support the audio element.
@@ -310,10 +332,10 @@ export default function Home() {
             </p>
           </div>
           <div className="space-y-2">
-            <h3 className="font-semibold text-zinc-200">Multiple Voices</h3>
+            <h3 className="font-semibold text-zinc-200">Auto Character Casting</h3>
             <p className="text-sm text-zinc-500">
-              Choose from a range of natural-sounding voices. Each brings a
-              different tone and personality to your text.
+              AI identifies every character in your book and assigns each one a
+              unique voice that matches their personality.
             </p>
           </div>
           <div className="space-y-2">

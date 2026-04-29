@@ -20,7 +20,6 @@ VALID_VOICE_IDS = {v["id"] for v in AVAILABLE_VOICES}
 async def upload_manuscript(
     file: UploadFile,
     voice: str = Form(default="Kore"),
-    character_voice: str = Form(default="Aoede"),
 ):
     ext = "." + file.filename.rsplit(".", 1)[-1].lower() if "." in file.filename else ""
     if ext not in ALLOWED_EXTENSIONS:
@@ -28,8 +27,6 @@ async def upload_manuscript(
 
     if voice not in VALID_VOICE_IDS:
         raise HTTPException(400, f"Unknown voice. Available: {VALID_VOICE_IDS}")
-    if character_voice not in VALID_VOICE_IDS:
-        raise HTTPException(400, f"Unknown character voice. Available: {VALID_VOICE_IDS}")
 
     job_id = str(uuid.uuid4())
     filepath = f"{settings.upload_dir}/{job_id}{ext}"
@@ -40,10 +37,7 @@ async def upload_manuscript(
             raise HTTPException(413, f"File exceeds {settings.max_file_size_mb}MB limit")
         await f.write(content)
 
-    job = JobResponse(
-        id=job_id, filename=file.filename, status=JobStatus.PENDING,
-        voice=voice, character_voice=character_voice,
-    )
+    job = JobResponse(id=job_id, filename=file.filename, status=JobStatus.PENDING, voice=voice)
     jobs[job_id] = job
 
     asyncio.create_task(run_pipeline(job, filepath, jobs))
