@@ -1,4 +1,4 @@
-import { SignInButton, SignedIn, SignedOut } from "@clerk/nextjs";
+import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import Link from "next/link";
 
 export default function Home() {
@@ -18,12 +18,15 @@ export default function Home() {
             </SignInButton>
           </SignedOut>
           <SignedIn>
-            <Link
-              href="/studio"
-              className="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-500 rounded-lg transition-colors"
-            >
-              Open Studio
-            </Link>
+            <div className="flex items-center gap-3">
+              <Link
+                href="/studio"
+                className="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-500 rounded-lg transition-colors"
+              >
+                Studio
+              </Link>
+              <UserButton afterSignOutUrl="/" />
+            </div>
           </SignedIn>
         </div>
       </nav>
