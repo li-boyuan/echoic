@@ -1,5 +1,6 @@
 import asyncio
 import base64
+import json
 import logging
 import re
 import wave
@@ -77,8 +78,15 @@ async def generate_segment_audio(
                 continue
             raise RuntimeError(f"{code} {data['error']['message']}")
 
-        audio_b64 = data["candidates"][0]["content"]["parts"][0]["inlineData"]["data"]
-        return base64.b64decode(audio_b64)
+        try:
+            audio_b64 = data["candidates"][0]["content"]["parts"][0]["inlineData"]["data"]
+            return base64.b64decode(audio_b64)
+        except (KeyError, IndexError) as e:
+            logger.error("Unexpected TTS response: %s", json.dumps(data)[:500])
+            if attempt < 4:
+                await asyncio.sleep(10)
+                continue
+            raise RuntimeError(f"TTS returned unexpected response: {e}")
 
     raise RuntimeError("Max retries exceeded for TTS generation")
 

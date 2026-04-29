@@ -7,7 +7,7 @@ from fastapi import APIRouter, Form, HTTPException, UploadFile
 from app.api.jobs import jobs
 from app.config import settings
 from app.models.schemas import JobResponse, JobStatus
-from app.services.credits import can_convert, consume_credit
+from app.services.credits import can_convert
 from app.services.narrator import AVAILABLE_VOICES
 from app.services.parser import extract_text
 from app.services.pipeline import run_pipeline
@@ -52,11 +52,9 @@ async def upload_manuscript(
             "No credits available. Purchase a Single Book or subscribe to Pro to continue.",
         )
 
-    consume_credit(user_id, tier)
-
     job = JobResponse(id=job_id, filename=file.filename, status=JobStatus.PENDING, voice=voice)
     jobs[job_id] = job
 
-    asyncio.create_task(run_pipeline(job, filepath, jobs))
+    asyncio.create_task(run_pipeline(job, filepath, jobs, user_id=user_id, credit_tier=tier))
 
     return job

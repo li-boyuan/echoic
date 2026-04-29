@@ -2,6 +2,7 @@ import logging
 import os
 
 from app.models.schemas import ChapterInfo, JobResponse, JobStatus
+from app.services.credits import consume_credit
 from app.services.director import direct_text
 from app.services.narrator import generate_segment_audio, stitch_audio
 from app.services.parser import chunk_text, extract_text, split_chapters
@@ -15,7 +16,10 @@ from app.services.segmenter import (
 logger = logging.getLogger(__name__)
 
 
-async def run_pipeline(job: JobResponse, filepath: str, jobs: dict[str, JobResponse]):
+async def run_pipeline(
+    job: JobResponse, filepath: str, jobs: dict[str, JobResponse],
+    user_id: str = "anonymous", credit_tier: str = "free",
+):
     try:
         text = extract_text(filepath)
         chapters = split_chapters(text)
@@ -94,6 +98,8 @@ async def run_pipeline(job: JobResponse, filepath: str, jobs: dict[str, JobRespo
 
         full_path = f"output/{job.id}/full.wav"
         stitch_audio(full_pcm, full_path)
+
+        consume_credit(user_id, credit_tier)
 
         job.status = JobStatus.COMPLETED
         job.progress = 1.0
