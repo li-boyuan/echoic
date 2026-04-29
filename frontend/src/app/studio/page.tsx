@@ -3,6 +3,7 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { UserButton, useUser } from "@clerk/nextjs";
 import Link from "next/link";
+import { trackUpload, trackConversion } from "@/lib/tracking";
 
 type JobStatus = "idle" | "uploading" | "pending" | "directing" | "narrating" | "completed" | "failed";
 type Voice = { id: string; name: string; description: string };
@@ -67,6 +68,7 @@ export default function Studio() {
           setAudioUrl(job.audio_url);
           if (job.cast) setCast(job.cast);
           if (job.chapters) setChapters(job.chapters);
+          trackConversion(file?.name || "unknown");
         } else if (job.status === "failed") {
           setStatus("failed");
           setError(job.error || "Processing failed");
@@ -109,6 +111,7 @@ export default function Studio() {
       const job = await res.json();
       setJobId(job.id);
       setStatus("pending");
+      trackUpload(file.name);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Upload failed");
       setStatus("idle");

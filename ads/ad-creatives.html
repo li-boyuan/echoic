@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body { margin: 0; padding: 40px; background: #f0f0f0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+    .ad-card { width: 500px; margin: 0 auto 40px; background: #18181b; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.3); }
+    .ad-image { padding: 48px 40px; text-align: center; }
+    .ad-image h1 { font-size: 36px; font-weight: 800; background: linear-gradient(135deg, #60a5fa, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0 0 16px; }
+    .ad-image p { color: #a1a1aa; font-size: 18px; margin: 0 0 24px; line-height: 1.5; }
+    .ad-image .tagline { color: #f4f4f5; font-size: 22px; font-weight: 600; margin: 0 0 8px; }
+    .ad-badge { display: inline-block; padding: 6px 16px; background: #3b82f6; color: white; border-radius: 20px; font-size: 14px; font-weight: 600; }
+    .ad-pipeline { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 20px 0; color: #71717a; font-size: 14px; }
+    .ad-pipeline span { color: #f4f4f5; background: #27272a; padding: 4px 12px; border-radius: 8px; }
+    .ad-pipeline .arrow { color: #3b82f6; font-size: 16px; }
+    .ad-body { padding: 20px 24px; border-top: 1px solid #27272a; }
+    .ad-body p { color: #d4d4d8; font-size: 14px; margin: 0 0 12px; line-height: 1.6; }
+    .ad-cta { display: block; text-align: center; padding: 12px; background: #3b82f6; color: white; text-decoration: none; font-weight: 600; font-size: 15px; border-radius: 8px; margin-top: 8px; }
+    .label { text-align: center; color: #666; font-size: 12px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+    .voices { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin: 16px 0; }
+    .voice-chip { padding: 4px 12px; background: #27272a; border: 1px solid #3f3f46; border-radius: 20px; color: #a1a1aa; font-size: 12px; }
+    .cast-line { color: #a1a1aa; font-size: 13px; margin: 4px 0; }
+    .cast-line .char { color: #f4f4f5; }
+    .cast-line .voice { color: #60a5fa; }
+  </style>
+</head>
+<body>
+
+<!-- AD 1: Pain Point -->
+<p class="label">Ad 1 — Pain Point (1080x1080 feed)</p>
+<div class="ad-card">
+  <div class="ad-image">
+    <h1>Echoic</h1>
+    <p class="tagline">Your book deserves an audiobook.</p>
+    <p>Professional narration costs $3,000+.<br>Echoic does it for $9.99.</p>
+    <div class="ad-badge">Try Free — No Credit Card</div>
+  </div>
+  <div class="ad-body">
+    <p>Audiobooks drive 30% more revenue — but most indie authors skip them because narration is too expensive. Echoic's AI reads your manuscript, casts character voices, and narrates with real emotion. Upload your book, get an audiobook.</p>
+    <a class="ad-cta" href="#">Get Started Free →</a>
+  </div>
+</div>
+
+<!-- AD 2: Tech/Demo -->
+<p class="label">Ad 2 — How It Works (1080x1080 feed)</p>
+<div class="ad-card">
+  <div class="ad-image">
+    <h1>Echoic</h1>
+    <p class="tagline">AI that reads your book before narrating it.</p>
+    <div class="ad-pipeline">
+      <span>Upload</span>
+      <span class="arrow">→</span>
+      <span>AI Reads</span>
+      <span class="arrow">→</span>
+      <span>Cast Voices</span>
+      <span class="arrow">→</span>
+      <span>Audiobook</span>
+    </div>
+    <div style="margin-top: 16px;">
+      <div class="cast-line"><span class="char">Narrator</span> — <span class="voice">Kore</span></div>
+      <div class="cast-line"><span class="char">Aunt Petunia</span> — <span class="voice">Leda</span></div>
+      <div class="cast-line"><span class="char">Harry</span> — <span class="voice">Puck</span></div>
+    </div>
+  </div>
+  <div class="ad-body">
+    <p>Most AI audiobooks sound robotic. Echoic is different — it reads your text first, identifies every character, and assigns each one a unique voice. The result? Audiobooks that actually sound like someone performed them.</p>
+    <a class="ad-cta" href="#">Try It Free →</a>
+  </div>
+</div>
+
+<!-- AD 3: Simple -->
+<p class="label">Ad 3 — Simplicity (1080x1080 feed)</p>
+<div class="ad-card">
+  <div class="ad-image">
+    <h1>Echoic</h1>
+    <p class="tagline">Upload a manuscript.<br>Get an audiobook.</p>
+    <div class="voices">
+      <span class="voice-chip">PDF</span>
+      <span class="voice-chip">EPUB</span>
+      <span class="voice-chip">DOCX</span>
+      <span class="voice-chip">TXT</span>
+    </div>
+    <p style="color: #71717a; font-size: 14px; margin: 0;">6 voices · auto character casting · chapter splitting</p>
+  </div>
+  <div class="ad-body">
+    <p>No voice acting skills. No audio engineering. No $3,000 narrator fee. Just upload your manuscript and Echoic handles the rest. Free for your first book.</p>
+    <a class="ad-cta" href="#">Upload Your Book →</a>
+  </div>
+</div>
+
+</body>
+</html>

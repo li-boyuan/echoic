@@ -2,7 +2,8 @@
 
 import { useUser, SignInButton, SignedIn, SignedOut } from "@clerk/nextjs";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { trackPricingView } from "@/lib/tracking";
 
 const PLANS = [
   {
@@ -38,6 +39,8 @@ const PLANS = [
 export default function Pricing() {
   const { user } = useUser();
   const [loading, setLoading] = useState<string | null>(null);
+
+  useEffect(() => { trackPricingView(); }, []);
 
   const handlePurchase = async (productId: string) => {
     if (!user) return;
