@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Script from "next/script";
 import { ClerkProvider } from "@clerk/nextjs";
+import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 
 const FB_PIXEL_ID = process.env.NEXT_PUBLIC_FB_PIXEL_ID;
@@ -80,6 +81,7 @@ export default function RootLayout({
         </head>
         <body className="bg-zinc-950 text-zinc-100 antialiased">
           {children}
+          <Analytics />
         </body>
       </html>
     </ClerkProvider>
