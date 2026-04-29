@@ -126,7 +126,7 @@ npm run dev
 ```
 ANTHROPIC_API_KEY=sk-ant-...        # Claude API (Director + Casting)
 GEMINI_API_KEY=AI...                # Gemini TTS (Narrator)
-STRIPE_SECRET_KEY=sk_test_...       # Stripe payments
+STRIPE_SECRET_KEY=sk_live_...       # Stripe payments (use sk_test_ for local dev)
 STRIPE_WEBHOOK_SECRET=whsec_...     # Stripe webhook verification
 FRONTEND_URL=http://localhost:3001  # For Stripe redirect URLs
 ```
@@ -136,13 +136,23 @@ FRONTEND_URL=http://localhost:3001  # For Stripe redirect URLs
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
 CLERK_SECRET_KEY=sk_test_...
 NEXT_PUBLIC_API_URL=http://localhost:8000
+NEXT_PUBLIC_FB_PIXEL_ID=...         # Meta Pixel for ad conversion tracking
 ```
 
 ## Deployment
 
-- **Frontend**: Vercel (auto-deploys from GitHub)
-- **Backend**: Render (configured via `render.yaml`)
-- **Domain**: echoic.studio (Cloudflare DNS)
+- **Frontend**: Vercel (auto-deploys from GitHub) → https://echoic.studio
+- **Backend**: Render (configured via `render.yaml`) → https://echoic-api.onrender.com
+- **Domain**: echoic.studio (Cloudflare DNS → Vercel CNAME)
+- **Payments**: Stripe live mode with webhook at `/api/webhook/stripe`
+- **Auth**: Clerk with Google, Email, and Facebook sign-in
+
+## Marketing
+
+- **Facebook Page**: [Echoic](https://www.facebook.com/profile.php?id=61560376811560)
+- **Meta Pixel**: Integrated for conversion tracking (PageView, CompleteRegistration, InitiateCheckout, Purchase)
+- **Ad Creatives**: 3 static (1080x1080) + 1 animated video in `ads/`
+- **Targeting**: Self-published authors, KDP users, audiobook enthusiasts
 
 ## Tech Stack
 
@@ -152,7 +162,8 @@ NEXT_PUBLIC_API_URL=http://localhost:8000
 | Backend | FastAPI, Python 3.12 |
 | AI Director | Claude Haiku 4.5 (Anthropic) |
 | AI Narrator | Gemini 2.5 Flash TTS (Google) |
-| Auth | Clerk |
-| Payments | Stripe |
+| Auth | Clerk (Google, Email, Facebook) |
+| Payments | Stripe (live) |
+| Analytics | Meta Pixel |
 | Hosting | Vercel + Render |
 | Domain | Cloudflare |
