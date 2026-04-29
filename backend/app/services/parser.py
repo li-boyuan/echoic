@@ -149,6 +149,55 @@ def _extract_docx_fallback(path: Path) -> str:
     return "\n\n".join(paragraphs)
 
 
+import re
+from dataclasses import dataclass
+
+
+@dataclass
+class Chapter:
+    title: str
+    text: str
+    index: int
+
+
+CHAPTER_PATTERN = re.compile(
+    r"^(?:"
+    r"chapter\s+\w+"
+    r"|part\s+\w+"
+    r"|book\s+\w+"
+    r"|prologue"
+    r"|epilogue"
+    r"|introduction"
+    r"|preface"
+    r")\s*[:\-—.]?\s*.*$",
+    re.IGNORECASE | re.MULTILINE,
+)
+
+
+def split_chapters(text: str) -> list[Chapter]:
+    matches = list(CHAPTER_PATTERN.finditer(text))
+
+    if len(matches) < 2:
+        return [Chapter(title="Full Text", text=text.strip(), index=0)]
+
+    chapters = []
+    for i, match in enumerate(matches):
+        title = match.group(0).strip().rstrip(":—-. ")
+        start = match.start()
+        end = matches[i + 1].start() if i + 1 < len(matches) else len(text)
+        chapter_text = text[start:end].strip()
+        if chapter_text:
+            chapters.append(Chapter(title=title, text=chapter_text, index=i))
+
+    preamble = text[: matches[0].start()].strip()
+    if preamble and len(preamble) > 100:
+        chapters.insert(0, Chapter(title="Preamble", text=preamble, index=-1))
+        for i, ch in enumerate(chapters):
+            ch.index = i
+
+    return chapters
+
+
 def chunk_text(text: str, max_chars: int = 4000) -> list[str]:
     paragraphs = text.split("\n\n")
     chunks = []

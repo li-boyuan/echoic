@@ -7,6 +7,7 @@ import Link from "next/link";
 type JobStatus = "idle" | "uploading" | "pending" | "directing" | "narrating" | "completed" | "failed";
 type Voice = { id: string; name: string; description: string };
 type Cast = Record<string, string>;
+type Chapter = { index: number; title: string; status: string; audio_url: string | null };
 
 const VOICES: Voice[] = [
   { id: "Kore", name: "Kore", description: "Warm, clear female voice" },
@@ -27,6 +28,8 @@ export default function Studio() {
   const [dragOver, setDragOver] = useState(false);
   const [selectedVoice, setSelectedVoice] = useState("Kore");
   const [cast, setCast] = useState<Cast>({});
+  const [chapters, setChapters] = useState<Chapter[]>([]);
+  const [playingChapter, setPlayingChapter] = useState<number | null>(null);
   const pollRef = useRef<NodeJS.Timeout | null>(null);
 
   const voiceName = (id: string) => VOICES.find((v) => v.id === id)?.name || id;
@@ -44,6 +47,7 @@ export default function Studio() {
         const job = await res.json();
         setProgress(job.progress);
         if (job.cast && Object.keys(job.cast).length > 0) setCast(job.cast);
+        if (job.chapters?.length > 0) setChapters(job.chapters);
 
         if (job.status === "directing") setStatus("directing");
         else if (job.status === "narrating") setStatus("narrating");
@@ -51,6 +55,7 @@ export default function Studio() {
           setStatus("completed");
           setAudioUrl(job.audio_url);
           if (job.cast) setCast(job.cast);
+          if (job.chapters) setChapters(job.chapters);
         } else if (job.status === "failed") {
           setStatus("failed");
           setError(job.error || "Processing failed");
@@ -106,6 +111,8 @@ export default function Studio() {
     setProgress(0);
     setError(null);
     setCast({});
+    setChapters([]);
+    setPlayingChapter(null);
   };
 
   return (
@@ -248,6 +255,29 @@ export default function Studio() {
                   </div>
                 </div>
               )}
+
+              {chapters.length > 1 && (
+                <div className="mt-6 max-w-sm mx-auto">
+                  <p className="text-xs text-zinc-500 mb-2">Chapters</p>
+                  <div className="space-y-1">
+                    {chapters.map((ch) => (
+                      <div
+                        key={ch.index}
+                        className="flex items-center justify-between px-3 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-xs"
+                      >
+                        <span className="text-zinc-300">{ch.title}</span>
+                        <span className={
+                          ch.status === "completed" ? "text-green-400" :
+                          ch.status === "directed" ? "text-blue-400" :
+                          "text-zinc-600"
+                        }>
+                          {ch.status === "completed" ? "done" : ch.status === "directed" ? "narrating..." : "pending"}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
@@ -273,11 +303,54 @@ export default function Studio() {
                 </div>
               )}
 
-              {audioUrl && (
+              {/* Full audiobook player */}
+              {audioUrl && chapters.length <= 1 && (
                 <audio controls className="mx-auto" src={audioUrl}>
                   Your browser does not support the audio element.
                 </audio>
               )}
+
+              {/* Chapter list with individual players */}
+              {chapters.length > 1 && (
+                <div className="max-w-md mx-auto space-y-2 text-left">
+                  <p className="text-xs text-zinc-500 mb-2 text-center">Chapters</p>
+                  {chapters.map((ch) => (
+                    <div
+                      key={ch.index}
+                      className="bg-zinc-900 border border-zinc-800 rounded-xl p-3 space-y-2"
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium text-zinc-200">{ch.title}</span>
+                        <div className="flex items-center gap-2">
+                          {ch.audio_url && (
+                            <>
+                              <button
+                                onClick={() => setPlayingChapter(playingChapter === ch.index ? null : ch.index)}
+                                className="text-xs px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 rounded-md transition-colors"
+                              >
+                                {playingChapter === ch.index ? "Hide" : "Play"}
+                              </button>
+                              <a
+                                href={ch.audio_url}
+                                download
+                                className="text-xs px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 rounded-md transition-colors"
+                              >
+                                Download
+                              </a>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                      {playingChapter === ch.index && ch.audio_url && (
+                        <audio controls className="w-full" src={ch.audio_url} autoPlay>
+                          Your browser does not support the audio element.
+                        </audio>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+
               <div className="flex gap-3 justify-center">
                 {audioUrl && (
                   <a
@@ -285,7 +358,7 @@ export default function Studio() {
                     download
                     className="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 rounded-lg font-medium transition-colors"
                   >
-                    Download
+                    {chapters.length > 1 ? "Download Full Audiobook" : "Download"}
                   </a>
                 )}
                 <button
