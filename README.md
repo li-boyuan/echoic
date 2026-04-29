@@ -20,7 +20,7 @@ Upload (.txt/.pdf/.epub/.docx)
 ### Core Pipeline
 - **AI Director** — Claude Haiku reads the text and splits it into speaker-tagged lines (Narrator vs. each character), adding natural prosody cues (ellipses, em-dashes, pacing)
 - **Auto Character Casting** — Claude identifies every character by name and assigns each a unique voice that matches their personality (e.g., Aunt Petunia → Leda, Harry → Puck)
-- **Multi-Speaker TTS** — Gemini 2.5 Flash TTS renders audio with separate voices for narrator and characters, stitched together seamlessly
+- **Multi-Speaker TTS** — Gemini 3.1 Flash TTS renders audio with separate voices for narrator and characters, stitched together seamlessly
 - **Chapter Splitting** — Auto-detects chapter boundaries (Chapter X, Part X, Prologue, Epilogue) and generates per-chapter audio files
 
 ### File Support
