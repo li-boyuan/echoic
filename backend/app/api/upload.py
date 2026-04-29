@@ -7,7 +7,9 @@ from fastapi import APIRouter, Form, HTTPException, UploadFile
 from app.api.jobs import jobs
 from app.config import settings
 from app.models.schemas import JobResponse, JobStatus
+from app.services.credits import can_convert, consume_credit
 from app.services.narrator import AVAILABLE_VOICES
+from app.services.parser import extract_text
 from app.services.pipeline import run_pipeline
 
 router = APIRouter()
@@ -20,6 +22,7 @@ VALID_VOICE_IDS = {v["id"] for v in AVAILABLE_VOICES}
 async def upload_manuscript(
     file: UploadFile,
     voice: str = Form(default="Kore"),
+    user_id: str = Form(default="anonymous"),
 ):
     ext = "." + file.filename.rsplit(".", 1)[-1].lower() if "." in file.filename else ""
     if ext not in ALLOWED_EXTENSIONS:
@@ -36,6 +39,20 @@ async def upload_manuscript(
         if len(content) > settings.max_file_size_mb * 1024 * 1024:
             raise HTTPException(413, f"File exceeds {settings.max_file_size_mb}MB limit")
         await f.write(content)
+
+    text = extract_text(filepath)
+    word_count = len(text.split())
+
+    allowed, tier = can_convert(user_id, word_count)
+    if not allowed:
+        import os
+        os.remove(filepath)
+        raise HTTPException(
+            402,
+            "No credits available. Purchase a Single Book or subscribe to Pro to continue.",
+        )
+
+    consume_credit(user_id, tier)
 
     job = JobResponse(id=job_id, filename=file.filename, status=JobStatus.PENDING, voice=voice)
     jobs[job_id] = job

@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import jobs, upload
+from app.api import jobs, payments, upload
 from app.config import settings
 
 
@@ -26,6 +26,7 @@ app.add_middleware(
 
 app.include_router(upload.router, prefix="/api")
 app.include_router(jobs.router, prefix="/api")
+app.include_router(payments.router, prefix="/api")
 
 
 @app.get("/api/health")

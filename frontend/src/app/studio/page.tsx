@@ -1,13 +1,14 @@
 "use client";
 
 import { useState, useCallback, useEffect, useRef } from "react";
-import { UserButton } from "@clerk/nextjs";
+import { UserButton, useUser } from "@clerk/nextjs";
 import Link from "next/link";
 
 type JobStatus = "idle" | "uploading" | "pending" | "directing" | "narrating" | "completed" | "failed";
 type Voice = { id: string; name: string; description: string };
 type Cast = Record<string, string>;
 type Chapter = { index: number; title: string; status: string; audio_url: string | null };
+type Credits = { free_available: boolean; single_credits: number; pro_active: boolean; free_word_limit: number };
 
 const VOICES: Voice[] = [
   { id: "Kore", name: "Kore", description: "Warm, clear female voice" },
@@ -19,6 +20,8 @@ const VOICES: Voice[] = [
 ];
 
 export default function Studio() {
+  const { user } = useUser();
+  const [credits, setCredits] = useState<Credits | null>(null);
   const [status, setStatus] = useState<JobStatus>("idle");
   const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -33,6 +36,14 @@ export default function Studio() {
   const pollRef = useRef<NodeJS.Timeout | null>(null);
 
   const voiceName = (id: string) => VOICES.find((v) => v.id === id)?.name || id;
+
+  useEffect(() => {
+    if (!user) return;
+    fetch(`/api/user/${user.id}/credits`)
+      .then((r) => r.json())
+      .then(setCredits)
+      .catch(() => {});
+  }, [user, status]);
 
   useEffect(() => {
     if (!jobId || status === "idle" || status === "completed" || status === "failed") {
@@ -87,6 +98,7 @@ export default function Studio() {
       const formData = new FormData();
       formData.append("file", file);
       formData.append("voice", selectedVoice);
+      formData.append("user_id", user?.id || "anonymous");
 
       const res = await fetch("/api/upload", { method: "POST", body: formData });
       if (!res.ok) {
@@ -125,7 +137,28 @@ export default function Studio() {
         >
           Echoic
         </Link>
-        <UserButton afterSignOutUrl="/" />
+        <div className="flex items-center gap-4">
+          {credits && (
+            <div className="flex items-center gap-3 text-xs">
+              {credits.pro_active ? (
+                <span className="px-2.5 py-1 bg-violet-600/20 text-violet-300 border border-violet-500/30 rounded-full">Pro</span>
+              ) : (
+                <>
+                  {credits.free_available && (
+                    <span className="text-zinc-500">1 free conversion</span>
+                  )}
+                  {credits.single_credits > 0 && (
+                    <span className="text-zinc-400">{credits.single_credits} credit{credits.single_credits !== 1 ? "s" : ""}</span>
+                  )}
+                  {!credits.free_available && credits.single_credits === 0 && (
+                    <Link href="/pricing" className="text-blue-400 hover:text-blue-300">Get credits</Link>
+                  )}
+                </>
+              )}
+            </div>
+          )}
+          <UserButton afterSignOutUrl="/" />
+        </div>
       </nav>
 
       {/* Studio Content */}
@@ -134,6 +167,19 @@ export default function Studio() {
           {status === "idle" && (
             <div className="space-y-6">
               <h2 className="text-2xl font-semibold text-center">Create an audiobook</h2>
+
+              {credits && !credits.pro_active && !credits.free_available && credits.single_credits === 0 && (
+                <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 text-center space-y-3">
+                  <p className="text-zinc-300">You've used your free conversion</p>
+                  <p className="text-sm text-zinc-500">Purchase credits or subscribe to Pro to continue</p>
+                  <Link
+                    href="/pricing"
+                    className="inline-block px-6 py-2.5 bg-blue-600 hover:bg-blue-500 rounded-lg font-medium text-sm transition-colors"
+                  >
+                    View Pricing
+                  </Link>
+                </div>
+              )}
 
               {/* Narrator Voice Selector */}
               <div className="space-y-2">

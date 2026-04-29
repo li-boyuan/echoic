@@ -9,7 +9,10 @@ export default function Home() {
         <span className="text-lg font-bold bg-gradient-to-r from-blue-400 to-violet-400 bg-clip-text text-transparent">
           Echoic
         </span>
-        <div>
+        <div className="flex items-center gap-3">
+          <Link href="/pricing" className="px-4 py-2 text-sm text-zinc-400 hover:text-zinc-200 transition-colors">
+            Pricing
+          </Link>
           <SignedOut>
             <SignInButton mode="modal">
               <button className="px-4 py-2 text-sm bg-zinc-800 hover:bg-zinc-700 rounded-lg transition-colors">
