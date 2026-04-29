@@ -161,7 +161,7 @@ NEXT_PUBLIC_FB_PIXEL_ID=...         # Meta Pixel for ad conversion tracking
 | Frontend | Next.js 15, React 19, Tailwind CSS v4 |
 | Backend | FastAPI, Python 3.12 |
 | AI Director | Claude Haiku 4.5 (Anthropic) |
-| AI Narrator | Gemini 2.5 Flash TTS (Google) |
+| AI Narrator | Gemini 3.1 Flash TTS (Google) |
 | Auth | Clerk (Google, Email, Facebook) |
 | Payments | Stripe (live) |
 | Analytics | Meta Pixel |

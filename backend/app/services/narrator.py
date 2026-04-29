@@ -23,7 +23,7 @@ AVAILABLE_VOICES = [
     {"id": "Leda", "name": "Leda", "description": "Soft, gentle female voice"},
 ]
 
-API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent"
+API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-tts-preview:generateContent"
 
 
 def _clean_for_tts(text: str) -> str:
