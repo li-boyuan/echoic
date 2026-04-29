@@ -13,7 +13,6 @@ const PLANS = [
     description: "Try it out",
     features: ["1 free conversion", "Up to 5,000 words", "All voices included", "Auto character casting"],
     cta: "Get Started",
-    highlight: false,
   },
   {
     id: "single",
@@ -23,7 +22,7 @@ const PLANS = [
     description: "Perfect for one book",
     features: ["1 book conversion", "Unlimited words", "All voices included", "Auto character casting", "Chapter splitting"],
     cta: "Buy Now",
-    highlight: true,
+    popular: true,
   },
   {
     id: "pro",
@@ -33,7 +32,6 @@ const PLANS = [
     description: "For power users",
     features: ["Unlimited conversions", "Unlimited words", "All voices included", "Auto character casting", "Chapter splitting", "Priority processing"],
     cta: "Subscribe",
-    highlight: false,
   },
 ];
 
@@ -91,19 +89,21 @@ export default function Pricing() {
             {PLANS.map((plan) => (
               <div
                 key={plan.id}
-                className={`rounded-2xl p-6 space-y-4 ${
-                  plan.highlight
-                    ? "bg-blue-600/10 border-2 border-blue-500"
-                    : "bg-zinc-900 border-2 border-zinc-800"
-                }`}
+                className="bg-zinc-900 border-2 border-zinc-800 rounded-2xl p-6 space-y-4 relative"
               >
+                {"popular" in plan && plan.popular && (
+                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 bg-blue-600 text-white text-xs font-medium rounded-full">
+                    Most Popular
+                  </span>
+                )}
+
                 <div>
-                  <h3 className="text-lg font-semibold">{plan.name}</h3>
+                  <h3 className="text-lg font-semibold text-zinc-100">{plan.name}</h3>
                   <p className="text-sm text-zinc-500">{plan.description}</p>
                 </div>
 
                 <div className="flex items-baseline gap-1">
-                  <span className="text-3xl font-bold">{plan.price}</span>
+                  <span className="text-3xl font-bold text-zinc-100">{plan.price}</span>
                   {plan.period && (
                     <span className="text-zinc-500 text-sm">{plan.period}</span>
                   )}
@@ -123,7 +123,7 @@ export default function Pricing() {
                     <>
                       <SignedOut>
                         <SignInButton mode="modal">
-                          <button className="w-full py-2.5 bg-zinc-800 hover:bg-zinc-700 rounded-lg font-medium text-sm transition-colors">
+                          <button className="w-full py-2.5 bg-zinc-700 hover:bg-zinc-600 text-zinc-100 rounded-lg font-medium text-sm transition-colors cursor-pointer">
                             {plan.cta}
                           </button>
                         </SignInButton>
@@ -131,7 +131,7 @@ export default function Pricing() {
                       <SignedIn>
                         <Link
                           href="/studio"
-                          className="block w-full py-2.5 bg-zinc-800 hover:bg-zinc-700 rounded-lg font-medium text-sm transition-colors text-center"
+                          className="block w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-medium text-sm transition-colors text-center"
                         >
                           Go to Studio
                         </Link>
@@ -141,13 +141,7 @@ export default function Pricing() {
                     <>
                       <SignedOut>
                         <SignInButton mode="modal">
-                          <button
-                            className={`w-full py-2.5 rounded-lg font-medium text-sm transition-colors ${
-                              plan.highlight
-                                ? "bg-blue-600 hover:bg-blue-500"
-                                : "bg-zinc-800 hover:bg-zinc-700"
-                            }`}
-                          >
+                          <button className="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-medium text-sm transition-colors cursor-pointer">
                             {plan.cta}
                           </button>
                         </SignInButton>
@@ -156,11 +150,7 @@ export default function Pricing() {
                         <button
                           onClick={() => handlePurchase(plan.id)}
                           disabled={loading === plan.id}
-                          className={`w-full py-2.5 rounded-lg font-medium text-sm transition-colors ${
-                            plan.highlight
-                              ? "bg-blue-600 hover:bg-blue-500"
-                              : "bg-zinc-800 hover:bg-zinc-700"
-                          } disabled:opacity-50`}
+                          className="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-medium text-sm transition-colors cursor-pointer disabled:opacity-50"
                         >
                           {loading === plan.id ? "Redirecting..." : plan.cta}
                         </button>

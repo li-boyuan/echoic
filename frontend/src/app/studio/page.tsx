@@ -139,19 +139,28 @@ export default function Studio() {
         </Link>
         <div className="flex items-center gap-4">
           {credits && (
-            <div className="flex items-center gap-3 text-xs">
+            <div className="flex items-center gap-3 text-sm">
               {credits.pro_active ? (
-                <span className="px-2.5 py-1 bg-violet-600/20 text-violet-300 border border-violet-500/30 rounded-full">Pro</span>
+                <span className="px-3 py-1.5 bg-violet-600/20 text-violet-300 border border-violet-500/30 rounded-full font-medium">Pro</span>
               ) : (
                 <>
                   {credits.free_available && (
-                    <span className="text-zinc-500">1 free conversion</span>
+                    <span className="px-3 py-1.5 bg-emerald-600/20 text-emerald-300 border border-emerald-500/30 rounded-full font-medium">
+                      1 free conversion
+                    </span>
                   )}
                   {credits.single_credits > 0 && (
-                    <span className="text-zinc-400">{credits.single_credits} credit{credits.single_credits !== 1 ? "s" : ""}</span>
+                    <span className="px-3 py-1.5 bg-blue-600/20 text-blue-300 border border-blue-500/30 rounded-full font-medium">
+                      {credits.single_credits} credit{credits.single_credits !== 1 ? "s" : ""}
+                    </span>
                   )}
                   {!credits.free_available && credits.single_credits === 0 && (
-                    <Link href="/pricing" className="text-blue-400 hover:text-blue-300">Get credits</Link>
+                    <Link
+                      href="/pricing"
+                      className="px-3 py-1.5 bg-amber-600/20 text-amber-300 border border-amber-500/30 rounded-full font-medium hover:bg-amber-600/30 transition-colors"
+                    >
+                      Get credits
+                    </Link>
                   )}
                 </>
               )}
