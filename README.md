@@ -22,6 +22,16 @@ Upload (.txt/.pdf/.epub/.docx)
 - **Auto Character Casting** — Claude identifies every character by name and assigns each a unique voice that matches their personality (e.g., Aunt Petunia → Leda, Harry → Puck)
 - **Multi-Speaker TTS** — Gemini 3.1 Flash TTS renders audio with separate voices for narrator and characters, stitched together seamlessly
 - **Chapter Splitting** — Auto-detects chapter boundaries (Chapter X, Part X, Prologue, Epilogue) and generates per-chapter audio files
+- **Format Conversion** — Download audiobooks in multiple formats, converted on-the-fly via ffmpeg
+
+### Output Formats
+| Format | Description |
+|--------|-------------|
+| MP3 | Compressed, universal compatibility (default) |
+| WAV | Uncompressed, highest quality |
+| M4A | AAC audio, great for Apple devices |
+| FLAC | Lossless compression |
+| OGG | Open format, good quality |
 
 ### File Support
 - **TXT** — direct text extraction
