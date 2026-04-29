@@ -6,6 +6,15 @@ type JobStatus = "idle" | "uploading" | "pending" | "directing" | "narrating" | 
 type Voice = { id: string; name: string; description: string };
 type Cast = Record<string, string>;
 
+const VOICES: Voice[] = [
+  { id: "Kore", name: "Kore", description: "Warm, clear female voice" },
+  { id: "Charon", name: "Charon", description: "Deep, authoritative male voice" },
+  { id: "Fenrir", name: "Fenrir", description: "Calm, steady male voice" },
+  { id: "Aoede", name: "Aoede", description: "Bright, expressive female voice" },
+  { id: "Puck", name: "Puck", description: "Energetic, youthful voice" },
+  { id: "Leda", name: "Leda", description: "Soft, gentle female voice" },
+];
+
 export default function Home() {
   const [status, setStatus] = useState<JobStatus>("idle");
   const [file, setFile] = useState<File | null>(null);
@@ -14,19 +23,11 @@ export default function Home() {
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
   const [dragOver, setDragOver] = useState(false);
-  const [voices, setVoices] = useState<Voice[]>([]);
   const [selectedVoice, setSelectedVoice] = useState("Kore");
   const [cast, setCast] = useState<Cast>({});
   const pollRef = useRef<NodeJS.Timeout | null>(null);
 
-  useEffect(() => {
-    fetch("/api/voices")
-      .then((r) => r.json())
-      .then(setVoices)
-      .catch(() => {});
-  }, []);
-
-  const voiceName = (id: string) => voices.find((v) => v.id === id)?.name || id;
+  const voiceName = (id: string) => VOICES.find((v) => v.id === id)?.name || id;
 
   useEffect(() => {
     if (!jobId || status === "idle" || status === "completed" || status === "failed") {
@@ -125,12 +126,12 @@ export default function Home() {
           {status === "idle" && (
             <div className="space-y-6">
               {/* Narrator Voice Selector */}
-              {voices.length > 0 && (
+              {VOICES.length > 0 && (
                 <div className="space-y-2">
                   <label className="text-sm text-zinc-400 block">Narrator voice</label>
                   <p className="text-xs text-zinc-600">Character voices are automatically cast by AI</p>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                    {voices.map((v) => (
+                    {VOICES.map((v) => (
                       <button
                         key={v.id}
                         onClick={() => setSelectedVoice(v.id)}
