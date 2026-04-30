@@ -110,7 +110,7 @@ def segment_text(
         current_lines = []
         current_char = None
 
-    max_segment_chars = 1500
+    max_segment_chars = 3000
 
     for line in lines:
         match = re.match(r"^([^:]+):\s*(.*)$", line)
