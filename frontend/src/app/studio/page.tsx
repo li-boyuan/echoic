@@ -144,6 +144,27 @@ export default function Studio() {
     }
   };
 
+  const [refundStatus, setRefundStatus] = useState<"idle" | "loading" | "done" | "error">("idle");
+
+  const handleRefund = async () => {
+    if (!user) return;
+    setRefundStatus("loading");
+    try {
+      const res = await fetch("/api/refund", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id: user.id }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.detail || "Refund failed");
+      }
+      setRefundStatus("done");
+    } catch {
+      setRefundStatus("error");
+    }
+  };
+
   const reset = () => {
     setStatus("idle");
     setFile(null);
@@ -490,12 +511,26 @@ export default function Studio() {
             <div className="text-center py-12 space-y-4">
               <p className="text-red-400">Something went wrong</p>
               {error && <p className="text-sm text-red-400/70">{error}</p>}
-              <button
-                onClick={reset}
-                className="px-6 py-2.5 bg-zinc-800 hover:bg-zinc-700 rounded-lg font-medium transition-colors"
-              >
-                Try again
-              </button>
+              <div className="flex gap-3 justify-center">
+                <button
+                  onClick={reset}
+                  className="px-6 py-2.5 bg-zinc-800 hover:bg-zinc-700 rounded-lg font-medium transition-colors"
+                >
+                  Try again
+                </button>
+                {user && credits && !credits.free_available && (
+                  <button
+                    onClick={handleRefund}
+                    disabled={refundStatus !== "idle"}
+                    className="px-6 py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 rounded-lg text-sm text-zinc-400 transition-colors disabled:opacity-50"
+                  >
+                    {refundStatus === "loading" ? "Processing..." :
+                     refundStatus === "done" ? "Refunded" :
+                     refundStatus === "error" ? "No refundable payment" :
+                     "Request Refund"}
+                  </button>
+                )}
+              </div>
             </div>
           )}
 

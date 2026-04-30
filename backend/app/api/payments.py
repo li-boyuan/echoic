@@ -33,6 +33,10 @@ class CheckoutRequest(BaseModel):
     user_id: str
 
 
+class RefundRequest(BaseModel):
+    user_id: str
+
+
 class UserStatusResponse(BaseModel):
     free_available: bool
     single_credits: int
@@ -139,6 +143,44 @@ async def stripe_webhook(request: Request):
             activate_pro(user_id, datetime.utcnow() + timedelta(days=30))
 
     return {"status": "ok"}
+
+
+@router.post("/refund")
+async def request_refund(req: RefundRequest):
+    if not settings.stripe_secret_key:
+        raise HTTPException(500, "Stripe not configured")
+
+    import stripe
+    stripe.api_key = settings.stripe_secret_key
+
+    sessions = stripe.checkout.Session.list(
+        status="complete", limit=100
+    )
+
+    refunded = False
+    for session in sessions.auto_paging_iter():
+        meta = session.get("metadata", {})
+        if meta.get("user_id") != req.user_id:
+            continue
+        if session.get("payment_intent") is None:
+            continue
+
+        pi = stripe.PaymentIntent.retrieve(session["payment_intent"])
+        if pi.status != "succeeded":
+            continue
+
+        existing = stripe.Refund.list(payment_intent=pi.id, limit=1)
+        if existing.data:
+            continue
+
+        stripe.Refund.create(payment_intent=pi.id)
+        refunded = True
+        break
+
+    if not refunded:
+        raise HTTPException(404, "No refundable payment found")
+
+    return {"status": "refunded"}
 
 
 @router.get("/pricing")
