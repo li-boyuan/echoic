@@ -6,7 +6,7 @@ from app.models.schemas import ChapterInfo, JobResponse, JobStatus
 from app.services.credits import consume_credit
 from app.services.director import direct_text
 from app.services.narrator import generate_segment_audio, stitch_audio
-from app.services.parser import chunk_text, extract_text, split_chapters
+from app.services.parser import extract_text, split_chapters
 from app.services.segmenter import (
     assign_voices,
     extract_characters,
@@ -42,22 +42,16 @@ async def run_pipeline(
         completed = 0
 
         for ch in chapters:
-            chunks = chunk_text(ch.text)
             logger.info(
-                "Job %s: chapter %d '%s' — %d chars, %d chunks",
-                job.id, ch.index, ch.title, len(ch.text), len(chunks),
+                "Job %s: chapter %d '%s' — %d chars",
+                job.id, ch.index, ch.title, len(ch.text),
             )
-            directed_chunks = []
-            for i, chunk in enumerate(chunks):
-                directed = await direct_text(chunk)
-                logger.info(
-                    "Job %s: chapter %d chunk %d/%d — input %d chars, output %d chars",
-                    job.id, ch.index, i + 1, len(chunks), len(chunk), len(directed),
-                )
-                directed_chunks.append(directed)
-
-            full_directed = "\n".join(directed_chunks)
-            all_directed.append((ch, full_directed))
+            directed = await direct_text(ch.text)
+            logger.info(
+                "Job %s: chapter %d — directed %d chars → %d chars",
+                job.id, ch.index, len(ch.text), len(directed),
+            )
+            all_directed.append((ch, directed))
             completed += 1
             job.progress = completed / total_steps
             job.chapters[ch.index].status = "directed"
