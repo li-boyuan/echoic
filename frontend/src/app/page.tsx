@@ -89,8 +89,9 @@ export default function Home() {
       </div>
 
       {/* Footer */}
-      <footer className="border-t border-zinc-800 py-6 px-4 text-center text-xs text-zinc-600">
-        echoic.studio — AI-powered audiobook generation
+      <footer className="border-t border-zinc-800 py-6 px-4 text-center text-xs text-zinc-600 space-x-3">
+        <span>echoic.studio — AI-powered audiobook generation</span>
+        <Link href="/privacy" className="hover:text-zinc-400 transition-colors">Privacy Policy</Link>
       </footer>
     </main>
   );
