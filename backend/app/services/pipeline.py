@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import os
 
@@ -87,12 +88,14 @@ async def run_pipeline(
             )
 
             pcm_chunks = []
-            for seg in segments:
+            for i, seg in enumerate(segments):
                 seg_text = prepare_segment_text(seg)
                 pcm = await generate_segment_audio(
                     seg_text, seg.narrator_voice, seg.character_voice,
                 )
                 pcm_chunks.append(pcm)
+                if i < len(segments) - 1:
+                    await asyncio.sleep(1.5)
 
             chapter_path = f"output/{job.id}/chapter_{ch.index}.wav"
             stitch_audio(pcm_chunks, chapter_path)
