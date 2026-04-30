@@ -12,7 +12,7 @@ class Settings(BaseSettings):
     stripe_webhook_secret: str = ""
     frontend_url: str = "http://localhost:3001"
     free_word_limit: int = 5000
-    admin_user_ids: list[str] = []
+    admin_user_ids: str = ""
 
     model_config = {"env_file": ".env"}
 

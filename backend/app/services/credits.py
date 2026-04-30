@@ -105,7 +105,9 @@ def set_stripe_customer(user_id: str, customer_id: str):
 
 
 def grant_admin_access():
-    for uid in settings.admin_user_ids:
+    if not settings.admin_user_ids:
+        return
+    for uid in settings.admin_user_ids.split(","):
         user = get_user(uid)
         if not user.pro_subscription:
             with _lock:
