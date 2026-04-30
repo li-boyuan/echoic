@@ -110,16 +110,22 @@ def segment_text(
         current_lines = []
         current_char = None
 
+    max_segment_chars = 1500
+
     for line in lines:
         match = re.match(r"^([^:]+):\s*(.*)$", line)
         if not match:
             current_lines.append(f"{NARRATOR_TAG}: {line}")
+            if sum(len(l) for l in current_lines) > max_segment_chars:
+                flush()
             continue
 
         speaker = match.group(1).strip()
 
         if speaker == NARRATOR_TAG:
             current_lines.append(line)
+            if sum(len(l) for l in current_lines) > max_segment_chars:
+                flush()
         else:
             if current_char is not None and speaker != current_char:
                 flush()

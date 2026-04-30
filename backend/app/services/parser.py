@@ -240,7 +240,7 @@ def split_chapters(text: str) -> list[Chapter]:
     return chapters
 
 
-def chunk_text(text: str, max_chars: int = 4000) -> list[str]:
+def chunk_text(text: str, max_chars: int = 2000) -> list[str]:
     paragraphs = text.split("\n\n")
     chunks = []
     current = ""

@@ -1,6 +1,10 @@
+import logging
+
 import anthropic
 
 from app.config import settings
+
+logger = logging.getLogger(__name__)
 
 DIRECTOR_SYSTEM = """You are an audiobook director preparing text for a multi-speaker TTS system.
 Your job is to split text into speaker-tagged lines, identifying each character by name.
@@ -36,8 +40,13 @@ async def direct_text(text: str) -> str:
     client = anthropic.AsyncAnthropic(api_key=settings.anthropic_api_key)
     message = await client.messages.create(
         model="claude-haiku-4-5-20251001",
-        max_tokens=8192,
+        max_tokens=16384,
         system=DIRECTOR_SYSTEM,
         messages=[{"role": "user", "content": text}],
     )
+    if message.stop_reason == "max_tokens":
+        logger.warning(
+            "Director output truncated (input %d chars, output %d chars)",
+            len(text), len(message.content[0].text),
+        )
     return message.content[0].text
