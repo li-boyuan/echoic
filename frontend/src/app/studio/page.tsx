@@ -22,7 +22,7 @@ const VOICES: Voice[] = [
 ];
 
 export default function Studio() {
-  const { user } = useUser();
+  const { user, isLoaded } = useUser();
   const [credits, setCredits] = useState<Credits | null>(null);
   const [status, setStatus] = useState<JobStatus>("idle");
   const [file, setFile] = useState<File | null>(null);
@@ -43,11 +43,12 @@ export default function Studio() {
   const userId = user?.id || "anonymous";
 
   useEffect(() => {
+    if (!isLoaded) return;
     fetch(`/api/user/${userId}/credits`)
       .then((r) => r.json())
       .then(setCredits)
       .catch(() => {});
-  }, [userId, status]);
+  }, [isLoaded, userId, status]);
 
   useEffect(() => {
     if (!user?.createdAt) return;
