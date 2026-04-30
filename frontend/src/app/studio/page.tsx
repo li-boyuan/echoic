@@ -72,6 +72,11 @@ export default function Studio() {
     pollRef.current = setInterval(async () => {
       try {
         const res = await fetch(`/api/jobs/${jobId}`);
+        if (res.status === 404) {
+          setStatus("failed");
+          setError("Job not found — the server may have restarted. Please try again.");
+          return;
+        }
         if (!res.ok) return;
         const job = await res.json();
         setProgress(job.progress);
