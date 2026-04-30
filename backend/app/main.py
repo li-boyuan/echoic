@@ -6,12 +6,14 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api import jobs, payments, upload
 from app.config import settings
+from app.services.credits import sync_from_stripe
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     os.makedirs(settings.upload_dir, exist_ok=True)
     os.makedirs(settings.output_dir, exist_ok=True)
+    sync_from_stripe()
     yield
 
 

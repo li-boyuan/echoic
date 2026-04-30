@@ -1,10 +1,13 @@
 import json
+import logging
 import os
 import threading
 from dataclasses import asdict, dataclass
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from app.config import settings
+
+logger = logging.getLogger(__name__)
 
 CREDITS_FILE = os.environ.get("CREDITS_FILE", "data/credits.json")
 
@@ -99,3 +102,39 @@ def set_stripe_customer(user_id: str, customer_id: str):
     with _lock:
         user.stripe_customer_id = customer_id
         _save()
+
+
+def sync_from_stripe():
+    if not settings.stripe_secret_key:
+        logger.warning("Stripe not configured, skipping credit sync")
+        return
+
+    if os.path.exists(CREDITS_FILE):
+        logger.info("Credits file exists, skipping Stripe sync")
+        return
+
+    import stripe
+    stripe.api_key = settings.stripe_secret_key
+
+    logger.info("No credits file found — rebuilding from Stripe payment history")
+    restored = 0
+
+    sessions = stripe.checkout.Session.list(status="complete", limit=100)
+    for session in sessions.auto_paging_iter():
+        meta = session.get("metadata", {})
+        user_id = meta.get("user_id")
+        product = meta.get("product")
+        if not user_id or not product:
+            continue
+
+        if session.get("customer"):
+            set_stripe_customer(user_id, session["customer"])
+
+        if product == "single":
+            add_single_credit(user_id)
+            restored += 1
+        elif product == "pro":
+            activate_pro(user_id, datetime.utcnow() + timedelta(days=30))
+            restored += 1
+
+    logger.info("Restored credits for %d payments from Stripe", restored)
