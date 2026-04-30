@@ -65,9 +65,17 @@ async def generate_segment_audio(
     }
 
     for attempt in range(5):
-        async with httpx.AsyncClient(timeout=120) as client:
-            resp = await client.post(url, json=payload)
-            data = resp.json()
+        try:
+            async with httpx.AsyncClient(timeout=300) as client:
+                resp = await client.post(url, json=payload)
+                data = resp.json()
+        except httpx.TimeoutException:
+            if attempt < 4:
+                wait = 10 * (attempt + 1)
+                logger.warning("TTS request timed out, retrying in %ds (attempt %d)", wait, attempt + 1)
+                await asyncio.sleep(wait)
+                continue
+            raise RuntimeError("TTS request timed out after 5 attempts")
 
         if "error" in data:
             code = data["error"]["code"]
