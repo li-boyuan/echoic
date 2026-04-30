@@ -27,6 +27,10 @@ AVAILABLE_VOICES = [
 API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-tts-preview:generateContent"
 
 
+def _silence(seconds: float) -> bytes:
+    return b"\x00" * int(SAMPLE_RATE * SAMPLE_WIDTH * CHANNELS * seconds)
+
+
 def _clean_for_tts(text: str) -> str:
     text = re.sub(r"\[[^\]]*\]", "", text)
     text = re.sub(r"\n{3,}", "\n\n", text)
@@ -86,8 +90,18 @@ async def generate_segment_audio(
                 continue
             raise RuntimeError(f"{code} {data['error']['message']}")
 
+        candidate = data.get("candidates", [{}])[0]
+        finish_reason = candidate.get("finishReason", "")
+
+        if finish_reason == "OTHER" or "copyrighted" in candidate.get("finishMessage", ""):
+            logger.warning(
+                "TTS content filtered (copyright): %s — inserting silence",
+                text[:80],
+            )
+            return _silence(1.0)
+
         try:
-            audio_b64 = data["candidates"][0]["content"]["parts"][0]["inlineData"]["data"]
+            audio_b64 = candidate["content"]["parts"][0]["inlineData"]["data"]
             return base64.b64decode(audio_b64)
         except (KeyError, IndexError) as e:
             logger.error("Unexpected TTS response: %s", json.dumps(data)[:500])
