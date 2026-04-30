@@ -114,8 +114,8 @@ export default function Privacy() {
             <h2 className="text-lg font-medium text-zinc-100">Contact</h2>
             <p>
               If you have questions about this privacy policy, contact us at{" "}
-              <a href="mailto:privacy@echoic.studio" className="text-blue-400 hover:underline">
-                privacy@echoic.studio
+              <a href="mailto:support@echoic.studio" className="text-blue-400 hover:underline">
+                support@echoic.studio
               </a>
               .
             </p>

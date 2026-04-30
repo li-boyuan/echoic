@@ -498,7 +498,7 @@ export default function Studio() {
               </button>
               <p className="text-xs text-zinc-500 pt-2">
                 Need a refund?{" "}
-                <a href="mailto:privacy@echoic.studio" className="text-blue-400 hover:underline">
+                <a href="mailto:support@echoic.studio" className="text-blue-400 hover:underline">
                   Contact us
                 </a>
               </p>
