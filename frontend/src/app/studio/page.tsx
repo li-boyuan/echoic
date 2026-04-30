@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect, useRef } from "react";
-import { UserButton, useUser } from "@clerk/nextjs";
+import { SignInButton, UserButton, useUser } from "@clerk/nextjs";
 import Link from "next/link";
 import { trackUpload, trackConversion, trackSignUp, trackPurchase, trackPlay, trackDownload } from "@/lib/tracking";
 
@@ -39,13 +39,14 @@ export default function Studio() {
 
   const voiceName = (id: string) => VOICES.find((v) => v.id === id)?.name || id;
 
+  const userId = user?.id || "anonymous";
+
   useEffect(() => {
-    if (!user) return;
-    fetch(`/api/user/${user.id}/credits`)
+    fetch(`/api/user/${userId}/credits`)
       .then((r) => r.json())
       .then(setCredits)
       .catch(() => {});
-  }, [user, status]);
+  }, [userId, status]);
 
   useEffect(() => {
     if (!user?.createdAt) return;
@@ -115,7 +116,7 @@ export default function Studio() {
       const formData = new FormData();
       formData.append("file", file);
       formData.append("voice", selectedVoice);
-      formData.append("user_id", user?.id || "anonymous");
+      formData.append("user_id", userId);
 
       const res = await fetch("/api/upload", { method: "POST", body: formData });
       if (!res.ok) {
@@ -184,7 +185,15 @@ export default function Studio() {
               )}
             </div>
           )}
-          <UserButton afterSignOutUrl="/" />
+          {user ? (
+            <UserButton afterSignOutUrl="/" />
+          ) : (
+            <SignInButton mode="modal">
+              <button className="px-4 py-2 text-sm bg-zinc-800 hover:bg-zinc-700 rounded-lg transition-colors">
+                Sign in
+              </button>
+            </SignInButton>
+          )}
         </div>
       </nav>
 

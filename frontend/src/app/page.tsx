@@ -51,21 +51,12 @@ export default function Home() {
           </div>
 
           <div className="pt-4">
-            <SignedOut>
-              <SignInButton mode="modal">
-                <button className="px-8 py-3.5 bg-blue-600 hover:bg-blue-500 rounded-xl font-medium text-lg transition-colors">
-                  Get Started — Free
-                </button>
-              </SignInButton>
-            </SignedOut>
-            <SignedIn>
-              <Link
-                href="/studio"
-                className="inline-block px-8 py-3.5 bg-blue-600 hover:bg-blue-500 rounded-xl font-medium text-lg transition-colors"
-              >
-                Open Studio
-              </Link>
-            </SignedIn>
+            <Link
+              href="/studio"
+              className="inline-block px-8 py-3.5 bg-blue-600 hover:bg-blue-500 rounded-xl font-medium text-lg transition-colors"
+            >
+              Try Free — No Sign-up Required
+            </Link>
           </div>
         </div>
       </div>
