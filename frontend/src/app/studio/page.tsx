@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useCallback, useEffect, useRef } from "react";
+import { useSearchParams } from "next/navigation";
 import { UserButton, useUser } from "@clerk/nextjs";
 import Link from "next/link";
-import { trackUpload, trackConversion } from "@/lib/tracking";
+import { trackUpload, trackConversion, trackSignUp, trackPurchase, trackPlay, trackDownload } from "@/lib/tracking";
 
 type JobStatus = "idle" | "uploading" | "pending" | "directing" | "narrating" | "completed" | "failed";
 type Voice = { id: string; name: string; description: string };
@@ -22,6 +23,7 @@ const VOICES: Voice[] = [
 
 export default function Studio() {
   const { user } = useUser();
+  const searchParams = useSearchParams();
   const [credits, setCredits] = useState<Credits | null>(null);
   const [status, setStatus] = useState<JobStatus>("idle");
   const [file, setFile] = useState<File | null>(null);
@@ -46,6 +48,19 @@ export default function Studio() {
       .then(setCredits)
       .catch(() => {});
   }, [user, status]);
+
+  useEffect(() => {
+    if (!user?.createdAt) return;
+    const ageMs = Date.now() - new Date(user.createdAt).getTime();
+    if (ageMs < 60_000) trackSignUp();
+  }, [user]);
+
+  useEffect(() => {
+    if (searchParams.get("payment") === "success") {
+      trackPurchase(9.99);
+      window.history.replaceState({}, "", "/studio");
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     if (!jobId || status === "idle" || status === "completed" || status === "failed") {
@@ -384,7 +399,11 @@ export default function Studio() {
                           {ch.audio_url && (
                             <>
                               <button
-                                onClick={() => setPlayingChapter(playingChapter === ch.index ? null : ch.index)}
+                                onClick={() => {
+                                  const willPlay = playingChapter !== ch.index;
+                                  setPlayingChapter(willPlay ? ch.index : null);
+                                  if (willPlay) trackPlay();
+                                }}
                                 className="text-xs px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 rounded-md transition-colors"
                               >
                                 {playingChapter === ch.index ? "Hide" : "Play"}
@@ -392,6 +411,7 @@ export default function Studio() {
                               <a
                                 href={`${ch.audio_url}?format=${downloadFormat}`}
                                 download
+                                onClick={() => trackDownload(downloadFormat)}
                                 className="text-xs px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 rounded-md transition-colors"
                               >
                                 Download
@@ -431,6 +451,7 @@ export default function Studio() {
                     <a
                       href={`${audioUrl}?format=${downloadFormat}`}
                       download
+                      onClick={() => trackDownload(downloadFormat)}
                       className="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 rounded-lg font-medium transition-colors"
                     >
                       {chapters.length > 1 ? "Download Full Audiobook" : "Download"}
