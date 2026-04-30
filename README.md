@@ -54,7 +54,8 @@ Upload (.txt/.pdf/.epub/.docx)
 ### Authentication
 - **Clerk** integration with Google, Email, and Facebook sign-in
 - Dark-themed sign-in modal matching the app design
-- Public landing page (`/`) with protected studio (`/studio`)
+- Anonymous access — users can try the studio without signing up
+- Sign-in prompted for credits/payment features
 
 ### Payments (Stripe)
 | Tier | Price | What you get |
@@ -161,7 +162,8 @@ NEXT_PUBLIC_FB_PIXEL_ID=...         # Meta Pixel for ad conversion tracking
 ## Marketing
 
 - **Facebook Page**: [Echoic](https://www.facebook.com/profile.php?id=61560376811560)
-- **Meta Pixel**: Integrated for conversion tracking (PageView, CompleteRegistration, InitiateCheckout, Purchase)
+- **Meta Pixel**: Full-funnel tracking (PageView, CompleteRegistration, InitiateCheckout, Purchase, ViewContent, Lead)
+- **Vercel Analytics**: Custom engagement events (file_selected, generate_clicked, conversion_completed, audio_played, audio_downloaded)
 - **Ad Creatives**: 3 static (1080x1080) + 1 animated video in `ads/`
 - **Targeting**: Self-published authors, KDP users, audiobook enthusiasts
 
@@ -175,6 +177,6 @@ NEXT_PUBLIC_FB_PIXEL_ID=...         # Meta Pixel for ad conversion tracking
 | AI Narrator | Gemini 3.1 Flash TTS (Google) |
 | Auth | Clerk (Google, Email, Facebook) |
 | Payments | Stripe (live) |
-| Analytics | Meta Pixel |
+| Analytics | Meta Pixel, Vercel Analytics |
 | Hosting | Vercel + Render |
 | Domain | Cloudflare |
