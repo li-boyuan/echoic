@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useCallback, useEffect, useRef } from "react";
-import { useSearchParams } from "next/navigation";
 import { UserButton, useUser } from "@clerk/nextjs";
 import Link from "next/link";
 import { trackUpload, trackConversion, trackSignUp, trackPurchase, trackPlay, trackDownload } from "@/lib/tracking";
@@ -23,7 +22,6 @@ const VOICES: Voice[] = [
 
 export default function Studio() {
   const { user } = useUser();
-  const searchParams = useSearchParams();
   const [credits, setCredits] = useState<Credits | null>(null);
   const [status, setStatus] = useState<JobStatus>("idle");
   const [file, setFile] = useState<File | null>(null);
@@ -56,11 +54,12 @@ export default function Studio() {
   }, [user]);
 
   useEffect(() => {
-    if (searchParams.get("payment") === "success") {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("payment") === "success") {
       trackPurchase(9.99);
       window.history.replaceState({}, "", "/studio");
     }
-  }, [searchParams]);
+  }, []);
 
   useEffect(() => {
     if (!jobId || status === "idle" || status === "completed" || status === "failed") {
