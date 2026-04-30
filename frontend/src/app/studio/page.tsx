@@ -3,6 +3,7 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { SignInButton, UserButton, useUser } from "@clerk/nextjs";
 import Link from "next/link";
+import { track } from "@vercel/analytics";
 import { trackUpload, trackConversion, trackSignUp, trackPurchase, trackPlay, trackDownload } from "@/lib/tracking";
 
 type JobStatus = "idle" | "uploading" | "pending" | "directing" | "narrating" | "completed" | "failed";
@@ -85,6 +86,7 @@ export default function Studio() {
           if (job.cast) setCast(job.cast);
           if (job.chapters) setChapters(job.chapters);
           trackConversion(file?.name || "unknown");
+          track("conversion_completed");
         } else if (job.status === "failed") {
           setStatus("failed");
           setError(job.error || "Processing failed");
@@ -105,6 +107,7 @@ export default function Studio() {
     }
     setFile(f);
     setError(null);
+    track("file_selected", { type: ext ?? "unknown" });
   }, []);
 
   const handleUpload = async () => {
@@ -128,6 +131,7 @@ export default function Studio() {
       setJobId(job.id);
       setStatus("pending");
       trackUpload(file.name);
+      track("generate_clicked", { voice: selectedVoice });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Upload failed");
       setStatus("idle");
@@ -410,7 +414,7 @@ export default function Studio() {
                                 onClick={() => {
                                   const willPlay = playingChapter !== ch.index;
                                   setPlayingChapter(willPlay ? ch.index : null);
-                                  if (willPlay) trackPlay();
+                                  if (willPlay) { trackPlay(); track("audio_played"); }
                                 }}
                                 className="text-xs px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 rounded-md transition-colors"
                               >
@@ -419,7 +423,7 @@ export default function Studio() {
                               <a
                                 href={`${ch.audio_url}?format=${downloadFormat}`}
                                 download
-                                onClick={() => trackDownload(downloadFormat)}
+                                onClick={() => { trackDownload(downloadFormat); track("audio_downloaded", { format: downloadFormat }); }}
                                 className="text-xs px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 rounded-md transition-colors"
                               >
                                 Download
@@ -459,7 +463,7 @@ export default function Studio() {
                     <a
                       href={`${audioUrl}?format=${downloadFormat}`}
                       download
-                      onClick={() => trackDownload(downloadFormat)}
+                      onClick={() => { trackDownload(downloadFormat); track("audio_downloaded", { format: downloadFormat }); }}
                       className="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 rounded-lg font-medium transition-colors"
                     >
                       {chapters.length > 1 ? "Download Full Audiobook" : "Download"}
