@@ -240,12 +240,34 @@ def split_chapters(text: str) -> list[Chapter]:
     return chapters
 
 
+def _split_long_paragraph(text: str, max_chars: int) -> list[str]:
+    """Split a single long paragraph by sentence boundaries."""
+    parts = []
+    current = ""
+    for sentence in re.split(r"(?<=[.!?])\s+", text):
+        if len(current) + len(sentence) + 1 > max_chars and current:
+            parts.append(current.strip())
+            current = sentence
+        else:
+            current = f"{current} {sentence}" if current else sentence
+    if current.strip():
+        parts.append(current.strip())
+    return parts
+
+
 def chunk_text(text: str, max_chars: int = 2000) -> list[str]:
     paragraphs = text.split("\n\n")
     chunks = []
     current = ""
 
     for para in paragraphs:
+        if len(para) > max_chars:
+            if current.strip():
+                chunks.append(current.strip())
+                current = ""
+            chunks.extend(_split_long_paragraph(para, max_chars))
+            continue
+
         if len(current) + len(para) + 2 > max_chars and current:
             chunks.append(current.strip())
             current = para

@@ -22,6 +22,7 @@ async def run_pipeline(
 ):
     try:
         text = extract_text(filepath)
+        logger.info("Job %s: extracted %d chars of text", job.id, len(text))
         chapters = split_chapters(text)
 
         job.chapters = [
@@ -41,9 +42,17 @@ async def run_pipeline(
 
         for ch in chapters:
             chunks = chunk_text(ch.text)
+            logger.info(
+                "Job %s: chapter %d '%s' — %d chars, %d chunks",
+                job.id, ch.index, ch.title, len(ch.text), len(chunks),
+            )
             directed_chunks = []
-            for chunk in chunks:
+            for i, chunk in enumerate(chunks):
                 directed = await direct_text(chunk)
+                logger.info(
+                    "Job %s: chapter %d chunk %d/%d — input %d chars, output %d chars",
+                    job.id, ch.index, i + 1, len(chunks), len(chunk), len(directed),
+                )
                 directed_chunks.append(directed)
 
             full_directed = "\n".join(directed_chunks)
@@ -71,6 +80,11 @@ async def run_pipeline(
         chapter_audio_paths = []
         for ch, directed in all_directed:
             segments = segment_text(directed, job.voice, voice_map)
+            logger.info(
+                "Job %s: chapter %d — %d segments, total %d chars",
+                job.id, ch.index, len(segments),
+                sum(len(s.text) for s in segments),
+            )
 
             pcm_chunks = []
             for seg in segments:
