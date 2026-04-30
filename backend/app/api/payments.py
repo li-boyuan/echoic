@@ -48,7 +48,7 @@ class UserStatusResponse(BaseModel):
 async def get_credits(user_id: str):
     user = get_user(user_id)
     pro_active = user.pro_subscription and (
-        user.pro_expires is not None and user.pro_expires > datetime.utcnow()
+        user.pro_expires is None or datetime.fromisoformat(user.pro_expires) > datetime.utcnow()
     )
     return UserStatusResponse(
         free_available=not user.free_used,

@@ -57,7 +57,7 @@ def can_convert(user_id: str, word_count: int) -> tuple[bool, str]:
     user = get_user(user_id)
 
     if user.pro_subscription:
-        if user.pro_expires and datetime.fromisoformat(user.pro_expires) > datetime.utcnow():
+        if user.pro_expires is None or datetime.fromisoformat(user.pro_expires) > datetime.utcnow():
             return True, "pro"
         with _lock:
             user.pro_subscription = False
@@ -102,6 +102,17 @@ def set_stripe_customer(user_id: str, customer_id: str):
     with _lock:
         user.stripe_customer_id = customer_id
         _save()
+
+
+def grant_admin_access():
+    for uid in settings.admin_user_ids:
+        user = get_user(uid)
+        if not user.pro_subscription:
+            with _lock:
+                user.pro_subscription = True
+                user.pro_expires = None
+                _save()
+            logger.info("Granted admin access to %s", uid)
 
 
 def sync_from_stripe():
