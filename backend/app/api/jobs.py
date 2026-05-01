@@ -119,7 +119,7 @@ async def list_formats():
 @router.get("/voices")
 async def list_voices(lang: str = Query(default="en")):
     voices = get_voices_for_language(lang)
-    return [{"id": v["id"], "name": v["id"], "description": v["description"]} for v in voices]
+    return [{"id": v["id"], "name": v["id"], "description": f"{v['gender']} — {v['description']}"} for v in voices]
 
 
 @router.get("/languages")
