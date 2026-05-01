@@ -175,7 +175,10 @@ export default function Studio() {
       formData.append("voice", selectedVoice);
       formData.append("language", selectedLanguage);
       const res = await fetch("/api/preview", { method: "POST", body: formData });
-      if (!res.ok) throw new Error("Preview failed");
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.detail || "Preview failed");
+      }
       const blob = await res.blob();
       setBookPreviewUrl(URL.createObjectURL(blob));
       setBookPreview("ready");
@@ -363,6 +366,9 @@ export default function Studio() {
                     <p className="text-sm text-zinc-500">
                       {(file.size / 1024 / 1024).toFixed(1)} MB
                     </p>
+                    {error && status === "idle" && (
+                      <p className="text-red-400 text-sm">{error}</p>
+                    )}
                     {bookPreview === "ready" && bookPreviewUrl && (
                       <div className="pt-2" onClick={(e) => e.stopPropagation()}>
                         <p className="text-xs text-zinc-500 mb-1">Preview (first 30 seconds)</p>

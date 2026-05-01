@@ -42,6 +42,8 @@ async def preview_voice(
 
     try:
         text = extract_text(filepath)
+        if not text or len(text.strip()) < 20:
+            raise HTTPException(400, "Could not extract enough text from file for preview")
         sample = text[:500]
 
         directed = await direct_text(sample, language=language)
