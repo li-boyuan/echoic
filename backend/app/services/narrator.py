@@ -83,9 +83,9 @@ async def generate_segment_audio(
 
         if "error" in data:
             code = data["error"]["code"]
-            if code == 429 and attempt < 4:
+            if code in (429, 500, 503) and attempt < 4:
                 wait = 15 * (attempt + 1)
-                logger.warning("Rate limited, retrying in %ds (attempt %d)", wait, attempt + 1)
+                logger.warning("TTS error %d, retrying in %ds (attempt %d)", code, wait, attempt + 1)
                 await asyncio.sleep(wait)
                 continue
             raise RuntimeError(f"{code} {data['error']['message']}")
