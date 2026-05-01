@@ -24,7 +24,13 @@ AVAILABLE_VOICES = [
     {"id": "Leda", "name": "Leda", "description": "Soft, gentle female voice"},
 ]
 
-API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro-preview-tts:generateContent"
+API_BASE = "https://generativelanguage.googleapis.com/v1beta/models"
+
+TTS_MODELS = [
+    "gemini-3.1-flash-tts-preview",
+    "gemini-2.5-pro-preview-tts",
+    "gemini-2.5-flash-preview-tts",
+]
 
 
 def _silence(seconds: float) -> bytes:
@@ -37,12 +43,41 @@ def _clean_for_tts(text: str) -> str:
     return text.strip()
 
 
+async def _try_model(model: str, payload: dict) -> dict | None:
+    """Try a single model with retries. Returns response data or None on exhaustion."""
+    url = f"{API_BASE}/{model}:generateContent?key={settings.gemini_api_key}"
+
+    for attempt in range(3):
+        try:
+            async with httpx.AsyncClient(timeout=300) as client:
+                resp = await client.post(url, json=payload)
+                data = resp.json()
+        except httpx.TimeoutException:
+            logger.warning("[%s] Timeout (attempt %d)", model, attempt + 1)
+            if attempt < 2:
+                await asyncio.sleep(10 * (attempt + 1))
+                continue
+            return None
+
+        if "error" in data:
+            code = data["error"]["code"]
+            if code in (429, 500, 503) and attempt < 2:
+                wait = 10 * (attempt + 1)
+                logger.warning("[%s] Error %d, retrying in %ds (attempt %d)", model, code, wait, attempt + 1)
+                await asyncio.sleep(wait)
+                continue
+            logger.warning("[%s] Failed with %d: %s", model, code, data["error"]["message"][:100])
+            return None
+
+        return data
+
+    return None
+
+
 async def generate_segment_audio(
     text: str, narrator_voice: str, character_voice: str
 ) -> bytes:
-    """Generate audio for a single segment with Narrator + Character voices."""
-    url = f"{API_URL}?key={settings.gemini_api_key}"
-
+    """Generate audio with model fallback chain."""
     payload = {
         "contents": [{"parts": [{"text": text}]}],
         "generationConfig": {
@@ -68,49 +103,28 @@ async def generate_segment_audio(
         },
     }
 
-    for attempt in range(5):
-        try:
-            async with httpx.AsyncClient(timeout=300) as client:
-                resp = await client.post(url, json=payload)
-                data = resp.json()
-        except httpx.TimeoutException:
-            if attempt < 4:
-                wait = 10 * (attempt + 1)
-                logger.warning("TTS request timed out, retrying in %ds (attempt %d)", wait, attempt + 1)
-                await asyncio.sleep(wait)
-                continue
-            raise RuntimeError("TTS request timed out after 5 attempts")
-
-        if "error" in data:
-            code = data["error"]["code"]
-            if code in (429, 500, 503) and attempt < 4:
-                wait = 15 * (attempt + 1)
-                logger.warning("TTS error %d, retrying in %ds (attempt %d)", code, wait, attempt + 1)
-                await asyncio.sleep(wait)
-                continue
-            raise RuntimeError(f"{code} {data['error']['message']}")
+    for model in TTS_MODELS:
+        data = await _try_model(model, payload)
+        if data is None:
+            logger.warning("Model %s exhausted, trying next", model)
+            continue
 
         candidate = data.get("candidates", [{}])[0]
         finish_reason = candidate.get("finishReason", "")
 
         if finish_reason == "OTHER" or "copyrighted" in candidate.get("finishMessage", ""):
-            logger.warning(
-                "TTS content filtered (copyright): %s — inserting silence",
-                text[:80],
-            )
+            logger.warning("TTS content filtered (copyright): %s — inserting silence", text[:80])
             return _silence(1.0)
 
         try:
             audio_b64 = candidate["content"]["parts"][0]["inlineData"]["data"]
+            logger.info("TTS segment generated via %s", model)
             return base64.b64decode(audio_b64)
-        except (KeyError, IndexError) as e:
-            logger.error("Unexpected TTS response: %s", json.dumps(data)[:500])
-            if attempt < 4:
-                await asyncio.sleep(10)
-                continue
-            raise RuntimeError(f"TTS returned unexpected response: {e}")
+        except (KeyError, IndexError):
+            logger.error("[%s] Unexpected response: %s", model, json.dumps(data)[:500])
+            continue
 
-    raise RuntimeError("Max retries exceeded for TTS generation")
+    raise RuntimeError("All TTS models failed")
 
 
 def stitch_audio(pcm_chunks: list[bytes], output_path: str) -> str:
