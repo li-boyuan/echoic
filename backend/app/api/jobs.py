@@ -5,7 +5,7 @@ from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import FileResponse
 
 from app.models.schemas import JobResponse, JobStatus, VoiceOption
-from app.services.narrator import AVAILABLE_VOICES, LANGUAGES, get_voices_for_language
+from app.services.narrator import AVAILABLE_VOICES, LANGUAGES, generate_preview, get_voices_for_language
 
 router = APIRouter()
 
@@ -125,3 +125,11 @@ async def list_voices(lang: str = Query(default="en")):
 @router.get("/languages")
 async def list_languages():
     return LANGUAGES
+
+
+@router.get("/voices/preview")
+async def voice_preview(voice: str = Query(), lang: str = Query(default="en")):
+    path = await generate_preview(voice, lang, "data/previews")
+    if not path:
+        raise HTTPException(503, "Could not generate preview — try again later")
+    return FileResponse(path, media_type="audio/wav")

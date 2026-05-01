@@ -2,6 +2,7 @@ import asyncio
 import base64
 import json
 import logging
+import os
 import re
 import wave
 
@@ -225,6 +226,60 @@ async def narrate_text(
 
     pcm_data = await generate_segment_audio(clean_text, voice, character_voice)
     return stitch_audio([pcm_data], output_path)
+
+
+PREVIEW_TEXTS = {
+    "en": "Once upon a time, in a land far away, there lived a kind and curious young girl.",
+    "zh": "从前，在一个遥远的地方，住着一个善良又好奇的小女孩。",
+    "de": "Es war einmal, in einem fernen Land, da lebte ein freundliches und neugieriges Mädchen.",
+    "fr": "Il était une fois, dans un pays lointain, une jeune fille gentille et curieuse.",
+    "hi": "एक समय की बात है, एक दूर देश में, एक दयालु और जिज्ञासु लड़की रहती थी।",
+    "ja": "むかしむかし、遠い国に、優しくて好奇心旺盛な女の子が住んでいました。",
+    "ko": "옛날 옛적에, 먼 나라에 착하고 호기심 많은 소녀가 살았습니다.",
+    "pt": "Era uma vez, em uma terra distante, vivia uma jovem gentil e curiosa.",
+    "es": "Había una vez, en una tierra lejana, una joven amable y curiosa.",
+    "ar": "في قديم الزمان، في أرض بعيدة، عاشت فتاة طيبة وفضولية.",
+    "it": "C'era una volta, in una terra lontana, una ragazza gentile e curiosa.",
+    "ru": "Давным-давно, в далёкой стране, жила добрая и любопытная девочка.",
+    "nl": "Er was eens, in een ver land, een vriendelijk en nieuwsgierig meisje.",
+    "pl": "Dawno, dawno temu, w odległej krainie, żyła miła i ciekawska dziewczynka.",
+    "tr": "Bir zamanlar, uzak bir diyarda, nazik ve meraklı genç bir kız yaşarmış.",
+}
+
+
+async def generate_preview(voice_id: str, lang: str, output_dir: str) -> str | None:
+    cache_path = f"{output_dir}/preview_{voice_id}_{lang}.wav"
+    if os.path.exists(cache_path):
+        return cache_path
+
+    text = PREVIEW_TEXTS.get(lang, PREVIEW_TEXTS["en"])
+
+    payload = {
+        "contents": [{"parts": [{"text": text}]}],
+        "generationConfig": {
+            "responseModalities": ["AUDIO"],
+            "speechConfig": {
+                "voiceConfig": {
+                    "prebuiltVoiceConfig": {"voiceName": voice_id}
+                }
+            },
+        },
+    }
+
+    for model in TTS_MODELS:
+        data = await _try_model(model, payload)
+        if data is None:
+            continue
+        try:
+            audio_b64 = data["candidates"][0]["content"]["parts"][0]["inlineData"]["data"]
+            pcm = base64.b64decode(audio_b64)
+            os.makedirs(output_dir, exist_ok=True)
+            stitch_audio([pcm], cache_path)
+            return cache_path
+        except (KeyError, IndexError):
+            continue
+
+    return None
 
 
 def _has_mp3_support() -> bool:

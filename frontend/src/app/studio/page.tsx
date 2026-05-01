@@ -31,6 +31,8 @@ export default function Studio() {
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [playingChapter, setPlayingChapter] = useState<number | null>(null);
   const [downloadFormat, setDownloadFormat] = useState("mp3");
+  const [previewVoice, setPreviewVoice] = useState<string | null>(null);
+  const previewAudioRef = useRef<HTMLAudioElement | null>(null);
   const pollRef = useRef<NodeJS.Timeout | null>(null);
 
   const voiceName = (id: string) => voices.find((v) => v.id === id)?.name || id;
@@ -262,18 +264,39 @@ export default function Studio() {
                 <p className="text-xs text-zinc-600">Character voices are automatically cast by AI</p>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                   {voices.map((v) => (
-                    <button
+                    <div
                       key={v.id}
                       onClick={() => setSelectedVoice(v.id)}
-                      className={`px-4 py-3 rounded-xl text-left transition-all ${
+                      className={`px-4 py-3 rounded-xl text-left transition-all cursor-pointer ${
                         selectedVoice === v.id
                           ? "bg-blue-600/20 border-2 border-blue-500 text-blue-300"
                           : "bg-zinc-900 border-2 border-zinc-800 hover:border-zinc-600 text-zinc-300"
                       }`}
                     >
-                      <div className="font-medium text-sm">{v.name}</div>
+                      <div className="flex items-center justify-between">
+                        <div className="font-medium text-sm">{v.name}</div>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (previewVoice === v.id) {
+                              previewAudioRef.current?.pause();
+                              setPreviewVoice(null);
+                            } else {
+                              if (previewAudioRef.current) previewAudioRef.current.pause();
+                              const audio = new Audio(`/api/voices/preview?voice=${v.id}&lang=${selectedLanguage}`);
+                              audio.onended = () => setPreviewVoice(null);
+                              audio.play();
+                              previewAudioRef.current = audio;
+                              setPreviewVoice(v.id);
+                            }
+                          }}
+                          className="text-xs px-2 py-0.5 bg-zinc-800 hover:bg-zinc-700 rounded transition-colors"
+                        >
+                          {previewVoice === v.id ? "Stop" : "Preview"}
+                        </button>
+                      </div>
                       <div className="text-xs text-zinc-500 mt-0.5">{v.description}</div>
-                    </button>
+                    </div>
                   ))}
                 </div>
               </div>
