@@ -167,10 +167,18 @@ async def generate_segment_audio(
         },
     }
 
+    blocked_by_all = True
+
     for model in TTS_MODELS:
         data = await _try_model(model, payload)
         if data is None:
             logger.warning("Model %s exhausted, trying next", model)
+            continue
+
+        # Check prompt-level block (PROHIBITED_CONTENT, etc.)
+        block_reason = data.get("promptFeedback", {}).get("blockReason", "")
+        if block_reason:
+            logger.warning("[%s] Content blocked (%s): %s — trying next model", model, block_reason, text[:80])
             continue
 
         candidate = data.get("candidates", [{}])[0]
@@ -183,10 +191,15 @@ async def generate_segment_audio(
         try:
             audio_b64 = candidate["content"]["parts"][0]["inlineData"]["data"]
             logger.info("TTS segment generated via %s", model)
+            blocked_by_all = False
             return base64.b64decode(audio_b64)
         except (KeyError, IndexError):
             logger.error("[%s] Unexpected response: %s", model, json.dumps(data)[:500])
             continue
+
+    if blocked_by_all:
+        logger.warning("All models blocked content, inserting silence: %s", text[:80])
+        return _silence(1.0)
 
     raise RuntimeError("All TTS models failed")
 
