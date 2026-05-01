@@ -283,8 +283,9 @@ export default function Studio() {
                               setPreviewVoice(null);
                             } else {
                               if (previewAudioRef.current) previewAudioRef.current.pause();
-                              const audio = new Audio(`/api/voices/preview?voice=${v.id}&lang=${selectedLanguage}`);
+                              const audio = new Audio(`/previews/${v.id}_${selectedLanguage}.wav`);
                               audio.onended = () => setPreviewVoice(null);
+                              audio.onerror = () => setPreviewVoice(null);
                               audio.play();
                               previewAudioRef.current = audio;
                               setPreviewVoice(v.id);
