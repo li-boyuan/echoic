@@ -8,18 +8,10 @@ import { trackUpload, trackConversion, trackSignUp, trackPurchase, trackPlay, tr
 
 type JobStatus = "idle" | "uploading" | "pending" | "directing" | "narrating" | "completed" | "failed";
 type Voice = { id: string; name: string; description: string };
+type Language = { code: string; name: string };
 type Cast = Record<string, string>;
 type Chapter = { index: number; title: string; status: string; audio_url: string | null };
 type Credits = { free_available: boolean; single_credits: number; pro_active: boolean; free_word_limit: number };
-
-const VOICES: Voice[] = [
-  { id: "Kore", name: "Kore", description: "Warm, clear female voice" },
-  { id: "Charon", name: "Charon", description: "Deep, authoritative male voice" },
-  { id: "Fenrir", name: "Fenrir", description: "Calm, steady male voice" },
-  { id: "Aoede", name: "Aoede", description: "Bright, expressive female voice" },
-  { id: "Puck", name: "Puck", description: "Energetic, youthful voice" },
-  { id: "Leda", name: "Leda", description: "Soft, gentle female voice" },
-];
 
 export default function Studio() {
   const { user, isLoaded } = useUser();
@@ -31,6 +23,9 @@ export default function Studio() {
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
   const [dragOver, setDragOver] = useState(false);
+  const [selectedLanguage, setSelectedLanguage] = useState("en");
+  const [languages, setLanguages] = useState<Language[]>([]);
+  const [voices, setVoices] = useState<Voice[]>([]);
   const [selectedVoice, setSelectedVoice] = useState("Kore");
   const [cast, setCast] = useState<Cast>({});
   const [chapters, setChapters] = useState<Chapter[]>([]);
@@ -38,7 +33,26 @@ export default function Studio() {
   const [downloadFormat, setDownloadFormat] = useState("mp3");
   const pollRef = useRef<NodeJS.Timeout | null>(null);
 
-  const voiceName = (id: string) => VOICES.find((v) => v.id === id)?.name || id;
+  const voiceName = (id: string) => voices.find((v) => v.id === id)?.name || id;
+
+  useEffect(() => {
+    fetch("/api/languages")
+      .then((r) => r.json())
+      .then(setLanguages)
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    fetch(`/api/voices?lang=${selectedLanguage}`)
+      .then((r) => r.json())
+      .then((v: Voice[]) => {
+        setVoices(v);
+        if (v.length > 0 && !v.find((x) => x.id === selectedVoice)) {
+          setSelectedVoice(v[0].id);
+        }
+      })
+      .catch(() => {});
+  }, [selectedLanguage]);
 
   const userId = user?.id || "anonymous";
 
@@ -227,12 +241,26 @@ export default function Studio() {
                 </div>
               )}
 
+              {/* Language Selector */}
+              <div className="space-y-2">
+                <label className="text-sm text-zinc-400 block">Language</label>
+                <select
+                  value={selectedLanguage}
+                  onChange={(e) => setSelectedLanguage(e.target.value)}
+                  className="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-200 cursor-pointer"
+                >
+                  {languages.map((l) => (
+                    <option key={l.code} value={l.code}>{l.name}</option>
+                  ))}
+                </select>
+              </div>
+
               {/* Narrator Voice Selector */}
               <div className="space-y-2">
                 <label className="text-sm text-zinc-400 block">Narrator voice</label>
                 <p className="text-xs text-zinc-600">Character voices are automatically cast by AI</p>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                  {VOICES.map((v) => (
+                  {voices.map((v) => (
                     <button
                       key={v.id}
                       onClick={() => setSelectedVoice(v.id)}

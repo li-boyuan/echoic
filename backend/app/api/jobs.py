@@ -5,7 +5,7 @@ from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import FileResponse
 
 from app.models.schemas import JobResponse, JobStatus, VoiceOption
-from app.services.narrator import AVAILABLE_VOICES
+from app.services.narrator import AVAILABLE_VOICES, LANGUAGES, get_voices_for_language
 
 router = APIRouter()
 
@@ -116,6 +116,12 @@ async def list_formats():
     ]
 
 
-@router.get("/voices", response_model=list[VoiceOption])
-async def list_voices():
-    return AVAILABLE_VOICES
+@router.get("/voices")
+async def list_voices(lang: str = Query(default="en")):
+    voices = get_voices_for_language(lang)
+    return [{"id": v["id"], "name": v["id"], "description": v["description"]} for v in voices]
+
+
+@router.get("/languages")
+async def list_languages():
+    return LANGUAGES

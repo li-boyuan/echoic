@@ -79,10 +79,10 @@ export default function Home() {
             </p>
           </div>
           <div className="space-y-2">
-            <h3 className="font-semibold text-zinc-200">Any Format</h3>
+            <h3 className="font-semibold text-zinc-200">24+ Languages</h3>
             <p className="text-sm text-zinc-500">
-              Upload TXT, PDF, EPUB, or DOCX. Echoic extracts the text and
-              handles the rest.
+              Generate audiobooks in English, Chinese, Spanish, French, Japanese,
+              Korean, Hindi, and many more languages.
             </p>
           </div>
         </div>

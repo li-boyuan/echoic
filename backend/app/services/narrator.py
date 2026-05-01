@@ -15,14 +15,91 @@ SAMPLE_RATE = 24000
 SAMPLE_WIDTH = 2
 CHANNELS = 1
 
-AVAILABLE_VOICES = [
-    {"id": "Kore", "name": "Kore", "description": "Warm, clear female voice"},
-    {"id": "Charon", "name": "Charon", "description": "Deep, authoritative male voice"},
-    {"id": "Fenrir", "name": "Fenrir", "description": "Calm, steady male voice"},
-    {"id": "Aoede", "name": "Aoede", "description": "Bright, expressive female voice"},
-    {"id": "Puck", "name": "Puck", "description": "Energetic, youthful voice"},
-    {"id": "Leda", "name": "Leda", "description": "Soft, gentle female voice"},
+LANGUAGES = [
+    {"code": "en", "name": "English"},
+    {"code": "zh", "name": "Chinese (Mandarin)"},
+    {"code": "de", "name": "German"},
+    {"code": "fr", "name": "French"},
+    {"code": "hi", "name": "Hindi"},
+    {"code": "ja", "name": "Japanese"},
+    {"code": "ko", "name": "Korean"},
+    {"code": "pt", "name": "Portuguese"},
+    {"code": "es", "name": "Spanish"},
+    {"code": "ar", "name": "Arabic"},
+    {"code": "bn", "name": "Bengali"},
+    {"code": "gu", "name": "Gujarati"},
+    {"code": "id", "name": "Indonesian"},
+    {"code": "it", "name": "Italian"},
+    {"code": "kn", "name": "Kannada"},
+    {"code": "ml", "name": "Malayalam"},
+    {"code": "mr", "name": "Marathi"},
+    {"code": "nl", "name": "Dutch"},
+    {"code": "pl", "name": "Polish"},
+    {"code": "ru", "name": "Russian"},
+    {"code": "ta", "name": "Tamil"},
+    {"code": "te", "name": "Telugu"},
+    {"code": "th", "name": "Thai"},
+    {"code": "tr", "name": "Turkish"},
+    {"code": "uk", "name": "Ukrainian"},
+    {"code": "vi", "name": "Vietnamese"},
 ]
+
+VOICES = [
+    {"id": "Zephyr", "description": "Bright", "languages": ["en"]},
+    {"id": "Puck", "description": "Upbeat", "languages": ["en"]},
+    {"id": "Charon", "description": "Informative", "languages": ["en"]},
+    {"id": "Kore", "description": "Firm", "languages": ["en"]},
+    {"id": "Fenrir", "description": "Excitable", "languages": ["en"]},
+    {"id": "Leda", "description": "Youthful", "languages": ["en"]},
+    {"id": "Orus", "description": "Firm", "languages": ["en"]},
+    {"id": "Aoede", "description": "Breezy", "languages": ["en"]},
+    {"id": "Callirrhoe", "description": "Easy-going", "languages": ["en"]},
+    {"id": "Autonoe", "description": "Bright", "languages": ["en"]},
+    {"id": "Enceladus", "description": "Breathy", "languages": ["en"]},
+    {"id": "Iapetus", "description": "Clear", "languages": ["en"]},
+    {"id": "Umbriel", "description": "Easy-going", "languages": ["en"]},
+    {"id": "Algieba", "description": "Smooth", "languages": ["en"]},
+    {"id": "Despina", "description": "Smooth", "languages": ["en"]},
+    {"id": "Erinome", "description": "Clear", "languages": ["en"]},
+    {"id": "Algenib", "description": "Gravelly", "languages": ["en"]},
+    {"id": "Rasalgethi", "description": "Informative", "languages": ["en"]},
+    {"id": "Laomedeia", "description": "Upbeat", "languages": ["en"]},
+    {"id": "Achernar", "description": "Soft", "languages": ["en"]},
+    {"id": "Alnilam", "description": "Firm", "languages": ["en"]},
+    {"id": "Schedar", "description": "Even", "languages": ["en"]},
+    {"id": "Gacrux", "description": "Mature", "languages": ["en"]},
+    {"id": "Pulcherrima", "description": "Forward", "languages": ["en"]},
+    {"id": "Achird", "description": "Friendly", "languages": ["en"]},
+    {"id": "Zubenelgenubi", "description": "Casual", "languages": ["en"]},
+    {"id": "Vindemiatrix", "description": "Gentle", "languages": ["en"]},
+    {"id": "Sadachbia", "description": "Lively", "languages": ["en"]},
+    {"id": "Sadaltager", "description": "Knowledgeable", "languages": ["en"]},
+    {"id": "Sulafat", "description": "Warm", "languages": ["en"]},
+    {"id": "Leda", "description": "Youthful", "languages": ["zh", "de", "fr", "hi", "ja", "ko", "pt", "es", "ar", "bn", "gu", "id", "it", "kn", "ml", "mr", "nl", "pl", "ru", "ta", "te", "th", "tr", "uk", "vi"]},
+    {"id": "Kore", "description": "Firm", "languages": ["zh", "de", "fr", "hi", "ja", "ko", "pt", "es", "ar", "bn", "gu", "id", "it", "kn", "ml", "mr", "nl", "pl", "ru", "ta", "te", "th", "tr", "uk", "vi"]},
+    {"id": "Charon", "description": "Informative", "languages": ["zh", "de", "fr", "hi", "ja", "ko", "pt", "es", "ar", "bn", "gu", "id", "it", "kn", "ml", "mr", "nl", "pl", "ru", "ta", "te", "th", "tr", "uk", "vi"]},
+    {"id": "Fenrir", "description": "Excitable", "languages": ["zh", "de", "fr", "hi", "ja", "ko", "pt", "es", "ar", "bn", "gu", "id", "it", "kn", "ml", "mr", "nl", "pl", "ru", "ta", "te", "th", "tr", "uk", "vi"]},
+    {"id": "Puck", "description": "Upbeat", "languages": ["zh", "de", "fr", "hi", "ja", "ko", "pt", "es", "ar", "bn", "gu", "id", "it", "kn", "ml", "mr", "nl", "pl", "ru", "ta", "te", "th", "tr", "uk", "vi"]},
+    {"id": "Aoede", "description": "Breezy", "languages": ["zh", "de", "fr", "hi", "ja", "ko", "pt", "es"]},
+    {"id": "Orus", "description": "Firm", "languages": ["zh", "de", "fr", "hi", "ja", "ko", "pt", "es"]},
+    {"id": "Zephyr", "description": "Bright", "languages": ["zh", "de", "fr", "hi", "ja", "ko", "pt", "es"]},
+]
+
+# Deduplicate: a voice appears once per unique id, collect all its languages
+_voice_map: dict[str, dict] = {}
+for v in VOICES:
+    if v["id"] in _voice_map:
+        _voice_map[v["id"]]["languages"] = list(set(_voice_map[v["id"]]["languages"] + v["languages"]))
+    else:
+        _voice_map[v["id"]] = {"id": v["id"], "description": v["description"], "languages": list(v["languages"])}
+VOICES = list(_voice_map.values())
+
+# Legacy compat
+AVAILABLE_VOICES = [{"id": v["id"], "name": v["id"], "description": v["description"]} for v in VOICES]
+
+
+def get_voices_for_language(lang_code: str) -> list[dict]:
+    return [v for v in VOICES if lang_code in v["languages"]]
 
 API_BASE = "https://generativelanguage.googleapis.com/v1beta/models"
 
