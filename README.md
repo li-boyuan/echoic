@@ -22,7 +22,7 @@ Upload (.txt/.pdf/.epub/.docx/.mobi/.azw3)
 - **Auto Character Casting** — Claude identifies every character by name and assigns each a unique voice that matches their personality
 - **Multi-Speaker TTS** — Gemini TTS renders audio with separate voices for narrator and characters, stitched together seamlessly
 - **Model Fallback Chain** — TTS tries Gemini 3.1 Flash → 2.5 Pro → 2.5 Flash, auto-falling back on errors or rate limits. Effectively triples daily API quota.
-- **Parallel Chapter Processing** — Chapters are directed and narrated concurrently (up to 3 simultaneous) for faster results. Users can play/download completed chapters while others are still processing.
+- **Parallel Chapter Processing** — Chapters are directed (up to 2 concurrent) and narrated (up to 3 concurrent) in parallel for faster results. Users can play/download completed chapters while others are still processing. Rate limit retry with backoff on both Claude and Gemini APIs.
 - **Chapter Splitting** — Auto-detects chapter boundaries (Chapter X, Part X, Prologue, Epilogue) and generates per-chapter audio files with title narration
 - **Audio Preview** — Generate a ~30-second sample from the first page before committing to a full conversion. Try different voices instantly.
 - **Content Filter Handling** — If Gemini's copyright or safety filter blocks a segment, tries the next model in the fallback chain (different models have different thresholds). If all models block, inserts silence and continues instead of failing the entire job.
