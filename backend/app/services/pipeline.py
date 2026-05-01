@@ -58,7 +58,7 @@ async def _narrate_chapter(job, jobs, ch, directed, voice_map, semaphore):
 
 async def run_pipeline(
     job: JobResponse, filepath: str, jobs: dict[str, JobResponse],
-    user_id: str = "anonymous", credit_tier: str = "free",
+    user_id: str = "anonymous", credit_tier: str = "free", language: str = "en",
 ):
     try:
         text = extract_text(filepath)
@@ -79,7 +79,7 @@ async def run_pipeline(
         # Direct all chapters in parallel
         async def direct_chapter(ch):
             logger.info("Job %s: directing chapter %d '%s' — %d chars", job.id, ch.index, ch.title, len(ch.text))
-            directed = await direct_text(ch.text)
+            directed = await direct_text(ch.text, language=language)
             if ch.title and ch.title != "Full Text":
                 directed = f"Narrator: {ch.title}\n{directed}"
             logger.info("Job %s: chapter %d directed — %d chars → %d chars", job.id, ch.index, len(ch.text), len(directed))

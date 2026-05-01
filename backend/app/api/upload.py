@@ -23,6 +23,7 @@ async def upload_manuscript(
     file: UploadFile,
     voice: str = Form(default="Kore"),
     user_id: str = Form(default="anonymous"),
+    language: str = Form(default="en"),
 ):
     ext = "." + file.filename.rsplit(".", 1)[-1].lower() if "." in file.filename else ""
     if ext not in ALLOWED_EXTENSIONS:
@@ -55,6 +56,6 @@ async def upload_manuscript(
     job = JobResponse(id=job_id, filename=file.filename, status=JobStatus.PENDING, voice=voice)
     jobs[job_id] = job
 
-    asyncio.create_task(run_pipeline(job, filepath, jobs, user_id=user_id, credit_tier=tier))
+    asyncio.create_task(run_pipeline(job, filepath, jobs, user_id=user_id, credit_tier=tier, language=language))
 
     return job

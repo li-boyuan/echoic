@@ -140,6 +140,7 @@ export default function Studio() {
       formData.append("file", file);
       formData.append("voice", selectedVoice);
       formData.append("user_id", userId);
+      formData.append("language", selectedLanguage);
 
       const res = await fetch("/api/upload", { method: "POST", body: formData });
       if (!res.ok) {
