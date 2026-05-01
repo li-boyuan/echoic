@@ -7,21 +7,23 @@ Upload a manuscript, and Echoic's AI reads it, identifies characters, casts voic
 ## How It Works
 
 ```
-Upload (.txt/.pdf/.epub/.docx)
+Upload (.txt/.pdf/.epub/.docx/.mobi/.azw3)
   → Parser (extract text, detect chapters)
   → Director (Claude Haiku — splits text into Narrator/Character lines)
   → Casting Director (Claude Haiku — assigns voices by character personality)
-  → Narrator (Gemini TTS — multi-speaker audio per segment)
+  → Narrator (Gemini TTS — multi-speaker audio per segment, with model fallback)
   → Stitcher (combines segments into chapters, chapters into full audiobook)
 ```
 
 ## Features
 
 ### Core Pipeline
-- **AI Director** — Claude Haiku reads the text and splits it into speaker-tagged lines (Narrator vs. each character), adding natural prosody cues (ellipses, em-dashes, pacing)
-- **Auto Character Casting** — Claude identifies every character by name and assigns each a unique voice that matches their personality (e.g., Aunt Petunia → Leda, Harry → Puck)
-- **Multi-Speaker TTS** — Gemini 3.1 Flash TTS renders audio with separate voices for narrator and characters, stitched together seamlessly
-- **Chapter Splitting** — Auto-detects chapter boundaries (Chapter X, Part X, Prologue, Epilogue) and generates per-chapter audio files
+- **AI Director** — Claude Haiku reads each chapter and splits it into speaker-tagged lines (Narrator vs. each character), preserving the original text faithfully
+- **Auto Character Casting** — Claude identifies every character by name and assigns each a unique voice that matches their personality
+- **Multi-Speaker TTS** — Gemini TTS renders audio with separate voices for narrator and characters, stitched together seamlessly
+- **Model Fallback Chain** — TTS tries Gemini 3.1 Flash → 2.5 Pro → 2.5 Flash, auto-falling back on errors or rate limits
+- **Parallel Chapter Processing** — Chapters are directed and narrated concurrently for faster results
+- **Chapter Splitting** — Auto-detects chapter boundaries (Chapter X, Part X, Prologue, Epilogue) and generates per-chapter audio files with title narration
 - **Format Conversion** — Download audiobooks in multiple formats, converted on-the-fly via ffmpeg
 
 ### Output Formats
@@ -65,16 +67,21 @@ Upload (.txt/.pdf/.epub/.docx)
 | Pro | $29.99/mo | Unlimited conversions |
 
 - Stripe Checkout for one-time and subscription payments
-- Credit system tracks usage per user
+- Credits persisted to disk (JSON file) with Stripe sync on startup
+- Admin user support via `ADMIN_USER_IDS` env var
 - Upload gated behind credit check
+
+### Privacy & Compliance
+- **Cookie consent banner** — gates Meta Pixel loading (GDPR/CCPA compliant)
+- **Privacy policy** at `/privacy` — covers all third-party services
+- Vercel Analytics (cookie-free) loads without consent
 
 ### Frontend
 - Next.js 15 + Tailwind CSS (dark theme)
 - Drag-and-drop file upload
 - Narrator voice selector (character voices auto-assigned)
-- Real-time progress bar with status updates
+- Per-chapter progress with live play/download as chapters complete
 - Cast display showing character → voice assignments
-- Chapter-by-chapter playback with individual Play/Download buttons
 - "Download Full Audiobook" for the stitched output
 - Pricing page with 3-tier cards
 
@@ -84,11 +91,16 @@ Upload (.txt/.pdf/.epub/.docx)
 frontend/                    → Next.js 15 + Tailwind
   src/app/
     page.tsx                 → Public landing page
-    studio/page.tsx          → Protected upload + conversion UI
+    studio/page.tsx          → Upload + conversion UI (anonymous + auth)
     pricing/page.tsx         → Pricing cards + Stripe checkout
+    privacy/page.tsx         → Privacy policy
     sign-in/                 → Clerk sign-in page
     sign-up/                 → Clerk sign-up page
-    layout.tsx               → ClerkProvider + dark theme
+    layout.tsx               → ClerkProvider + Analytics + CookieConsent
+  src/components/
+    CookieConsent.tsx        → Cookie banner + conditional Meta Pixel
+  src/lib/
+    tracking.ts              → Meta Pixel event helpers
   middleware.ts              → Route protection
 
 backend/                     → FastAPI
@@ -99,15 +111,15 @@ backend/                     → FastAPI
       payments.py            → Stripe checkout + webhooks + pricing
     services/
       director.py            → Claude Haiku — speaker tagging
-      narrator.py            → Gemini TTS — multi-speaker audio generation
+      narrator.py            → Gemini TTS — multi-speaker audio + model fallback
       segmenter.py           → Character extraction, voice assignment, text segmentation
-      parser.py              → File parsing (txt/pdf/epub/docx) + chapter detection
-      pipeline.py            → Orchestrates director → cast → narrate → stitch
-      credits.py             → User credit tracking (free/single/pro)
+      parser.py              → File parsing (txt/pdf/epub/docx/mobi) + chapter detection
+      pipeline.py            → Parallel chapter processing: direct → cast → narrate → stitch
+      credits.py             → Persistent credit tracking + Stripe sync + admin access
     models/
       schemas.py             → Pydantic models (Job, Chapter, Voice)
     config.py                → Environment settings
-    main.py                  → FastAPI app + CORS + routers
+    main.py                  → FastAPI app + CORS + startup hooks
 ```
 
 ## Setup
@@ -141,6 +153,7 @@ GEMINI_API_KEY=AI...                # Gemini TTS (Narrator)
 STRIPE_SECRET_KEY=sk_live_...       # Stripe payments (use sk_test_ for local dev)
 STRIPE_WEBHOOK_SECRET=whsec_...     # Stripe webhook verification
 FRONTEND_URL=http://localhost:3001  # For Stripe redirect URLs
+ADMIN_USER_IDS=user_abc,user_xyz   # Comma-separated Clerk user IDs for unlimited access
 ```
 
 **Frontend** (`frontend/.env.local`):
@@ -162,7 +175,7 @@ NEXT_PUBLIC_FB_PIXEL_ID=...         # Meta Pixel for ad conversion tracking
 ## Marketing
 
 - **Facebook Page**: [Echoic](https://www.facebook.com/profile.php?id=61560376811560)
-- **Meta Pixel**: Full-funnel tracking (PageView, CompleteRegistration, InitiateCheckout, Purchase, ViewContent, Lead)
+- **Meta Pixel**: Full-funnel tracking with cookie consent (PageView, CompleteRegistration, InitiateCheckout, Purchase, ViewContent, Lead)
 - **Vercel Analytics**: Custom engagement events (file_selected, generate_clicked, conversion_completed, audio_played, audio_downloaded)
 - **Ad Creatives**: 3 static (1080x1080) + 1 animated video in `ads/`
 - **Targeting**: Self-published authors, KDP users, audiobook enthusiasts
@@ -174,9 +187,9 @@ NEXT_PUBLIC_FB_PIXEL_ID=...         # Meta Pixel for ad conversion tracking
 | Frontend | Next.js 15, React 19, Tailwind CSS v4 |
 | Backend | FastAPI, Python 3.12 |
 | AI Director | Claude Haiku 4.5 (Anthropic) |
-| AI Narrator | Gemini 3.1 Flash TTS (Google) |
+| AI Narrator | Gemini TTS (3.1 Flash → 2.5 Pro → 2.5 Flash fallback) |
 | Auth | Clerk (Google, Email, Facebook) |
 | Payments | Stripe (live) |
-| Analytics | Meta Pixel, Vercel Analytics |
-| Hosting | Vercel + Render |
+| Analytics | Meta Pixel (with consent), Vercel Analytics |
+| Hosting | Vercel + Render (Docker) |
 | Domain | Cloudflare |
