@@ -1,6 +1,7 @@
 import asyncio
 import logging
 import os
+import wave
 
 from app.models.schemas import ChapterInfo, JobResponse, JobStatus
 from app.services.credits import consume_credit
@@ -15,6 +16,44 @@ from app.services.segmenter import (
 )
 
 logger = logging.getLogger(__name__)
+
+
+async def _narrate_chapter(job, jobs, ch, directed, voice_map, semaphore):
+    async with semaphore:
+        try:
+            segments = segment_text(directed, job.voice, voice_map)
+            logger.info(
+                "Job %s: chapter %d — %d segments, total %d chars",
+                job.id, ch.index, len(segments),
+                sum(len(s.text) for s in segments),
+            )
+
+            pcm_chunks = []
+            for i, seg in enumerate(segments):
+                seg_text = prepare_segment_text(seg)
+                pcm = await generate_segment_audio(
+                    seg_text, seg.narrator_voice, seg.character_voice,
+                )
+                pcm_chunks.append(pcm)
+                if i < len(segments) - 1:
+                    await asyncio.sleep(1.5)
+
+            chapter_path = f"output/{job.id}/chapter_{ch.index}.wav"
+            stitch_audio(pcm_chunks, chapter_path)
+
+            job.chapters[ch.index].status = "completed"
+            job.chapters[ch.index].audio_url = f"/api/jobs/{job.id}/audio/{ch.index}"
+            completed = sum(1 for c in job.chapters if c.status == "completed")
+            job.progress = 0.5 + (completed / len(job.chapters)) * 0.5
+            jobs[job.id] = job
+
+            logger.info("Job %s: chapter %d completed", job.id, ch.index)
+            return chapter_path
+        except Exception as e:
+            logger.exception("Job %s: chapter %d failed", job.id, ch.index)
+            job.chapters[ch.index].status = "failed"
+            jobs[job.id] = job
+            raise
 
 
 async def run_pipeline(
@@ -37,73 +76,38 @@ async def run_pipeline(
 
         os.makedirs(f"output/{job.id}", exist_ok=True)
 
-        all_directed = []
-        total_steps = len(chapters) * 2
-        completed = 0
-
-        for ch in chapters:
-            logger.info(
-                "Job %s: chapter %d '%s' — %d chars",
-                job.id, ch.index, ch.title, len(ch.text),
-            )
+        # Direct all chapters in parallel
+        async def direct_chapter(ch):
+            logger.info("Job %s: directing chapter %d '%s' — %d chars", job.id, ch.index, ch.title, len(ch.text))
             directed = await direct_text(ch.text)
-            logger.info(
-                "Job %s: chapter %d — directed %d chars → %d chars",
-                job.id, ch.index, len(ch.text), len(directed),
-            )
-            all_directed.append((ch, directed))
-            completed += 1
-            job.progress = completed / total_steps
+            logger.info("Job %s: chapter %d directed — %d chars → %d chars", job.id, ch.index, len(ch.text), len(directed))
             job.chapters[ch.index].status = "directed"
+            job.progress = sum(1 for c in job.chapters if c.status != "pending") / (len(chapters) * 2)
             jobs[job.id] = job
+            return ch, directed
 
+        all_directed = await asyncio.gather(*[direct_chapter(ch) for ch in chapters])
+
+        # Cast voices from all directed text
         all_text = "\n".join(d for _, d in all_directed)
         characters = extract_characters(all_text)
         voice_map = await assign_voices(characters, job.voice)
         job.cast = voice_map
-        jobs[job.id] = job
-
-        logger.info(
-            "Job %s: cast %s",
-            job.id,
-            ", ".join(f"{c}={v}" for c, v in voice_map.items()),
-        )
-
         job.status = JobStatus.NARRATING
         jobs[job.id] = job
 
-        chapter_audio_paths = []
-        for ch, directed in all_directed:
-            segments = segment_text(directed, job.voice, voice_map)
-            logger.info(
-                "Job %s: chapter %d — %d segments, total %d chars",
-                job.id, ch.index, len(segments),
-                sum(len(s.text) for s in segments),
-            )
+        logger.info("Job %s: cast %s", job.id, ", ".join(f"{c}={v}" for c, v in voice_map.items()))
 
-            pcm_chunks = []
-            for i, seg in enumerate(segments):
-                seg_text = prepare_segment_text(seg)
-                pcm = await generate_segment_audio(
-                    seg_text, seg.narrator_voice, seg.character_voice,
-                )
-                pcm_chunks.append(pcm)
-                if i < len(segments) - 1:
-                    await asyncio.sleep(1.5)
+        # Narrate all chapters in parallel (limit concurrency to 3)
+        semaphore = asyncio.Semaphore(3)
+        chapter_paths = await asyncio.gather(
+            *[_narrate_chapter(job, jobs, ch, directed, voice_map, semaphore)
+              for ch, directed in all_directed]
+        )
 
-            chapter_path = f"output/{job.id}/chapter_{ch.index}.wav"
-            stitch_audio(pcm_chunks, chapter_path)
-            chapter_audio_paths.append(chapter_path)
-
-            completed += 1
-            job.progress = completed / total_steps
-            job.chapters[ch.index].status = "completed"
-            job.chapters[ch.index].audio_url = f"/api/jobs/{job.id}/audio/{ch.index}"
-            jobs[job.id] = job
-
+        # Stitch full audiobook
         full_pcm = []
-        for path in chapter_audio_paths:
-            import wave
+        for path in chapter_paths:
             with wave.open(path, "rb") as wf:
                 full_pcm.append(wf.readframes(wf.getnframes()))
 

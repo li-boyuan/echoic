@@ -348,23 +348,61 @@ export default function Studio() {
                 </div>
               )}
 
-              {chapters.length > 1 && (
-                <div className="mt-6 max-w-sm mx-auto">
-                  <p className="text-xs text-zinc-500 mb-2">Chapters</p>
-                  <div className="space-y-1">
+              {chapters.length > 0 && (
+                <div className="mt-6 max-w-md mx-auto">
+                  <p className="text-xs text-zinc-500 mb-2">
+                    Chapters ({chapters.filter((c) => c.status === "completed").length}/{chapters.length} done)
+                  </p>
+                  <div className="space-y-2">
                     {chapters.map((ch) => (
                       <div
                         key={ch.index}
-                        className="flex items-center justify-between px-3 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-xs"
+                        className="bg-zinc-900 border border-zinc-800 rounded-xl p-3 space-y-2"
                       >
-                        <span className="text-zinc-300">{ch.title}</span>
-                        <span className={
-                          ch.status === "completed" ? "text-green-400" :
-                          ch.status === "directed" ? "text-blue-400" :
-                          "text-zinc-600"
-                        }>
-                          {ch.status === "completed" ? "done" : ch.status === "directed" ? "narrating..." : "pending"}
-                        </span>
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-medium text-zinc-200">{ch.title}</span>
+                          <div className="flex items-center gap-2">
+                            {ch.status === "completed" && ch.audio_url ? (
+                              <>
+                                <button
+                                  onClick={() => {
+                                    const willPlay = playingChapter !== ch.index;
+                                    setPlayingChapter(willPlay ? ch.index : null);
+                                    if (willPlay) { trackPlay(); track("audio_played"); }
+                                  }}
+                                  className="text-xs px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 rounded-md transition-colors"
+                                >
+                                  {playingChapter === ch.index ? "Hide" : "Play"}
+                                </button>
+                                <a
+                                  href={`${ch.audio_url}?format=${downloadFormat}`}
+                                  download
+                                  onClick={() => { trackDownload(downloadFormat); track("audio_downloaded", { format: downloadFormat }); }}
+                                  className="text-xs px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 rounded-md transition-colors"
+                                >
+                                  Download
+                                </a>
+                              </>
+                            ) : (
+                              <span className={
+                                ch.status === "completed" ? "text-green-400 text-xs" :
+                                ch.status === "directed" ? "text-blue-400 text-xs" :
+                                ch.status === "failed" ? "text-red-400 text-xs" :
+                                "text-zinc-600 text-xs"
+                              }>
+                                {ch.status === "completed" ? "done" :
+                                 ch.status === "directed" ? "narrating..." :
+                                 ch.status === "failed" ? "failed" :
+                                 "pending"}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        {playingChapter === ch.index && ch.audio_url && (
+                          <audio controls className="w-full" src={ch.audio_url} autoPlay>
+                            Your browser does not support the audio element.
+                          </audio>
+                        )}
                       </div>
                     ))}
                   </div>
