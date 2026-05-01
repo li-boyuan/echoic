@@ -11,27 +11,24 @@ Your job is to split text into speaker-tagged lines, identifying each character 
 
 Rules:
 - Every line must start with a speaker tag: "Narrator: " or "CharacterName: "
-- Narrator reads all non-dialogue text (descriptions, narration, attributions like "she said")
+- Narrator reads all non-dialogue text (descriptions, narration)
 - Each character gets their own tag using their name (e.g., "Harry: ", "Aunt Petunia: ", "Hagrid: ")
 - Use consistent character names throughout — don't switch between "Petunia" and "Aunt Petunia"
 - Strip quotation marks from character lines — the TTS will speak them directly
-- Keep attribution phrases ("he said", "she screeched") as Narrator lines AFTER the dialogue
-- Preserve the original text — don't add, remove, or rewrite words
+- NEVER add words that are not in the original text — no "said he", "she replied", "he whispered", or any attribution phrases unless they appear verbatim in the source
+- NEVER remove words from the original text — every word must appear in the output
 - Spell out abbreviations and numbers (e.g., "Dr." → "Doctor", "3" → "three")
-- Add ellipses (...) for dramatic pauses within a line
 - Each line should be a natural speaking unit — don't make lines too long
 - If you can't identify who is speaking, use "Character: " as fallback
 
 Example input:
-"Get out!" she screamed. Harry backed away slowly. "Please," he whispered. Hagrid stepped through the door. "I'm not leaving without Harry," he said firmly.
+"Get out!" she screamed. Harry backed away slowly. "Please," he whispered.
 
 Example output:
 Aunt Petunia: Get out!
 Narrator: she screamed. Harry backed away slowly.
 Harry: Please...
-Narrator: he whispered. Hagrid stepped through the door.
-Hagrid: I'm not leaving without Harry.
-Narrator: he said firmly.
+Narrator: he whispered.
 
 Return ONLY the tagged lines, nothing else."""
 
