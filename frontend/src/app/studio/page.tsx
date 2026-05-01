@@ -32,6 +32,8 @@ export default function Studio() {
   const [playingChapter, setPlayingChapter] = useState<number | null>(null);
   const [downloadFormat, setDownloadFormat] = useState("mp3");
   const [previewVoice, setPreviewVoice] = useState<string | null>(null);
+  const [bookPreview, setBookPreview] = useState<"idle" | "loading" | "ready">("idle");
+  const [bookPreviewUrl, setBookPreviewUrl] = useState<string | null>(null);
   const previewAudioRef = useRef<HTMLAudioElement | null>(null);
   const pollRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -129,6 +131,8 @@ export default function Studio() {
     }
     setFile(f);
     setError(null);
+    setBookPreview("idle");
+    setBookPreviewUrl(null);
     track("file_selected", { type: ext ?? "unknown" });
   }, []);
 
@@ -158,6 +162,27 @@ export default function Studio() {
     } catch (err) {
       setError(err instanceof Error ? err.message : "Upload failed");
       setStatus("idle");
+    }
+  };
+
+  const handlePreview = async () => {
+    if (!file) return;
+    setBookPreview("loading");
+    if (bookPreviewUrl) { URL.revokeObjectURL(bookPreviewUrl); setBookPreviewUrl(null); }
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("voice", selectedVoice);
+      formData.append("language", selectedLanguage);
+      const res = await fetch("/api/preview", { method: "POST", body: formData });
+      if (!res.ok) throw new Error("Preview failed");
+      const blob = await res.blob();
+      setBookPreviewUrl(URL.createObjectURL(blob));
+      setBookPreview("ready");
+      track("preview_generated", { voice: selectedVoice });
+    } catch {
+      setBookPreview("idle");
+      setError("Could not generate preview — try again later");
     }
   };
 
@@ -266,7 +291,7 @@ export default function Studio() {
                   {voices.map((v) => (
                     <div
                       key={v.id}
-                      onClick={() => setSelectedVoice(v.id)}
+                      onClick={() => { setSelectedVoice(v.id); setBookPreview("idle"); }}
                       className={`px-4 py-3 rounded-xl text-left transition-all cursor-pointer ${
                         selectedVoice === v.id
                           ? "bg-blue-600/20 border-2 border-blue-500 text-blue-300"
@@ -338,15 +363,33 @@ export default function Studio() {
                     <p className="text-sm text-zinc-500">
                       {(file.size / 1024 / 1024).toFixed(1)} MB
                     </p>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleUpload();
-                      }}
-                      className="mt-4 px-8 py-3 bg-blue-600 hover:bg-blue-500 rounded-xl font-medium transition-colors text-lg"
-                    >
-                      Generate Audiobook
-                    </button>
+                    {bookPreview === "ready" && bookPreviewUrl && (
+                      <div className="pt-2" onClick={(e) => e.stopPropagation()}>
+                        <p className="text-xs text-zinc-500 mb-1">Preview (first 30 seconds)</p>
+                        <audio controls className="mx-auto" src={bookPreviewUrl} />
+                      </div>
+                    )}
+                    <div className="flex gap-3 justify-center mt-4">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handlePreview();
+                        }}
+                        disabled={bookPreview === "loading"}
+                        className="px-6 py-3 bg-zinc-800 hover:bg-zinc-700 rounded-xl font-medium transition-colors disabled:opacity-50"
+                      >
+                        {bookPreview === "loading" ? "Generating preview..." : "Preview Voice"}
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleUpload();
+                        }}
+                        className="px-8 py-3 bg-blue-600 hover:bg-blue-500 rounded-xl font-medium transition-colors text-lg"
+                      >
+                        Generate Audiobook
+                      </button>
+                    </div>
                   </div>
                 ) : (
                   <div className="space-y-2">
