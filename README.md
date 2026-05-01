@@ -24,7 +24,8 @@ Upload (.txt/.pdf/.epub/.docx/.mobi/.azw3)
 - **Model Fallback Chain** — TTS tries Gemini 3.1 Flash → 2.5 Pro → 2.5 Flash, auto-falling back on errors or rate limits. Effectively triples daily API quota.
 - **Parallel Chapter Processing** — Chapters are directed and narrated concurrently (up to 3 simultaneous) for faster results. Users can play/download completed chapters while others are still processing.
 - **Chapter Splitting** — Auto-detects chapter boundaries (Chapter X, Part X, Prologue, Epilogue) and generates per-chapter audio files with title narration
-- **Copyright Filter Handling** — If Gemini's content filter blocks a segment, inserts silence and continues instead of failing the entire job
+- **Audio Preview** — Generate a ~30-second sample from the first page before committing to a full conversion. Try different voices instantly.
+- **Content Filter Handling** — If Gemini's copyright or safety filter blocks a segment, tries the next model in the fallback chain (different models have different thresholds). If all models block, inserts silence and continues instead of failing the entire job.
 - **Format Conversion** — Download audiobooks in multiple formats, converted on-the-fly via ffmpeg
 
 ### Multi-Language Support (26 languages)
@@ -90,17 +91,19 @@ Upload (.txt/.pdf/.epub/.docx/.mobi/.azw3)
 - Drag-and-drop file upload
 - Language selector with 26 languages
 - Narrator voice selector with gender labels and instant audio previews
+- Audio preview from uploaded manuscript before full conversion
 - Per-chapter progress with live play/download as chapters complete
 - Cast display showing character → voice assignments
 - "Download Full Audiobook" for the stitched output
 - Pricing page with 3-tier cards
+- FAQ section with publishing guidance and legal disclaimer
 
 ## Architecture
 
 ```
 frontend/                    → Next.js 15 + Tailwind
   src/app/
-    page.tsx                 → Public landing page
+    page.tsx                 → Public landing page (features, FAQ, disclaimer)
     studio/page.tsx          → Upload + conversion UI (anonymous + auth)
     pricing/page.tsx         → Pricing cards + Stripe checkout
     privacy/page.tsx         → Privacy policy
@@ -117,7 +120,7 @@ frontend/                    → Next.js 15 + Tailwind
 backend/                     → FastAPI
   app/
     api/
-      upload.py              → File upload + credit check + language param
+      upload.py              → File upload + credit check + language param + audio preview
       jobs.py                → Job status + audio download + voice preview + languages
       payments.py            → Stripe checkout + webhooks + pricing
     services/
