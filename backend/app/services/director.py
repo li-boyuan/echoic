@@ -1,3 +1,4 @@
+import asyncio
 import logging
 
 import anthropic
@@ -29,15 +30,24 @@ Return ONLY the tagged lines, nothing else."""
 async def direct_text(text: str, language: str = "en") -> str:
     lang_hint = f"\n\n[This text is in {language}. Identify dialogue using the conventions of this language.]" if language != "en" else ""
     client = anthropic.AsyncAnthropic(api_key=settings.anthropic_api_key)
-    message = await client.messages.create(
-        model="claude-haiku-4-5-20251001",
-        max_tokens=16384,
-        system=DIRECTOR_SYSTEM,
-        messages=[{"role": "user", "content": text + lang_hint}],
-    )
-    if message.stop_reason == "max_tokens":
-        logger.warning(
-            "Director output truncated (input %d chars, output %d chars)",
-            len(text), len(message.content[0].text),
-        )
-    return message.content[0].text
+
+    for attempt in range(5):
+        try:
+            message = await client.messages.create(
+                model="claude-haiku-4-5-20251001",
+                max_tokens=16384,
+                system=DIRECTOR_SYSTEM,
+                messages=[{"role": "user", "content": text + lang_hint}],
+            )
+            if message.stop_reason == "max_tokens":
+                logger.warning(
+                    "Director output truncated (input %d chars, output %d chars)",
+                    len(text), len(message.content[0].text),
+                )
+            return message.content[0].text
+        except anthropic.RateLimitError:
+            wait = 15 * (attempt + 1)
+            logger.warning("Director rate limited, retrying in %ds (attempt %d)", wait, attempt + 1)
+            await asyncio.sleep(wait)
+
+    raise RuntimeError("Director rate limited after 5 attempts")

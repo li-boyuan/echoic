@@ -76,17 +76,20 @@ async def run_pipeline(
 
         os.makedirs(f"output/{job.id}", exist_ok=True)
 
-        # Direct all chapters in parallel
+        # Direct chapters (limit concurrency to avoid Claude rate limits)
+        director_sem = asyncio.Semaphore(2)
+
         async def direct_chapter(ch):
-            logger.info("Job %s: directing chapter %d '%s' — %d chars", job.id, ch.index, ch.title, len(ch.text))
-            directed = await direct_text(ch.text, language=language)
-            if ch.title and ch.title != "Full Text":
-                directed = f"Narrator: {ch.title}\n{directed}"
-            logger.info("Job %s: chapter %d directed — %d chars → %d chars", job.id, ch.index, len(ch.text), len(directed))
-            job.chapters[ch.index].status = "directed"
-            job.progress = sum(1 for c in job.chapters if c.status != "pending") / (len(chapters) * 2)
-            jobs[job.id] = job
-            return ch, directed
+            async with director_sem:
+                logger.info("Job %s: directing chapter %d '%s' — %d chars", job.id, ch.index, ch.title, len(ch.text))
+                directed = await direct_text(ch.text, language=language)
+                if ch.title and ch.title != "Full Text":
+                    directed = f"Narrator: {ch.title}\n{directed}"
+                logger.info("Job %s: chapter %d directed — %d chars → %d chars", job.id, ch.index, len(ch.text), len(directed))
+                job.chapters[ch.index].status = "directed"
+                job.progress = sum(1 for c in job.chapters if c.status != "pending") / (len(chapters) * 2)
+                jobs[job.id] = job
+                return ch, directed
 
         all_directed = await asyncio.gather(*[direct_chapter(ch) for ch in chapters])
 
