@@ -468,6 +468,13 @@ export default function Studio() {
               </div>
               <p className="text-xs text-zinc-600">{Math.round(progress * 100)}%</p>
 
+              {user?.primaryEmailAddress && (
+                <p className="text-xs text-zinc-500 bg-zinc-900 border border-zinc-800 rounded-lg px-4 py-2 max-w-sm mx-auto">
+                  We&apos;ll email you at <span className="text-zinc-300">{user.primaryEmailAddress.emailAddress}</span> when
+                  it&apos;s ready. You can safely close this page.
+                </p>
+              )}
+
               {Object.keys(cast).length > 0 && (
                 <div className="mt-6 max-w-sm mx-auto">
                   <p className="text-xs text-zinc-500 mb-2">Cast</p>
