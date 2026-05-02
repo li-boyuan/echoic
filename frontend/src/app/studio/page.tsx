@@ -5,6 +5,8 @@ import { SignInButton, UserButton, useUser } from "@clerk/nextjs";
 import Link from "next/link";
 import { track } from "@vercel/analytics";
 import { trackUpload, trackConversion, trackSignUp, trackPurchase, trackPlay, trackDownload, trackError } from "@/lib/tracking";
+import { useI18n } from "@/lib/i18n";
+import LocaleSwitcher from "@/components/LocaleSwitcher";
 
 type JobStatus = "idle" | "uploading" | "pending" | "directing" | "narrating" | "completed" | "failed";
 type Voice = { id: string; name: string; description: string };
@@ -16,6 +18,7 @@ type HistoryJob = { id: string; filename: string; status: string; created_at: st
 
 export default function Studio() {
   const { user, isLoaded } = useUser();
+  const { t } = useI18n();
   const [credits, setCredits] = useState<Credits | null>(null);
   const [status, setStatus] = useState<JobStatus>("idle");
   const [file, setFile] = useState<File | null>(null);
@@ -248,10 +251,11 @@ export default function Studio() {
           Echoic
         </Link>
         <div className="flex items-center gap-4">
+          <LocaleSwitcher />
           {credits && (
             <div className="flex items-center gap-3 text-sm">
               {credits.pro_active ? (
-                <span className="px-3 py-1.5 bg-violet-600/20 text-violet-300 border border-violet-500/30 rounded-full font-medium">Pro</span>
+                <span className="px-3 py-1.5 bg-violet-600/20 text-violet-300 border border-violet-500/30 rounded-full font-medium">{t("studio.pro")}</span>
               ) : (
                 <>
                   {credits.free_available && (
@@ -293,7 +297,7 @@ export default function Studio() {
         <div className="max-w-2xl w-full space-y-8">
           {status === "idle" && (
             <div className="space-y-6">
-              <h2 className="text-2xl font-semibold text-center">Create an audiobook</h2>
+              <h2 className="text-2xl font-semibold text-center">{'{t("studio.create")}'}</h2>
 
               {credits && !credits.pro_active && !credits.free_available && credits.single_credits === 0 && (
                 <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 text-center space-y-3">
@@ -310,7 +314,7 @@ export default function Studio() {
 
               {/* Language Selector */}
               <div className="space-y-2">
-                <label className="text-sm text-zinc-400 block">Language</label>
+                <label className="text-sm text-zinc-400 block">{t("studio.language")}</label>
                 <select
                   value={selectedLanguage}
                   onChange={(e) => { setSelectedLanguage(e.target.value); setShowAllVoices(false); }}
@@ -324,8 +328,8 @@ export default function Studio() {
 
               {/* Narrator Voice Selector */}
               <div className="space-y-2">
-                <label className="text-sm text-zinc-400 block">Narrator voice</label>
-                <p className="text-xs text-zinc-600">Character voices are automatically cast by AI</p>
+                <label className="text-sm text-zinc-400 block">{'{t("studio.narratorVoice")}'}</label>
+                <p className="text-xs text-zinc-600">{t("studio.voiceHint")}</p>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                   {(showAllVoices ? voices : voices.slice(0, 6)).map((v) => (
                     <div
@@ -369,7 +373,7 @@ export default function Studio() {
                     onClick={() => setShowAllVoices(!showAllVoices)}
                     className="text-xs text-blue-400 hover:text-blue-300 transition-colors"
                   >
-                    {showAllVoices ? "Show fewer voices" : `Show all ${voices.length} voices`}
+                    {showAllVoices ? t("studio.showFewer") : t("studio.showAllVoices", { count: voices.length })}
                   </button>
                 )}
               </div>
@@ -428,7 +432,7 @@ export default function Studio() {
                         disabled={bookPreview === "loading"}
                         className="px-6 py-3 bg-zinc-800 hover:bg-zinc-700 rounded-xl font-medium transition-colors disabled:opacity-50"
                       >
-                        {bookPreview === "loading" ? "Generating preview..." : "Preview Voice"}
+                        {bookPreview === "loading" ? t("studio.generatingPreview") : t("studio.previewVoice")}
                       </button>
                       <button
                         onClick={(e) => {
@@ -445,9 +449,9 @@ export default function Studio() {
                   <div className="space-y-2">
                     <div className="text-4xl">📁</div>
                     <p className="text-zinc-400">
-                      Drop your manuscript here, or click to browse
+                      {t("studio.dropzone")}
                     </p>
-                    <p className="text-sm text-zinc-600">.txt, .pdf, .epub, .docx, .mobi, .azw3</p>
+                    <p className="text-sm text-zinc-600">{t("studio.formats")}</p>
                   </div>
                 )}
               </div>
@@ -457,7 +461,7 @@ export default function Studio() {
           {status === "uploading" && (
             <div className="text-center py-12">
               <div className="animate-spin h-8 w-8 border-2 border-blue-500 border-t-transparent rounded-full mx-auto" />
-              <p className="mt-4 text-zinc-400">Uploading...</p>
+              <p className="mt-4 text-zinc-400">{'{t("studio.uploading")}'}</p>
             </div>
           )}
 
@@ -465,9 +469,9 @@ export default function Studio() {
             <div className="text-center py-12 space-y-4">
               <div className="animate-spin h-8 w-8 border-2 border-blue-500 border-t-transparent rounded-full mx-auto" />
               <p className="text-zinc-300 font-medium">
-                {status === "pending" && "Queued..."}
-                {status === "directing" && "Reading text & casting characters..."}
-                {status === "narrating" && "Generating audio narration..."}
+                {status === "pending" && t("studio.queued")}
+                {status === "directing" && t("studio.directing")}
+                {status === "narrating" && t("studio.narrating")}
               </p>
               <div className="w-full bg-zinc-800 rounded-full h-2 max-w-xs mx-auto">
                 <div
@@ -567,11 +571,11 @@ export default function Studio() {
           {status === "completed" && (
             <div className="text-center py-12 space-y-6">
               <div className="text-4xl">🎧</div>
-              <p className="text-2xl font-semibold">Your audiobook is ready</p>
+              <p className="text-2xl font-semibold">{'{t("studio.ready")}'}</p>
 
               {Object.keys(cast).length > 0 && (
                 <div className="max-w-sm mx-auto">
-                  <p className="text-xs text-zinc-500 mb-2">Voice Cast</p>
+                  <p className="text-xs text-zinc-500 mb-2">{t("studio.voiceCast")}</p>
                   <div className="flex flex-wrap gap-2 justify-center">
                     {Object.entries(cast).map(([char, voice]) => (
                       <span
@@ -679,7 +683,7 @@ export default function Studio() {
 
           {status === "failed" && (
             <div className="text-center py-12 space-y-4">
-              <p className="text-red-400">Something went wrong</p>
+              <p className="text-red-400">{'{t("studio.failed")}'}</p>
               {error && <p className="text-sm text-red-400/70">{error}</p>}
               <button
                 onClick={reset}
@@ -706,7 +710,7 @@ export default function Studio() {
       {user && history.length > 0 && (
         <div className="border-t border-zinc-800 px-4 py-8">
           <div className="max-w-2xl mx-auto space-y-4">
-            <h3 className="text-lg font-semibold text-zinc-200">Your Audiobooks</h3>
+            <h3 className="text-lg font-semibold text-zinc-200">{'{t("studio.history")}'}</h3>
             <div className="space-y-2">
               {history.map((job) => (
                 <div

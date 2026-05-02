@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Analytics } from "@vercel/analytics/react";
 import CookieConsent from "@/components/CookieConsent";
+import { I18nProvider } from "@/lib/i18n";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -50,7 +51,9 @@ export default function RootLayout({
       <html lang="en">
         <head />
         <body className="bg-zinc-950 text-zinc-100 antialiased">
-          {children}
+          <I18nProvider>
+            {children}
+          </I18nProvider>
           <Analytics />
           <CookieConsent />
         </body>
