@@ -297,12 +297,12 @@ export default function Studio() {
         <div className="max-w-2xl w-full space-y-8">
           {status === "idle" && (
             <div className="space-y-6">
-              <h2 className="text-2xl font-semibold text-center">{'{t("studio.create")}'}</h2>
+              <h2 className="text-2xl font-semibold text-center">{t("studio.create")}</h2>
 
               {credits && !credits.pro_active && !credits.free_available && credits.single_credits === 0 && (
                 <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 text-center space-y-3">
-                  <p className="text-zinc-300">You've used your free conversion</p>
-                  <p className="text-sm text-zinc-500">Purchase credits or subscribe to Pro to continue</p>
+                  <p className="text-zinc-300">{t("studio.noCredits")}</p>
+                  <p className="text-sm text-zinc-500">{t("studio.noCredits.sub")}</p>
                   <Link
                     href="/pricing"
                     className="inline-block px-6 py-2.5 bg-blue-600 hover:bg-blue-500 rounded-lg font-medium text-sm transition-colors"
@@ -328,7 +328,7 @@ export default function Studio() {
 
               {/* Narrator Voice Selector */}
               <div className="space-y-2">
-                <label className="text-sm text-zinc-400 block">{'{t("studio.narratorVoice")}'}</label>
+                <label className="text-sm text-zinc-400 block">{t("studio.narratorVoice")}</label>
                 <p className="text-xs text-zinc-600">{t("studio.voiceHint")}</p>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                   {(showAllVoices ? voices : voices.slice(0, 6)).map((v) => (
@@ -441,7 +441,7 @@ export default function Studio() {
                         }}
                         className="px-8 py-3 bg-blue-600 hover:bg-blue-500 rounded-xl font-medium transition-colors text-lg"
                       >
-                        Generate Audiobook
+                        {t("studio.generate")}
                       </button>
                     </div>
                   </div>
@@ -461,7 +461,7 @@ export default function Studio() {
           {status === "uploading" && (
             <div className="text-center py-12">
               <div className="animate-spin h-8 w-8 border-2 border-blue-500 border-t-transparent rounded-full mx-auto" />
-              <p className="mt-4 text-zinc-400">{'{t("studio.uploading")}'}</p>
+              <p className="mt-4 text-zinc-400">{t("studio.uploading")}</p>
             </div>
           )}
 
@@ -571,7 +571,7 @@ export default function Studio() {
           {status === "completed" && (
             <div className="text-center py-12 space-y-6">
               <div className="text-4xl">🎧</div>
-              <p className="text-2xl font-semibold">{'{t("studio.ready")}'}</p>
+              <p className="text-2xl font-semibold">{t("studio.ready")}</p>
 
               {Object.keys(cast).length > 0 && (
                 <div className="max-w-sm mx-auto">
@@ -667,14 +667,14 @@ export default function Studio() {
                       onClick={() => { trackDownload(downloadFormat); track("audio_downloaded", { format: downloadFormat }); }}
                       className="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 rounded-lg font-medium transition-colors"
                     >
-                      {chapters.length > 1 ? "Download Full Audiobook" : "Download"}
+                      {chapters.length > 1 ? t("studio.downloadFull") : t("studio.download")}
                     </a>
                   )}
                   <button
                     onClick={reset}
                     className="px-6 py-2.5 bg-zinc-800 hover:bg-zinc-700 rounded-lg font-medium transition-colors"
                   >
-                    Convert another
+                    {t("studio.convertAnother")}
                   </button>
                 </div>
               </div>
@@ -683,18 +683,18 @@ export default function Studio() {
 
           {status === "failed" && (
             <div className="text-center py-12 space-y-4">
-              <p className="text-red-400">{'{t("studio.failed")}'}</p>
+              <p className="text-red-400">{t("studio.failed")}</p>
               {error && <p className="text-sm text-red-400/70">{error}</p>}
               <button
                 onClick={reset}
                 className="px-6 py-2.5 bg-zinc-800 hover:bg-zinc-700 rounded-lg font-medium transition-colors"
               >
-                Try again
+                {t("studio.tryAgain")}
               </button>
               <p className="text-xs text-zinc-500 pt-2">
-                Need a refund?{" "}
+                {t("studio.refund")}{" "}
                 <a href="mailto:support@echoic.studio" className="text-blue-400 hover:underline">
-                  Contact us
+                  {t("studio.contactUs")}
                 </a>
               </p>
             </div>
@@ -710,7 +710,7 @@ export default function Studio() {
       {user && history.length > 0 && (
         <div className="border-t border-zinc-800 px-4 py-8">
           <div className="max-w-2xl mx-auto space-y-4">
-            <h3 className="text-lg font-semibold text-zinc-200">{'{t("studio.history")}'}</h3>
+            <h3 className="text-lg font-semibold text-zinc-200">{t("studio.history")}</h3>
             <div className="space-y-2">
               {history.map((job) => (
                 <div
