@@ -12,6 +12,7 @@ type Language = { code: string; name: string };
 type Cast = Record<string, string>;
 type Chapter = { index: number; title: string; status: string; audio_url: string | null };
 type Credits = { free_available: boolean; single_credits: number; pro_active: boolean; free_word_limit: number };
+type HistoryJob = { id: string; filename: string; status: string; created_at: string | null; audio_url: string | null; chapters: Chapter[] };
 
 export default function Studio() {
   const { user, isLoaded } = useUser();
@@ -34,6 +35,7 @@ export default function Studio() {
   const [previewVoice, setPreviewVoice] = useState<string | null>(null);
   const [bookPreview, setBookPreview] = useState<"idle" | "loading" | "ready">("idle");
   const [bookPreviewUrl, setBookPreviewUrl] = useState<string | null>(null);
+  const [history, setHistory] = useState<HistoryJob[]>([]);
   const previewAudioRef = useRef<HTMLAudioElement | null>(null);
   const pollRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -73,6 +75,24 @@ export default function Studio() {
     const ageMs = Date.now() - new Date(user.createdAt).getTime();
     if (ageMs < 60_000) trackSignUp();
   }, [user]);
+
+  useEffect(() => {
+    if (!isLoaded || !user) return;
+    fetch(`/api/user/${userId}/jobs`)
+      .then((r) => r.json())
+      .then(setHistory)
+      .catch(() => {});
+  }, [isLoaded, user, userId, status]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const resumeJob = params.get("job");
+    if (resumeJob) {
+      setJobId(resumeJob);
+      setStatus("pending");
+      window.history.replaceState({}, "", "/studio");
+    }
+  }, []);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -154,6 +174,9 @@ export default function Studio() {
       formData.append("voice", selectedVoice);
       formData.append("user_id", userId);
       formData.append("language", selectedLanguage);
+      if (user?.primaryEmailAddress?.emailAddress) {
+        formData.append("user_email", user.primaryEmailAddress.emailAddress);
+      }
 
       const res = await fetch("/api/upload", { method: "POST", body: formData });
       if (!res.ok) {
@@ -662,6 +685,43 @@ export default function Studio() {
           )}
         </div>
       </div>
+
+      {/* Conversion History */}
+      {user && history.length > 0 && (
+        <div className="border-t border-zinc-800 px-4 py-8">
+          <div className="max-w-2xl mx-auto space-y-4">
+            <h3 className="text-lg font-semibold text-zinc-200">Your Audiobooks</h3>
+            <div className="space-y-2">
+              {history.map((job) => (
+                <div
+                  key={job.id}
+                  className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 flex items-center justify-between"
+                >
+                  <div>
+                    <p className="text-sm font-medium text-zinc-200">{job.filename}</p>
+                    <p className="text-xs text-zinc-500">
+                      {job.created_at ? new Date(job.created_at).toLocaleDateString() : ""}
+                      {" — "}
+                      <span className={job.status === "completed" ? "text-green-400" : "text-red-400"}>
+                        {job.status}
+                      </span>
+                    </p>
+                  </div>
+                  {job.status === "completed" && job.audio_url && (
+                    <a
+                      href={`${job.audio_url}?format=mp3`}
+                      download
+                      className="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-500 rounded-lg transition-colors"
+                    >
+                      Download
+                    </a>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }

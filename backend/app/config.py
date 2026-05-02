@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     frontend_url: str = "http://localhost:3001"
     free_word_limit: int = 5000
     admin_user_ids: str = ""
+    resend_api_key: str = ""
 
     model_config = {"env_file": ".env"}
 

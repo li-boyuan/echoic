@@ -5,11 +5,12 @@ from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import FileResponse
 
 from app.models.schemas import JobResponse, JobStatus, VoiceOption
+from app.services.jobstore import get_jobs, get_user_jobs, save_job
 from app.services.narrator import AVAILABLE_VOICES, LANGUAGES, generate_preview, get_voices_for_language
 
 router = APIRouter()
 
-jobs: dict[str, JobResponse] = {}
+jobs = get_jobs()
 
 SUPPORTED_FORMATS = {
     "wav": {"ext": ".wav", "media_type": "audio/wav"},
@@ -47,6 +48,11 @@ def _find_source_wav(base_dir: str, name: str) -> Path | None:
         if p.exists():
             return p
     return None
+
+
+@router.get("/user/{user_id}/jobs")
+async def list_user_jobs(user_id: str):
+    return get_user_jobs(user_id)
 
 
 @router.get("/jobs/{job_id}", response_model=JobResponse)

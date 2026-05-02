@@ -28,6 +28,9 @@ class JobResponse(BaseModel):
     chapters: list[ChapterInfo] = []
     error: str | None = None
     audio_url: str | None = None
+    user_id: str = "anonymous"
+    user_email: str | None = None
+    created_at: str | None = None
 
 
 class VoiceOption(BaseModel):

@@ -16,3 +16,4 @@ mobi==0.3.3
 stripe==11.5.0
 pytest==8.3.4
 httpx==0.28.1
+resend==2.5.0

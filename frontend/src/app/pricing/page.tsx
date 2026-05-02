@@ -12,7 +12,7 @@ const PLANS = [
     price: "$0",
     period: "",
     description: "Try it out",
-    features: ["1 free conversion", "Up to 5,000 words", "All voices included", "Auto character casting"],
+    features: ["1 free conversion", "Up to 5,000 words", "All voices included", "Auto character casting", "Instant processing only"],
     cta: "Get Started",
   },
   {
@@ -21,7 +21,7 @@ const PLANS = [
     price: "$9.99",
     period: "",
     description: "Perfect for one book",
-    features: ["1 book conversion", "Unlimited words", "All voices included", "Auto character casting", "Chapter splitting"],
+    features: ["1 book conversion", "Unlimited words", "All voices included", "Auto character casting", "Chapter splitting", "Email notification when done", "Conversion history"],
     cta: "Buy Now",
     popular: true,
   },
@@ -31,7 +31,7 @@ const PLANS = [
     price: "$29.99",
     period: "/mo",
     description: "For power users",
-    features: ["Unlimited conversions", "Unlimited words", "All voices included", "Auto character casting", "Chapter splitting", "Priority processing"],
+    features: ["Unlimited conversions", "Unlimited words", "All voices included", "Auto character casting", "Chapter splitting", "Email notification when done", "Conversion history", "Priority processing"],
     cta: "Subscribe",
   },
 ];

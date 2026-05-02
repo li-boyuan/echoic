@@ -8,6 +8,7 @@ from fastapi import APIRouter, Form, HTTPException, UploadFile
 from fastapi.responses import FileResponse
 
 from app.api.jobs import jobs
+from app.services.jobstore import save_job
 from app.config import settings
 from app.models.schemas import JobResponse, JobStatus
 from app.services.credits import can_convert
@@ -74,6 +75,7 @@ async def upload_manuscript(
     voice: str = Form(default="Kore"),
     user_id: str = Form(default="anonymous"),
     language: str = Form(default="en"),
+    user_email: str = Form(default=""),
 ):
     ext = "." + file.filename.rsplit(".", 1)[-1].lower() if "." in file.filename else ""
     if ext not in ALLOWED_EXTENSIONS:
@@ -103,7 +105,12 @@ async def upload_manuscript(
             "No credits available. Purchase a Single Book or subscribe to Pro to continue.",
         )
 
-    job = JobResponse(id=job_id, filename=file.filename, status=JobStatus.PENDING, voice=voice)
+    from datetime import datetime
+    job = JobResponse(
+        id=job_id, filename=file.filename, status=JobStatus.PENDING, voice=voice,
+        user_id=user_id, user_email=user_email or None, created_at=datetime.utcnow().isoformat(),
+    )
+    save_job(job_id, job)
     jobs[job_id] = job
 
     asyncio.create_task(run_pipeline(job, filepath, jobs, user_id=user_id, credit_tier=tier, language=language))

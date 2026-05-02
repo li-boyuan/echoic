@@ -6,7 +6,9 @@ import wave
 from app.models.schemas import ChapterInfo, JobResponse, JobStatus
 from app.services.credits import consume_credit
 from app.services.director import direct_text
+from app.services.jobstore import save_job
 from app.services.narrator import generate_segment_audio, stitch_audio
+from app.services.notify import send_completion_email, send_failure_email
 from app.services.parser import extract_text, split_chapters
 from app.services.segmenter import (
     assign_voices,
@@ -43,14 +45,14 @@ async def _narrate_chapter(job, jobs, ch, directed, voice_map, semaphore):
             job.chapters[ch.index].audio_url = f"/api/jobs/{job.id}/audio/{ch.index}"
             completed = sum(1 for c in job.chapters if c.status == "completed")
             job.progress = 0.5 + (completed / len(job.chapters)) * 0.5
-            jobs[job.id] = job
+            save_job(job.id, job); jobs[job.id] = job
 
             logger.info("Job %s: chapter %d completed", job.id, ch.index)
             return chapter_path
         except Exception as e:
             logger.exception("Job %s: chapter %d failed", job.id, ch.index)
             job.chapters[ch.index].status = "failed"
-            jobs[job.id] = job
+            save_job(job.id, job); jobs[job.id] = job
             raise
 
 
@@ -86,7 +88,7 @@ async def run_pipeline(
                 logger.info("Job %s: chapter %d directed — %d chars → %d chars", job.id, ch.index, len(ch.text), len(directed))
                 job.chapters[ch.index].status = "directed"
                 job.progress = sum(1 for c in job.chapters if c.status != "pending") / (len(chapters) * 2)
-                jobs[job.id] = job
+                save_job(job.id, job); jobs[job.id] = job
                 return ch, directed
 
         all_directed = await asyncio.gather(*[direct_chapter(ch) for ch in chapters])
@@ -122,10 +124,16 @@ async def run_pipeline(
         job.status = JobStatus.COMPLETED
         job.progress = 1.0
         job.audio_url = f"/api/jobs/{job.id}/audio"
-        jobs[job.id] = job
+        save_job(job.id, job); jobs[job.id] = job
+
+        if job.user_email:
+            send_completion_email(job.user_email, job.filename, job.id)
 
     except Exception as e:
         logger.exception("Pipeline failed for job %s", job.id)
         job.status = JobStatus.FAILED
         job.error = str(e)
-        jobs[job.id] = job
+        save_job(job.id, job); jobs[job.id] = job
+
+        if job.user_email:
+            send_failure_email(job.user_email, job.filename, str(e))
