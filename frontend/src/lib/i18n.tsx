@@ -40,6 +40,26 @@ const messages: Record<Locale, Record<string, string>> = {
     "footer.tagline": "echoic.studio — AI-powered audiobook generation",
     "footer.privacy": "Privacy Policy",
 
+    // Privacy
+    "privacy.title": "Privacy Policy",
+    "privacy.updated": "Last updated: April 30, 2026",
+    "privacy.collect.title": "What We Collect",
+    "privacy.collect.intro": "When you use Echoic, we may collect the following information:",
+    "privacy.collect.account": "If you sign up via Clerk (our authentication provider), we receive your name and email address.",
+    "privacy.collect.files": "Manuscripts you upload are processed to generate audiobooks. Files are not stored permanently and are deleted after processing.",
+    "privacy.collect.payment": "Payments are handled by Stripe. We do not store your credit card details.",
+    "privacy.collect.usage": "We collect anonymous usage metrics (page views, feature usage) through Vercel Analytics to improve the product. Vercel Analytics does not use cookies.",
+    "privacy.cookies.title": "Cookies & Tracking",
+    "privacy.cookies.pixel": "With your consent, we use the Meta Pixel (Facebook) to measure advertising effectiveness. The Meta Pixel places cookies on your device and may collect information about your browsing activity across websites.",
+    "privacy.cookies.control": "You can accept or decline tracking cookies via the banner shown on your first visit. If you decline, the Meta Pixel will not be loaded and no tracking cookies will be set. You can change your preference at any time by clearing your browser's local storage for this site.",
+    "privacy.thirdparty.title": "Third-Party Services",
+    "privacy.thirdparty.intro": "We use the following third-party services to operate Echoic:",
+    "privacy.thirdparty.each": "Each service has its own privacy policy governing how it handles your data.",
+    "privacy.retention.title": "Data Retention",
+    "privacy.retention.text": "Uploaded manuscripts and generated audio files are temporary and are not stored permanently. Account data is retained while your account is active. You can request deletion of your data by contacting us.",
+    "privacy.contact.title": "Contact",
+    "privacy.contact.text": "If you have questions about this privacy policy, contact us at",
+
     // Studio
     "studio.create": "Create an audiobook",
     "studio.noCredits": "You've used your free conversion",
@@ -129,6 +149,26 @@ const messages: Record<Locale, Record<string, string>> = {
 
     "footer.tagline": "echoic.studio — Generación de audiolibros con IA",
     "footer.privacy": "Política de Privacidad",
+
+    // Privacy
+    "privacy.title": "Política de Privacidad",
+    "privacy.updated": "Última actualización: 30 de abril de 2026",
+    "privacy.collect.title": "Qué Recopilamos",
+    "privacy.collect.intro": "Cuando usas Echoic, podemos recopilar la siguiente información:",
+    "privacy.collect.account": "Si te registras a través de Clerk (nuestro proveedor de autenticación), recibimos tu nombre y dirección de correo electrónico.",
+    "privacy.collect.files": "Los manuscritos que subes se procesan para generar audiolibros. Los archivos no se almacenan permanentemente y se eliminan después del procesamiento.",
+    "privacy.collect.payment": "Los pagos son gestionados por Stripe. No almacenamos los datos de tu tarjeta de crédito.",
+    "privacy.collect.usage": "Recopilamos métricas de uso anónimas (vistas de página, uso de funciones) a través de Vercel Analytics para mejorar el producto. Vercel Analytics no utiliza cookies.",
+    "privacy.cookies.title": "Cookies y Seguimiento",
+    "privacy.cookies.pixel": "Con tu consentimiento, utilizamos el Meta Pixel (Facebook) para medir la efectividad publicitaria. El Meta Pixel coloca cookies en tu dispositivo y puede recopilar información sobre tu actividad de navegación en sitios web.",
+    "privacy.cookies.control": "Puedes aceptar o rechazar las cookies de seguimiento a través del banner mostrado en tu primera visita. Si rechazas, el Meta Pixel no se cargará y no se establecerán cookies de seguimiento. Puedes cambiar tu preferencia en cualquier momento limpiando el almacenamiento local de tu navegador para este sitio.",
+    "privacy.thirdparty.title": "Servicios de Terceros",
+    "privacy.thirdparty.intro": "Utilizamos los siguientes servicios de terceros para operar Echoic:",
+    "privacy.thirdparty.each": "Cada servicio tiene su propia política de privacidad que rige cómo maneja tus datos.",
+    "privacy.retention.title": "Retención de Datos",
+    "privacy.retention.text": "Los manuscritos subidos y los archivos de audio generados son temporales y no se almacenan permanentemente. Los datos de la cuenta se conservan mientras tu cuenta esté activa. Puedes solicitar la eliminación de tus datos contactándonos.",
+    "privacy.contact.title": "Contacto",
+    "privacy.contact.text": "Si tienes preguntas sobre esta política de privacidad, contáctanos en",
 
     // Studio
     "studio.create": "Crear un audiolibro",
