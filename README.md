@@ -82,22 +82,37 @@ Upload (.txt/.pdf/.epub/.docx/.mobi/.azw3)
 - Upload gated behind credit check
 - "Contact us" refund link on failure screen
 
+### Localization
+- **Website UI** available in English and Spanish (more languages easy to add)
+- Globe icon language switcher on all pages
+- Auto-detects browser language
+- Locale persisted to localStorage
+
+### Persistent Jobs & Email Notifications
+- **Jobs persist to disk** — survive server restarts, users can return later
+- **Conversion history** — logged-in users see past audiobooks with download links
+- **Email notifications** via Resend — completion email with "Listen & Download" link, failure email with error details
+- **Resume from email** — click link in email to go directly to your audiobook
+
 ### Privacy & Compliance
 - **Cookie consent banner** — gates Meta Pixel loading (GDPR/CCPA compliant)
-- **Privacy policy** at `/privacy` — covers all third-party services
+- **Privacy policy** at `/privacy` — covers all third-party services, fully localized
 - Vercel Analytics (cookie-free) loads without consent
 
 ### Frontend
 - Next.js 15 + Tailwind CSS (dark theme)
 - Drag-and-drop file upload
-- Language selector with 26 languages
-- Narrator voice selector with gender labels and instant audio previews
+- Language selector with 26 languages for TTS
+- UI language switcher (English / Español)
+- Narrator voice selector with gender labels and instant audio previews (179 pre-generated samples)
 - Audio preview from uploaded manuscript before full conversion
 - Per-chapter progress with live play/download as chapters complete
+- Conversion history with download links for past audiobooks
 - Cast display showing character → voice assignments
 - "Download Full Audiobook" for the stitched output
-- Pricing page with 3-tier cards
+- Pricing page with 3-tier cards (email + history for paid tiers)
 - FAQ section with publishing guidance and legal disclaimer
+- Comprehensive error tracking via Vercel Analytics + Meta Pixel
 
 ## Architecture
 
@@ -110,11 +125,13 @@ frontend/                    → Next.js 15 + Tailwind
     privacy/page.tsx         → Privacy policy
     sign-in/                 → Clerk sign-in page
     sign-up/                 → Clerk sign-up page
-    layout.tsx               → ClerkProvider + Analytics + CookieConsent
+    layout.tsx               → ClerkProvider + Analytics + CookieConsent + I18nProvider
   src/components/
     CookieConsent.tsx        → Cookie banner + conditional Meta Pixel
+    LocaleSwitcher.tsx       → Globe icon + language dropdown (EN/ES)
   src/lib/
     tracking.ts              → Meta Pixel event helpers
+    i18n.tsx                 → Client-side i18n context + translations (en/es)
   public/previews/           → Pre-generated voice preview WAV files
   middleware.ts              → Route protection
 
@@ -131,6 +148,8 @@ backend/                     → FastAPI
       parser.py              → File parsing (txt/pdf/epub/docx/mobi) + chapter detection
       pipeline.py            → Parallel chapter processing: direct → cast → narrate → stitch
       credits.py             → Persistent credit tracking + Stripe sync + admin access
+      jobstore.py            → Persistent job storage (JSON file)
+      notify.py              → Email notifications via Resend (completion + failure)
     models/
       schemas.py             → Pydantic models (Job, Chapter, Voice)
     config.py                → Environment settings
@@ -182,6 +201,7 @@ STRIPE_SECRET_KEY=sk_live_...       # Stripe payments (use sk_test_ for local de
 STRIPE_WEBHOOK_SECRET=whsec_...     # Stripe webhook verification
 FRONTEND_URL=http://localhost:3001  # For Stripe redirect URLs
 ADMIN_USER_IDS=user_abc,user_xyz   # Comma-separated Clerk user IDs for unlimited access
+RESEND_API_KEY=re_...              # Email notifications (optional, from resend.com)
 ```
 
 **Frontend** (`frontend/.env.local`):
