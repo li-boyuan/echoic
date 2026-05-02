@@ -19,7 +19,7 @@ export function trackUpload(filename: string) {
 }
 
 export function trackConversion(filename: string) {
-  trackEvent("Purchase", { content_name: filename, value: 0, currency: "USD" });
+  trackEvent("CustomEvent", { content_name: "conversion_completed", filename });
 }
 
 export function trackPurchase(value: number) {
@@ -36,4 +36,8 @@ export function trackDownload(format: string) {
 
 export function trackPricingView() {
   trackEvent("ViewContent", { content_name: "pricing" });
+}
+
+export function trackError(context: string, message: string) {
+  trackEvent("CustomEvent", { content_name: "error", error_context: context, error_message: message });
 }

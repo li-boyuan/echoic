@@ -4,7 +4,7 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import { SignInButton, UserButton, useUser } from "@clerk/nextjs";
 import Link from "next/link";
 import { track } from "@vercel/analytics";
-import { trackUpload, trackConversion, trackSignUp, trackPurchase, trackPlay, trackDownload } from "@/lib/tracking";
+import { trackUpload, trackConversion, trackSignUp, trackPurchase, trackPlay, trackDownload, trackError } from "@/lib/tracking";
 
 type JobStatus = "idle" | "uploading" | "pending" | "directing" | "narrating" | "completed" | "failed";
 type Voice = { id: string; name: string; description: string };
@@ -94,6 +94,8 @@ export default function Studio() {
         if (res.status === 404) {
           setStatus("failed");
           setError("Job not found — the server may have restarted. Please try again.");
+          trackError("job_poll", "job_not_found_404");
+          track("error", { context: "job_poll", message: "job_not_found_404" });
           return;
         }
         if (!res.ok) return;
@@ -113,7 +115,10 @@ export default function Studio() {
           track("conversion_completed");
         } else if (job.status === "failed") {
           setStatus("failed");
-          setError(job.error || "Processing failed");
+          const msg = job.error || "Processing failed";
+          setError(msg);
+          trackError("pipeline", msg);
+          track("error", { context: "pipeline", message: msg.slice(0, 100) });
         }
       } catch {}
     }, 2000);
@@ -126,7 +131,9 @@ export default function Studio() {
   const handleFile = useCallback((f: File) => {
     const ext = f.name.split(".").pop()?.toLowerCase();
     if (!["txt", "pdf", "epub", "docx", "mobi", "azw", "azw3"].includes(ext ?? "")) {
-      setError("Unsupported file type. Please upload .txt, .pdf, .epub, .docx, .mobi, .azw3, .mobi, or .azw3");
+      setError("Unsupported file type. Please upload .txt, .pdf, .epub, .docx, .mobi, or .azw3");
+      trackError("file_type", `unsupported_extension_${ext}`);
+      track("error", { context: "file_type", message: `unsupported_${ext}` });
       return;
     }
     setFile(f);
@@ -160,8 +167,11 @@ export default function Studio() {
       trackUpload(file.name);
       track("generate_clicked", { voice: selectedVoice });
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Upload failed");
+      const msg = err instanceof Error ? err.message : "Upload failed";
+      setError(msg);
       setStatus("idle");
+      trackError("upload", msg);
+      track("error", { context: "upload", message: msg.slice(0, 100) });
     }
   };
 
@@ -186,6 +196,8 @@ export default function Studio() {
     } catch {
       setBookPreview("idle");
       setError("Could not generate preview — try again later");
+      trackError("preview", "preview_generation_failed");
+      track("error", { context: "preview", message: "preview_generation_failed" });
     }
   };
 
