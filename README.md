@@ -21,8 +21,9 @@ Upload (.txt/.pdf/.epub/.docx/.mobi/.azw3)
 - **AI Director** — Claude Haiku reads each chapter and splits it into speaker-tagged lines (Narrator vs. each character), preserving the original text faithfully. Language-aware: handles dialogue conventions for all supported languages (quotation marks, em-dashes,「」, «», etc.)
 - **Auto Character Casting** — Claude identifies every character by name and assigns each a unique voice that matches their personality
 - **Multi-Speaker TTS** — Gemini TTS renders audio with separate voices for narrator and characters, stitched together seamlessly
-- **Model Fallback Chain** — TTS tries Gemini 3.1 Flash → 2.5 Pro → 2.5 Flash, auto-falling back on errors or rate limits. Effectively triples daily API quota.
-- **Parallel Chapter Processing** — Chapters are directed (up to 2 concurrent) and narrated (up to 3 concurrent) in parallel for faster results. Users can play/download completed chapters while others are still processing. Rate limit retry with backoff on both Claude and Gemini APIs.
+- **Model Fallback Chain** — TTS tries Gemini 3.1 Flash → 2.5 Pro → 2.5 Flash, auto-falling back on errors or rate limits. Effectively triples daily API quota (100 + 100 + 50 = 250 RPD).
+- **Global Rate Limiter** — Serializes TTS calls with a configurable interval (default 7s) to stay within per-minute rate limits across all parallel chapters. Retry with backoff on both Claude (429) and Gemini (429/500/503) APIs.
+- **Parallel Chapter Processing** — Chapters are directed (up to 2 concurrent) and narrated (up to 3 concurrent) in parallel. Users can play/download completed chapters while others are still processing.
 - **Chapter Splitting** — Auto-detects chapter boundaries (Chapter X, Part X, Prologue, Epilogue) and generates per-chapter audio files with title narration
 - **Audio Preview** — Generate a ~30-second sample from the first page before committing to a full conversion. Try different voices instantly.
 - **Content Filter Handling** — If Gemini's copyright or safety filter blocks a segment, tries the next model in the fallback chain (different models have different thresholds). If all models block, inserts silence and continues instead of failing the entire job.
@@ -202,8 +203,8 @@ NEXT_PUBLIC_FB_PIXEL_ID=...         # Meta Pixel for ad conversion tracking
 ## Marketing
 
 - **Facebook Page**: [Echoic](https://www.facebook.com/profile.php?id=61560376811560)
-- **Meta Pixel**: Full-funnel tracking with cookie consent (PageView, CompleteRegistration, InitiateCheckout, Purchase, ViewContent, Lead)
-- **Vercel Analytics**: Custom engagement events (file_selected, generate_clicked, conversion_completed, audio_played, audio_downloaded)
+- **Meta Pixel**: Full-funnel tracking with cookie consent (PageView, CompleteRegistration, InitiateCheckout, Purchase, ViewContent, Lead). Purchase only fires on actual Stripe payments.
+- **Vercel Analytics**: Custom engagement events (file_selected, generate_clicked, conversion_completed, audio_played, audio_downloaded, preview_generated) + error tracking at all failure points (upload, pipeline, preview, file type)
 - **Ad Creatives**: 3 static (1080x1080) + 1 animated video in `ads/`
 - **Targeting**: Self-published authors, KDP users, audiobook enthusiasts
 
