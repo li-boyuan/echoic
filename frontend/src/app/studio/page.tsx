@@ -33,6 +33,7 @@ export default function Studio() {
   const [playingChapter, setPlayingChapter] = useState<number | null>(null);
   const [downloadFormat, setDownloadFormat] = useState("mp3");
   const [previewVoice, setPreviewVoice] = useState<string | null>(null);
+  const [showAllVoices, setShowAllVoices] = useState(false);
   const [bookPreview, setBookPreview] = useState<"idle" | "loading" | "ready">("idle");
   const [bookPreviewUrl, setBookPreviewUrl] = useState<string | null>(null);
   const [history, setHistory] = useState<HistoryJob[]>([]);
@@ -312,7 +313,7 @@ export default function Studio() {
                 <label className="text-sm text-zinc-400 block">Language</label>
                 <select
                   value={selectedLanguage}
-                  onChange={(e) => setSelectedLanguage(e.target.value)}
+                  onChange={(e) => { setSelectedLanguage(e.target.value); setShowAllVoices(false); }}
                   className="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-200 cursor-pointer"
                 >
                   {languages.map((l) => (
@@ -326,7 +327,7 @@ export default function Studio() {
                 <label className="text-sm text-zinc-400 block">Narrator voice</label>
                 <p className="text-xs text-zinc-600">Character voices are automatically cast by AI</p>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                  {voices.map((v) => (
+                  {(showAllVoices ? voices : voices.slice(0, 6)).map((v) => (
                     <div
                       key={v.id}
                       onClick={() => { setSelectedVoice(v.id); setBookPreview("idle"); }}
@@ -363,6 +364,14 @@ export default function Studio() {
                     </div>
                   ))}
                 </div>
+                {voices.length > 6 && (
+                  <button
+                    onClick={() => setShowAllVoices(!showAllVoices)}
+                    className="text-xs text-blue-400 hover:text-blue-300 transition-colors"
+                  >
+                    {showAllVoices ? "Show fewer voices" : `Show all ${voices.length} voices`}
+                  </button>
+                )}
               </div>
 
               {/* Upload Zone */}
