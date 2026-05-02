@@ -361,7 +361,7 @@ export default function Studio() {
                           }}
                           className="text-xs px-2 py-0.5 bg-zinc-800 hover:bg-zinc-700 rounded transition-colors"
                         >
-                          {previewVoice === v.id ? "Stop" : "Preview"}
+                          {previewVoice === v.id ? t("studio.stop") : t("studio.preview")}
                         </button>
                       </div>
                       <div className="text-xs text-zinc-500 mt-0.5">{v.description}</div>
@@ -529,7 +529,7 @@ export default function Studio() {
                                   }}
                                   className="text-xs px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 rounded-md transition-colors"
                                 >
-                                  {playingChapter === ch.index ? "Hide" : "Play"}
+                                  {playingChapter === ch.index ? t("studio.hide") : t("studio.play")}
                                 </button>
                                 <a
                                   href={`${ch.audio_url}?format=${downloadFormat}`}
@@ -537,7 +537,7 @@ export default function Studio() {
                                   onClick={() => { trackDownload(downloadFormat); track("audio_downloaded", { format: downloadFormat }); }}
                                   className="text-xs px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 rounded-md transition-colors"
                                 >
-                                  Download
+                                  {t("studio.download")}
                                 </a>
                               </>
                             ) : (
@@ -547,10 +547,10 @@ export default function Studio() {
                                 ch.status === "failed" ? "text-red-400 text-xs" :
                                 "text-zinc-600 text-xs"
                               }>
-                                {ch.status === "completed" ? "done" :
-                                 ch.status === "directed" ? "narrating..." :
-                                 ch.status === "failed" ? "failed" :
-                                 "pending"}
+                                {ch.status === "completed" ? t("studio.status.done") :
+                                 ch.status === "directed" ? t("studio.status.narrating") :
+                                 ch.status === "failed" ? t("studio.status.failed") :
+                                 t("studio.status.pending")}
                               </span>
                             )}
                           </div>
@@ -619,7 +619,7 @@ export default function Studio() {
                                 }}
                                 className="text-xs px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 rounded-md transition-colors"
                               >
-                                {playingChapter === ch.index ? "Hide" : "Play"}
+                                {playingChapter === ch.index ? t("studio.hide") : t("studio.play")}
                               </button>
                               <a
                                 href={`${ch.audio_url}?format=${downloadFormat}`}
@@ -627,7 +627,7 @@ export default function Studio() {
                                 onClick={() => { trackDownload(downloadFormat); track("audio_downloaded", { format: downloadFormat }); }}
                                 className="text-xs px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 rounded-md transition-colors"
                               >
-                                Download
+                                {t("studio.download")}
                               </a>
                             </>
                           )}
@@ -723,7 +723,7 @@ export default function Studio() {
                       {job.created_at ? new Date(job.created_at).toLocaleDateString() : ""}
                       {" — "}
                       <span className={job.status === "completed" ? "text-green-400" : "text-red-400"}>
-                        {job.status}
+                        {t(`studio.status.${job.status}`)}
                       </span>
                     </p>
                   </div>
@@ -733,7 +733,7 @@ export default function Studio() {
                       download
                       className="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-500 rounded-lg transition-colors"
                     >
-                      Download
+                      {t("studio.download")}
                     </a>
                   )}
                 </div>

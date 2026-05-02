@@ -84,6 +84,12 @@ const messages: Record<Locale, Record<string, string>> = {
     "studio.play": "Play",
     "studio.hide": "Hide",
 
+    "studio.status.done": "done",
+    "studio.status.narrating": "narrating...",
+    "studio.status.failed": "failed",
+    "studio.status.pending": "pending",
+    "studio.status.completed": "completed",
+
     // Pricing
     "pricing.title": "Simple pricing",
     "pricing.subtitle": "Pay only for what you need",
@@ -167,6 +173,12 @@ const messages: Record<Locale, Record<string, string>> = {
     "studio.stop": "Detener",
     "studio.play": "Reproducir",
     "studio.hide": "Ocultar",
+
+    "studio.status.done": "listo",
+    "studio.status.narrating": "narrando...",
+    "studio.status.failed": "fallido",
+    "studio.status.pending": "pendiente",
+    "studio.status.completed": "completado",
 
     // Pricing
     "pricing.title": "Precios simples",
