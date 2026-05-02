@@ -29,14 +29,12 @@ async def _narrate_chapter(job, jobs, ch, directed, voice_map, semaphore):
             )
 
             pcm_chunks = []
-            for i, seg in enumerate(segments):
+            for seg in segments:
                 seg_text = prepare_segment_text(seg)
                 pcm = await generate_segment_audio(
                     seg_text, seg.narrator_voice, seg.character_voice,
                 )
                 pcm_chunks.append(pcm)
-                if i < len(segments) - 1:
-                    await asyncio.sleep(1.5)
 
             chapter_path = f"output/{job.id}/chapter_{ch.index}.wav"
             stitch_audio(pcm_chunks, chapter_path)

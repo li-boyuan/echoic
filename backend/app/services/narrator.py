@@ -12,6 +12,10 @@ from app.config import settings
 
 logger = logging.getLogger(__name__)
 
+_tts_lock = asyncio.Lock()
+_last_tts_call = 0.0
+TTS_MIN_INTERVAL = 7.0  # seconds between TTS calls (safe for 10 RPM)
+
 SAMPLE_RATE = 24000
 SAMPLE_WIDTH = 2
 CHANNELS = 1
@@ -138,10 +142,22 @@ async def _try_model(model: str, payload: dict) -> dict | None:
     return None
 
 
+async def _rate_limit():
+    global _last_tts_call
+    async with _tts_lock:
+        import time
+        now = time.monotonic()
+        wait = TTS_MIN_INTERVAL - (now - _last_tts_call)
+        if wait > 0:
+            await asyncio.sleep(wait)
+        _last_tts_call = time.monotonic()
+
+
 async def generate_segment_audio(
     text: str, narrator_voice: str, character_voice: str
 ) -> bytes:
     """Generate audio with model fallback chain."""
+    await _rate_limit()
     payload = {
         "contents": [{"parts": [{"text": text}]}],
         "generationConfig": {
