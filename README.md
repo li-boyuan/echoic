@@ -26,7 +26,10 @@ Upload (.txt/.pdf/.epub/.docx/.mobi/.azw3)
 - **Parallel Chapter Processing** — Chapters are directed (up to 2 concurrent) and narrated (up to 3 concurrent) in parallel. Users can play/download completed chapters while others are still processing.
 - **Chapter Splitting** — Auto-detects chapter boundaries (Chapter X, Part X, Prologue, Epilogue) and generates per-chapter audio files with title narration
 - **Audio Preview** — Generate a ~30-second sample from the first page before committing to a full conversion. Try different voices instantly.
-- **Content Filter Handling** — If Gemini's copyright or safety filter blocks a segment, tries the next model in the fallback chain (different models have different thresholds). If all models block, inserts silence and continues instead of failing the entire job.
+- **Text Input** — Paste or type text directly in addition to uploading files
+- **Auto-split Oversized Segments** — Segments exceeding 5000 chars are recursively split at line boundaries to stay within TTS input limits
+- **Copyright Detection** — Copyrighted content is detected immediately with a user-friendly error. No credit consumed, no broken audiobook with silence gaps.
+- **Content Safety Handling** — If Gemini's safety filter blocks a segment (violence, mature themes), tries the next model in the fallback chain. If all models block, inserts silence and continues.
 - **Format Conversion** — Download audiobooks in multiple formats, converted on-the-fly via ffmpeg
 
 ### Multi-Language Support (26 languages)
@@ -72,9 +75,9 @@ Upload (.txt/.pdf/.epub/.docx/.mobi/.azw3)
 ### Payments (Stripe)
 | Tier | Price | What you get |
 |------|-------|-------------|
-| Free | $0 | 1 conversion up to 5,000 words |
+| Free | $0 | 1 conversion up to 500 words |
 | Single Book | $9.99 | 1 book, unlimited words |
-| Pro | $29.99/mo | Unlimited conversions |
+| Pro | $14.99 first month (50% off), $29.99/mo after | Unlimited conversions, most powerful AI model |
 
 - Stripe Checkout for one-time and subscription payments
 - Credits persisted to disk (JSON file) with Stripe sync on startup
@@ -88,9 +91,11 @@ Upload (.txt/.pdf/.epub/.docx/.mobi/.azw3)
 - Auto-detects browser language
 - Locale persisted to localStorage
 
-### Persistent Jobs & Email Notifications
+### Persistent Jobs & Storage
 - **Jobs persist to disk** — survive server restarts, users can return later
-- **Conversion history** — logged-in users see past audiobooks with download links
+- **Cloudflare R2 storage** — audio files persist across deploys, organized by user (`users/{user_id}/{job_id}/`)
+- **Access control** — user ownership check on all audio endpoints, presigned URLs (1hr expiry)
+- **"My Audiobooks" tab** — dedicated library with per-chapter downloads
 - **Email notifications** via Resend — completion email with "Listen & Download" link, failure email with error details
 - **Resume from email** — click link in email to go directly to your audiobook
 
@@ -101,13 +106,14 @@ Upload (.txt/.pdf/.epub/.docx/.mobi/.azw3)
 
 ### Frontend
 - Next.js 15 + Tailwind CSS (dark theme)
-- Drag-and-drop file upload
+- Drag-and-drop file upload + paste text input
 - Language selector with 26 languages for TTS
 - UI language switcher (English / Español)
 - Narrator voice selector with gender labels and instant audio previews (179 pre-generated samples)
+- Audio demo on landing page (multi-character showcase)
 - Audio preview from uploaded manuscript before full conversion
+- Create / My Audiobooks tab system
 - Per-chapter progress with live play/download as chapters complete
-- Conversion history with download links for past audiobooks
 - Cast display showing character → voice assignments
 - "Download Full Audiobook" for the stitched output
 - Pricing page with 3-tier cards (email + history for paid tiers)
@@ -150,6 +156,7 @@ backend/                     → FastAPI
       credits.py             → Persistent credit tracking + Stripe sync + admin access
       jobstore.py            → Persistent job storage (JSON file)
       notify.py              → Email notifications via Resend (completion + failure)
+      storage.py             → Cloudflare R2 upload + presigned URLs
     models/
       schemas.py             → Pydantic models (Job, Chapter, Voice)
     config.py                → Environment settings
@@ -202,6 +209,10 @@ STRIPE_WEBHOOK_SECRET=whsec_...     # Stripe webhook verification
 FRONTEND_URL=http://localhost:3001  # For Stripe redirect URLs
 ADMIN_USER_IDS=user_abc,user_xyz   # Comma-separated Clerk user IDs for unlimited access
 RESEND_API_KEY=re_...              # Email notifications (optional, from resend.com)
+R2_ACCOUNT_ID=...                  # Cloudflare R2 (optional, for persistent audio storage)
+R2_ACCESS_KEY_ID=...               # R2 API token
+R2_SECRET_ACCESS_KEY=...           # R2 API secret
+R2_BUCKET_NAME=echoic-audio        # R2 bucket name
 ```
 
 **Frontend** (`frontend/.env.local`):
