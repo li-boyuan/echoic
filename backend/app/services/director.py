@@ -55,5 +55,11 @@ async def direct_text(text: str, language: str = "en") -> str:
             wait = 15 * (attempt + 1)
             logger.warning("Director rate limited, retrying in %ds (attempt %d)", wait, attempt + 1)
             await asyncio.sleep(wait)
+        except anthropic.BadRequestError as e:
+            if "content filtering" in str(e).lower():
+                logger.warning("Director content filtered, using raw text as narrator: %s", text[:80])
+                lines = text.strip().splitlines()
+                return "\n".join(f"Narrator: {line}" for line in lines if line.strip())
+            raise
 
     raise RuntimeError("Director rate limited after 5 attempts")
