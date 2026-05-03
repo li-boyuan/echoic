@@ -16,6 +16,7 @@ class CopyrightFilterError(RuntimeError):
     pass
 
 _tts_lock = asyncio.Lock()
+_exhausted_models: set[str] = set()
 _last_tts_call = 0.0
 TTS_MIN_INTERVAL = 7.0  # seconds between TTS calls (safe for 10 RPM)
 
@@ -133,7 +134,8 @@ async def _try_model(model: str, payload: dict) -> dict | None:
         if "error" in data:
             code = data["error"]["code"]
             if code == 429:
-                logger.warning("[%s] Rate limited (429), falling back to next model", model)
+                logger.warning("[%s] Rate limited (429), skipping for remaining segments", model)
+                _exhausted_models.add(model)
                 return None
             if code in (500, 503) and attempt < 2:
                 wait = 10 * (attempt + 1)
@@ -205,6 +207,8 @@ async def generate_segment_audio(
     blocked_by_all = True
 
     for model in TTS_MODELS:
+        if model in _exhausted_models:
+            continue
         data = await _try_model(model, payload)
         if data is None:
             logger.warning("Model %s exhausted, trying next", model)
