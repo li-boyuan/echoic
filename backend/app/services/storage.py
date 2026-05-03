@@ -63,23 +63,24 @@ def get_presigned_url(key: str, expires_in: int = 3600) -> str | None:
         return None
 
 
-def upload_job_audio(job_id: str, output_dir: str) -> dict[str, str]:
+def upload_job_audio(job_id: str, output_dir: str, user_id: str = "anonymous") -> dict[str, str]:
     urls = {}
+    prefix = f"users/{user_id}/{job_id}"
 
     full_path = os.path.join(output_dir, job_id, "full.wav")
     if os.path.exists(full_path):
-        url = upload_file(full_path, f"jobs/{job_id}/full.wav")
-        if url:
-            urls["full"] = url
+        key = upload_file(full_path, f"{prefix}/full.wav")
+        if key:
+            urls["full"] = key
 
     chapter_idx = 0
     while True:
         ch_path = os.path.join(output_dir, job_id, f"chapter_{chapter_idx}.wav")
         if not os.path.exists(ch_path):
             break
-        url = upload_file(ch_path, f"jobs/{job_id}/chapter_{chapter_idx}.wav")
-        if url:
-            urls[f"chapter_{chapter_idx}"] = url
+        key = upload_file(ch_path, f"{prefix}/chapter_{chapter_idx}.wav")
+        if key:
+            urls[f"chapter_{chapter_idx}"] = key
         chapter_idx += 1
 
     return urls

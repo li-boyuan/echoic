@@ -122,7 +122,7 @@ async def run_pipeline(
 
         consume_credit(user_id, credit_tier)
 
-        r2_urls = upload_job_audio(job.id, "output")
+        r2_urls = upload_job_audio(job.id, "output", user_id=user_id)
         if "full" in r2_urls:
             job.r2_url = r2_urls["full"]
         for ch in job.chapters:
