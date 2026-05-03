@@ -156,7 +156,7 @@ async def _rate_limit():
         _last_tts_call = time.monotonic()
 
 
-MAX_TTS_CHARS = 5000
+MAX_TTS_CHARS = 2000
 
 
 async def generate_segment_audio(

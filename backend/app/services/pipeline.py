@@ -10,7 +10,7 @@ from app.services.jobstore import save_job
 from app.services.narrator import generate_segment_audio, stitch_audio
 from app.services.notify import send_completion_email, send_failure_email
 from app.services.storage import upload_job_audio
-from app.services.parser import extract_text, split_chapters
+from app.services.parser import chunk_text, extract_text, split_chapters
 from app.services.segmenter import (
     assign_voices,
     extract_characters,
@@ -83,10 +83,15 @@ async def run_pipeline(
         async def direct_chapter(ch):
             async with director_sem:
                 logger.info("Job %s: directing chapter %d '%s' — %d chars", job.id, ch.index, ch.title, len(ch.text))
-                directed = await direct_text(ch.text, language=language)
+                chunks = chunk_text(ch.text, max_chars=3000)
+                directed_parts = []
+                for chunk in chunks:
+                    part = await direct_text(chunk, language=language)
+                    directed_parts.append(part)
+                directed = "\n".join(directed_parts)
                 if ch.title and ch.title not in ("Full Text", "Preamble"):
                     directed = f"Narrator: {ch.title}.\n{directed}"
-                logger.info("Job %s: chapter %d directed — %d chars → %d chars", job.id, ch.index, len(ch.text), len(directed))
+                logger.info("Job %s: chapter %d directed — %d chars, %d chunks → %d chars", job.id, ch.index, len(ch.text), len(chunks), len(directed))
                 job.chapters[ch.index].status = "directed"
                 job.progress = sum(1 for c in job.chapters if c.status != "pending") / (len(chapters) * 2)
                 save_job(job.id, job); jobs[job.id] = job
