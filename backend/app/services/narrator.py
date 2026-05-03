@@ -58,7 +58,7 @@ VOICES = [
     {"id": "Puck", "gender": "Male", "description": "Upbeat", "languages": ALL_LANGS},
     {"id": "Charon", "gender": "Male", "description": "Informative", "languages": ALL_LANGS},
     {"id": "Kore", "gender": "Female", "description": "Firm", "languages": ALL_LANGS},
-    {"id": "Fenrir", "gender": "Male", "description": "Excitable", "languages": ALL_LANGS},
+    {"id": "Fenrir", "gender": "Female", "description": "Excitable", "languages": ALL_LANGS},
     {"id": "Leda", "gender": "Female", "description": "Youthful", "languages": ALL_LANGS},
     {"id": "Orus", "gender": "Male", "description": "Firm", "languages": MAJOR_LANGS},
     {"id": "Aoede", "gender": "Female", "description": "Breezy", "languages": MAJOR_LANGS},
