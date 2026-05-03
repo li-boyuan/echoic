@@ -132,7 +132,10 @@ async def _try_model(model: str, payload: dict) -> dict | None:
 
         if "error" in data:
             code = data["error"]["code"]
-            if code in (429, 500, 503) and attempt < 2:
+            if code == 429:
+                logger.warning("[%s] Rate limited (429), falling back to next model", model)
+                return None
+            if code in (500, 503) and attempt < 2:
                 wait = 10 * (attempt + 1)
                 logger.warning("[%s] Error %d, retrying in %ds (attempt %d)", model, code, wait, attempt + 1)
                 await asyncio.sleep(wait)
