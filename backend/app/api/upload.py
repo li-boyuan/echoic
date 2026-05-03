@@ -14,7 +14,7 @@ from app.config import settings
 from app.models.schemas import JobResponse, JobStatus
 from app.services.credits import can_convert
 from app.services.director import direct_text
-from app.services.narrator import AVAILABLE_VOICES, generate_segment_audio, stitch_audio
+from app.services.narrator import AVAILABLE_VOICES, generate_segment_audio, generate_simple_audio, stitch_audio
 from app.services.parser import extract_text
 from app.services.pipeline import run_pipeline
 from app.services.segmenter import prepare_segment_text, segment_text
@@ -38,8 +38,7 @@ async def demo_voice(req: DemoRequest):
     if len(text) > 500:
         text = text[:500]
 
-    tts_text = f"Narrator: {text}"
-    pcm = await generate_segment_audio(tts_text, req.voice, req.voice)
+    pcm = await generate_simple_audio(text, req.voice)
 
     demo_id = str(uuid.uuid4())
     os.makedirs("output/demos", exist_ok=True)

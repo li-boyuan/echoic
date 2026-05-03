@@ -339,6 +339,36 @@ async def generate_preview(voice_id: str, lang: str, output_dir: str) -> str | N
     return None
 
 
+async def generate_simple_audio(text: str, voice: str) -> bytes:
+    """Single-speaker TTS for short demos — no multi-speaker config."""
+    await _rate_limit()
+    payload = {
+        "contents": [{"parts": [{"text": text}]}],
+        "generationConfig": {
+            "responseModalities": ["AUDIO"],
+            "speechConfig": {
+                "voiceConfig": {
+                    "prebuiltVoiceConfig": {"voiceName": voice}
+                }
+            },
+        },
+    }
+
+    for model in TTS_MODELS:
+        if model in _exhausted_models:
+            continue
+        data = await _try_model(model, payload)
+        if data is None:
+            continue
+        try:
+            audio_b64 = data["candidates"][0]["content"]["parts"][0]["inlineData"]["data"]
+            return base64.b64decode(audio_b64)
+        except (KeyError, IndexError):
+            continue
+
+    raise RuntimeError("All TTS models failed")
+
+
 def _has_mp3_support() -> bool:
     try:
         from pydub import AudioSegment
