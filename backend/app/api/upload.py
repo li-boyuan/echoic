@@ -38,16 +38,8 @@ async def demo_voice(req: DemoRequest):
     if len(text) > 500:
         text = text[:500]
 
-    directed = await direct_text(text)
-    voice_map = {"Character": "Aoede" if req.voice != "Aoede" else "Puck"}
-    segments = segment_text(directed, req.voice, voice_map)
-
-    if not segments:
-        raise HTTPException(500, "Could not generate demo")
-
-    seg = segments[0]
-    seg_text = prepare_segment_text(seg)
-    pcm = await generate_segment_audio(seg_text, seg.narrator_voice, seg.character_voice)
+    tts_text = f"Narrator: {text}"
+    pcm = await generate_segment_audio(tts_text, req.voice, req.voice)
 
     demo_id = str(uuid.uuid4())
     os.makedirs("output/demos", exist_ok=True)
