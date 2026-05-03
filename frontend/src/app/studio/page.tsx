@@ -144,9 +144,10 @@ export default function Studio() {
         } else if (job.status === "failed") {
           setStatus("failed");
           const msg = job.error || "Processing failed";
-          setError(msg);
-          trackError("pipeline", msg);
-          track("error", { context: "pipeline", message: msg.slice(0, 100) });
+          const isCopyright = msg.includes("copyrighted") || msg.includes("copyright");
+          setError(isCopyright ? t("studio.copyrightError") : msg);
+          trackError("pipeline", isCopyright ? "copyright_filter" : msg);
+          track("error", { context: "pipeline", message: isCopyright ? "copyright_filter" : msg.slice(0, 100) });
         }
       } catch {}
     }, 2000);

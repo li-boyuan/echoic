@@ -12,6 +12,9 @@ from app.config import settings
 
 logger = logging.getLogger(__name__)
 
+class CopyrightFilterError(RuntimeError):
+    pass
+
 _tts_lock = asyncio.Lock()
 _last_tts_call = 0.0
 TTS_MIN_INTERVAL = 7.0  # seconds between TTS calls (safe for 10 RPM)
@@ -213,8 +216,13 @@ async def generate_segment_audio(
         candidate = data.get("candidates", [{}])[0]
         finish_reason = candidate.get("finishReason", "")
 
-        if finish_reason == "OTHER" or "copyrighted" in candidate.get("finishMessage", ""):
-            logger.warning("TTS content filtered (copyright): %s — inserting silence", text[:80])
+        finish_message = candidate.get("finishMessage", "")
+        if "copyrighted" in finish_message:
+            logger.warning("TTS copyright filter triggered: %s", text[:80])
+            raise CopyrightFilterError("This content was flagged as potentially copyrighted material. Please ensure you have the rights to the content you upload. Only original works can be converted.")
+
+        if finish_reason == "OTHER":
+            logger.warning("TTS content filtered (OTHER): %s — inserting silence", text[:80])
             return _silence(1.0)
 
         try:
