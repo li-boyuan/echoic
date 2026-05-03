@@ -95,9 +95,11 @@ Upload (.txt/.pdf/.epub/.docx/.mobi/.azw3)
 - **Full R2 persistence** — jobs.json, credits.json, and audio files all synced to Cloudflare R2. Downloaded on startup, uploaded on every save. Survives all Render deploys.
 - **Cloudflare R2 storage** — audio files organized by user (`users/{user_id}/{job_id}/`)
 - **Access control** — user ownership check on all audio endpoints, presigned URLs (1hr expiry)
-- **"My Audiobooks" tab** — dedicated library with per-chapter downloads
+- **"My Audiobooks" tab** — dedicated library with per-chapter downloads and delete
+- **Delete audiobook** — removes job data + all audio files from R2 with confirmation dialog
 - **Email notifications** via Resend — completion email with "Listen & Download" link, failure email with error details
 - **Resume from email** — click link in email to go directly to your audiobook
+- **Job resume on refresh** — active job ID persisted to localStorage, immediate status fetch on page load
 
 ### Privacy & Compliance
 - **Cookie consent banner** — gates Meta Pixel loading (GDPR/CCPA compliant)
