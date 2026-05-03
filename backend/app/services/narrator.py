@@ -153,10 +153,23 @@ async def _rate_limit():
         _last_tts_call = time.monotonic()
 
 
+MAX_TTS_CHARS = 5000
+
+
 async def generate_segment_audio(
     text: str, narrator_voice: str, character_voice: str
 ) -> bytes:
     """Generate audio with model fallback chain."""
+    if len(text) > MAX_TTS_CHARS:
+        logger.warning("TTS input too long (%d chars), splitting", len(text))
+        mid = text[:MAX_TTS_CHARS].rfind("\n")
+        if mid < 100:
+            mid = MAX_TTS_CHARS
+        part1 = await generate_segment_audio(text[:mid], narrator_voice, character_voice)
+        part2 = await generate_segment_audio(text[mid:], narrator_voice, character_voice)
+        return part1 + part2
+
+    logger.info("TTS segment: %d chars, starts with: %s", len(text), text[:80].replace("\n", " "))
     await _rate_limit()
     payload = {
         "contents": [{"parts": [{"text": text}]}],
