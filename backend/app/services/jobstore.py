@@ -61,3 +61,10 @@ def save_job(job_id: str, job: JobResponse):
 
 def get_user_jobs(user_id: str) -> list[JobResponse]:
     return [j for j in _jobs.values() if j.user_id == user_id and j.status in (JobStatus.COMPLETED, JobStatus.FAILED)]
+
+
+def delete_job(job_id: str):
+    with _lock:
+        if job_id in _jobs:
+            del _jobs[job_id]
+            _save()

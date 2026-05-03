@@ -95,6 +95,21 @@ def download_data(key: str, local_path: str) -> bool:
         return False
 
 
+def delete_prefix(prefix: str) -> bool:
+    if not is_configured():
+        return False
+    try:
+        client = _get_client()
+        resp = client.list_objects_v2(Bucket=settings.r2_bucket_name, Prefix=prefix)
+        for obj in resp.get("Contents", []):
+            client.delete_object(Bucket=settings.r2_bucket_name, Key=obj["Key"])
+            logger.info("Deleted %s from R2", obj["Key"])
+        return True
+    except Exception as e:
+        logger.error("R2 delete failed for %s: %s", prefix, e)
+        return False
+
+
 def upload_job_audio(job_id: str, output_dir: str, user_id: str = "anonymous") -> dict[str, str]:
     urls = {}
     prefix = f"users/{user_id}/{job_id}"

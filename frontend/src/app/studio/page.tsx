@@ -376,15 +376,27 @@ export default function Studio() {
                         </span>
                       </p>
                     </div>
-                    {job.status === "completed" && job.audio_url && (
-                      <a
-                        href={audioUrl2(job.audio_url!, "mp3")}
-                        download
-                        className="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-500 rounded-lg transition-colors"
+                    <div className="flex items-center gap-2">
+                      {job.status === "completed" && job.audio_url && (
+                        <a
+                          href={audioUrl2(job.audio_url!, "mp3")}
+                          download
+                          className="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-500 rounded-lg transition-colors"
+                        >
+                          {t("studio.download")}
+                        </a>
+                      )}
+                      <button
+                        onClick={async () => {
+                          if (!confirm(t("studio.deleteConfirm"))) return;
+                          await fetch(`/api/jobs/${job.id}?user_id=${userId}`, { method: "DELETE" });
+                          setHistory((h) => h.filter((j) => j.id !== job.id));
+                        }}
+                        className="px-3 py-2 text-sm text-zinc-500 hover:text-red-400 transition-colors"
                       >
-                        {t("studio.download")}
-                      </a>
-                    )}
+                        {t("studio.delete")}
+                      </button>
+                    </div>
                   </div>
                   {job.status === "completed" && job.chapters && job.chapters.length > 1 && (
                     <div className="space-y-1">

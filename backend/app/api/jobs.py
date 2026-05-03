@@ -5,9 +5,9 @@ from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import FileResponse, RedirectResponse
 
 from app.models.schemas import JobResponse, JobStatus, VoiceOption
-from app.services.jobstore import get_jobs, get_user_jobs, save_job
+from app.services.jobstore import delete_job, get_jobs, get_user_jobs, save_job
 from app.services.narrator import AVAILABLE_VOICES, LANGUAGES, generate_preview, get_voices_for_language
-from app.services.storage import get_presigned_url
+from app.services.storage import delete_prefix, get_presigned_url
 
 router = APIRouter()
 
@@ -54,6 +54,22 @@ def _find_source_wav(base_dir: str, name: str) -> Path | None:
 @router.get("/user/{user_id}/jobs")
 async def list_user_jobs(user_id: str):
     return get_user_jobs(user_id)
+
+
+@router.delete("/jobs/{job_id}")
+async def remove_job(job_id: str, user_id: str = Query(default="")):
+    job = jobs.get(job_id)
+    if not job:
+        raise HTTPException(404, "Job not found")
+    if job.user_id != "anonymous" and job.user_id != user_id:
+        raise HTTPException(403, "Access denied")
+
+    delete_prefix(f"users/{job.user_id}/{job_id}/")
+    delete_job(job_id)
+    if job_id in jobs:
+        del jobs[job_id]
+
+    return {"status": "deleted"}
 
 
 @router.get("/jobs/{job_id}", response_model=JobResponse)
