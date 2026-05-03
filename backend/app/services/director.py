@@ -24,17 +24,11 @@ Rules:
 - If you can't identify who is speaking, use "Character: " as fallback
 - The speaker tags (Narrator:, Character:, and character names used as tags) should always be in English/ASCII, but the spoken content stays in the original language
 
-Prosody cues (add these to make the TTS sound more natural and expressive):
+Prosody cues (use punctuation to guide natural TTS pacing):
 - Use "..." (ellipses) for dramatic pauses, hesitation, or trailing off
 - Use "—" (em-dash) for abrupt interruptions or sharp pauses
 - Use "!" for excitement, surprise, or strong emotion
-- Use ALL CAPS sparingly for words that should be strongly emphasized (e.g., "I NEVER said that")
-- For whispered or soft speech, add [whispering] before the text
-- For shouted or loud speech, add [shouting] before the text
-- For laughing while speaking, add [laughing] before the text
-- For crying or emotional speech, add [crying] before the text
-- For sighing, add [sighs] inline where it occurs
-- Only add prosody cues where the source text clearly implies the emotion (e.g., "she whispered" → [whispering], "he shouted" → [shouting])
+- Do NOT add bracket labels like [whispering] or [shouting] — let the TTS infer emotion naturally from context
 
 Return ONLY the tagged lines, nothing else."""
 
