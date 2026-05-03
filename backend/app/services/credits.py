@@ -26,12 +26,20 @@ _users: dict[str, UserCredits] = {}
 _lock = threading.Lock()
 
 
+R2_CREDITS_KEY = "data/credits.json"
+
+
 def _load():
     global _users
+    if not os.path.exists(CREDITS_FILE):
+        from app.services.storage import download_data
+        download_data(R2_CREDITS_KEY, CREDITS_FILE)
+
     if os.path.exists(CREDITS_FILE):
         with open(CREDITS_FILE, "r") as f:
             data = json.load(f)
         _users = {uid: UserCredits(**rec) for uid, rec in data.items()}
+        logger.info("Loaded %d user credits from storage", len(_users))
 
 
 def _save():
@@ -40,6 +48,9 @@ def _save():
     with open(tmp, "w") as f:
         json.dump({uid: asdict(u) for uid, u in _users.items()}, f)
     os.replace(tmp, CREDITS_FILE)
+
+    from app.services.storage import upload_data
+    upload_data(CREDITS_FILE, R2_CREDITS_KEY)
 
 
 _load()

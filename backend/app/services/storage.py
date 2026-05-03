@@ -63,6 +63,38 @@ def get_presigned_url(key: str, expires_in: int = 3600) -> str | None:
         return None
 
 
+def upload_data(local_path: str, key: str) -> bool:
+    if not is_configured():
+        return False
+    try:
+        client = _get_client()
+        client.upload_file(
+            local_path,
+            settings.r2_bucket_name,
+            key,
+            ExtraArgs={"ContentType": "application/json"},
+        )
+        logger.info("Synced %s to R2", key)
+        return True
+    except Exception as e:
+        logger.error("R2 sync failed for %s: %s", key, e)
+        return False
+
+
+def download_data(key: str, local_path: str) -> bool:
+    if not is_configured():
+        return False
+    try:
+        client = _get_client()
+        os.makedirs(os.path.dirname(local_path) or ".", exist_ok=True)
+        client.download_file(settings.r2_bucket_name, key, local_path)
+        logger.info("Downloaded %s from R2", key)
+        return True
+    except Exception as e:
+        logger.info("R2 download skipped for %s: %s", key, e)
+        return False
+
+
 def upload_job_audio(job_id: str, output_dir: str, user_id: str = "anonymous") -> dict[str, str]:
     urls = {}
     prefix = f"users/{user_id}/{job_id}"
