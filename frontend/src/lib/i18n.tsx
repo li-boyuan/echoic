@@ -19,7 +19,7 @@ const messages: Record<Locale, Record<string, string>> = {
 
     "demo.title": "Hear it in action",
     "demo.desc": "AI narrator with automatic character voice casting — from text to audiobook in minutes.",
-    "demo.text": "\"The old man sat by the fire, his eyes fixed on the flames. A knock echoed through the hall. 'Who goes there?' he called out, his voice firm despite his age. 'It is I, your granddaughter. I have traveled far to find you.' The door creaked open, and a young woman stepped inside, brushing snow from her cloak.\"",
+    "demo.text": "\"The old man sat by the fire, his eyes fixed on the flickering flames. A sharp knock echoed through the empty hall. He rose slowly, gripping his cane. 'Who goes there?' he called out, his voice firm despite his age. The door creaked open, letting in a gust of cold wind. A young woman stepped inside, brushing snow from her cloak. 'It is I, grandfather. Your granddaughter. I have traveled far to find you.' Her voice was soft but steady. The old man stared at her for a long moment, then a slow smile spread across his weathered face. 'Come in, child. Come in. The fire is warm, and I have waited a long time for this day.' He opened his arms, and she ran to him.\"",
 
     "features.directed.title": "AI-Directed",
     "features.directed.desc": "An AI reads your text first and adds emotion, pacing, and dramatic beats — so the narration sounds natural, not robotic.",
@@ -137,7 +137,7 @@ const messages: Record<Locale, Record<string, string>> = {
 
     "demo.title": "Escucha en acción",
     "demo.desc": "Narrador IA con casting automático de voces de personajes — de texto a audiolibro en minutos.",
-    "demo.text": "\"El viejo se sentó junto al fuego, con los ojos fijos en las llamas. Un golpe resonó en el salón. '¿Quién va?' gritó, con voz firme a pesar de su edad. 'Soy yo, tu nieta. He viajado lejos para encontrarte.' La puerta se abrió con un chirrido y una joven entró, sacudiéndose la nieve de la capa.\"",
+    "demo.text": "\"El viejo se sentó junto al fuego, con los ojos fijos en las llamas parpadeantes. Un golpe resonó en el salón vacío. Se levantó lentamente, agarrando su bastón. '¿Quién va?' gritó, con voz firme a pesar de su edad. La puerta se abrió con un chirrido, dejando entrar una ráfaga de viento frío. Una joven entró, sacudiéndose la nieve de la capa. 'Soy yo, abuelo. Tu nieta. He viajado lejos para encontrarte.' Su voz era suave pero firme. El viejo la miró un largo momento, y una lenta sonrisa se extendió por su rostro curtido. 'Entra, niña. Entra. El fuego está caliente, y he esperado mucho tiempo este día.' Abrió los brazos y ella corrió hacia él.\"",
 
     "features.directed.title": "Dirigido por IA",
     "features.directed.desc": "Una IA lee tu texto primero y añade emoción, ritmo y momentos dramáticos — para que la narración suene natural, no robótica.",
