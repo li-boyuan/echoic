@@ -1,9 +1,94 @@
 "use client";
 
+import { useState, useRef } from "react";
 import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import Link from "next/link";
 import LocaleSwitcher from "@/components/LocaleSwitcher";
 import { useI18n } from "@/lib/i18n";
+
+const DEMO_VOICES = [
+  { id: "Kore", label: "Kore (F)" },
+  { id: "Charon", label: "Charon (M)" },
+  { id: "Leda", label: "Leda (F)" },
+  { id: "Puck", label: "Puck (M)" },
+];
+
+function TryItNow() {
+  const { t } = useI18n();
+  const [text, setText] = useState("");
+  const [voice, setVoice] = useState("Kore");
+  const [loading, setLoading] = useState(false);
+  const [audioUrl, setAudioUrl] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  const generate = async () => {
+    if (text.trim().length < 10) return;
+    setLoading(true);
+    setError(null);
+    if (audioUrl) URL.revokeObjectURL(audioUrl);
+    setAudioUrl(null);
+
+    try {
+      const res = await fetch("/api/demo", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: text.trim(), voice }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.detail || "Failed to generate");
+      }
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      setAudioUrl(url);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="border-t border-zinc-800 py-16 px-4">
+      <div className="max-w-xl mx-auto space-y-4">
+        <h2 className="text-xl font-semibold text-zinc-200 text-center">{t("tryit.title")}</h2>
+        <p className="text-sm text-zinc-500 text-center">{t("tryit.desc")}</p>
+        <div className="space-y-3">
+          <textarea
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            placeholder={t("tryit.placeholder")}
+            className="w-full h-28 bg-zinc-900 border-2 border-zinc-700 rounded-xl p-4 text-sm text-zinc-200 placeholder-zinc-600 resize-none focus:border-blue-500 focus:outline-none"
+            maxLength={500}
+          />
+          <div className="flex items-center gap-3">
+            <select
+              value={voice}
+              onChange={(e) => setVoice(e.target.value)}
+              className="bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-200 cursor-pointer"
+            >
+              {DEMO_VOICES.map((v) => (
+                <option key={v.id} value={v.id}>{v.label}</option>
+              ))}
+            </select>
+            <button
+              onClick={generate}
+              disabled={loading || text.trim().length < 10}
+              className="flex-1 py-2.5 bg-blue-600 hover:bg-blue-500 rounded-lg font-medium text-sm transition-colors disabled:opacity-50"
+            >
+              {loading ? t("tryit.generating") : t("tryit.listen")}
+            </button>
+          </div>
+          {error && <p className="text-red-400 text-xs text-center">{error}</p>}
+          {audioUrl && (
+            <audio ref={audioRef} controls className="w-full" src={audioUrl} autoPlay />
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function Home() {
   const { t } = useI18n();
@@ -80,6 +165,9 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      {/* Try It Now */}
+      <TryItNow />
 
       {/* Features */}
       <div className="border-t border-zinc-800 py-16 px-4">

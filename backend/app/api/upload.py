@@ -6,6 +6,7 @@ import wave
 import aiofiles
 from fastapi import APIRouter, Form, HTTPException, UploadFile
 from fastapi.responses import FileResponse
+from pydantic import BaseModel
 
 from app.api.jobs import jobs
 from app.services.jobstore import save_job
@@ -22,6 +23,38 @@ router = APIRouter()
 
 ALLOWED_EXTENSIONS = {".txt", ".pdf", ".epub", ".docx", ".mobi", ".azw", ".azw3"}
 VALID_VOICE_IDS = {v["id"] for v in AVAILABLE_VOICES}
+
+
+class DemoRequest(BaseModel):
+    text: str
+    voice: str = "Kore"
+
+
+@router.post("/demo")
+async def demo_voice(req: DemoRequest):
+    text = req.text.strip()
+    if len(text) < 10:
+        raise HTTPException(400, "Text too short — enter at least a sentence")
+    if len(text) > 500:
+        text = text[:500]
+
+    directed = await direct_text(text)
+    voice_map = {"Character": "Aoede" if req.voice != "Aoede" else "Puck"}
+    segments = segment_text(directed, req.voice, voice_map)
+
+    if not segments:
+        raise HTTPException(500, "Could not generate demo")
+
+    seg = segments[0]
+    seg_text = prepare_segment_text(seg)
+    pcm = await generate_segment_audio(seg_text, seg.narrator_voice, seg.character_voice)
+
+    demo_id = str(uuid.uuid4())
+    os.makedirs("output/demos", exist_ok=True)
+    out_path = f"output/demos/{demo_id}.wav"
+    stitch_audio([pcm], out_path)
+
+    return FileResponse(out_path, media_type="audio/wav", filename="demo.wav")
 
 
 @router.post("/preview")

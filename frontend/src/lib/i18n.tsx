@@ -21,6 +21,12 @@ const messages: Record<Locale, Record<string, string>> = {
     "demo.desc": "AI narrator with automatic character voice casting — from text to audiobook in minutes.",
     "demo.text": "\"The old man sat by the fire, his eyes fixed on the flickering flames. A sharp knock echoed through the empty hall. He rose slowly, gripping his cane. 'Who goes there?' he called out, his voice firm despite his age. 'I have not survived eighty winters to be frightened by shadows. Show yourself!' The door creaked open, letting in a gust of cold wind. A young woman stepped inside, brushing snow from her cloak. She lowered her hood, revealing bright eyes and a warm smile. 'It is I, grandfather. Your granddaughter. I have traveled far to find you. The fire is just as warm as I remember.' The old man stared at her for a long moment... then opened his arms, and she ran to him.\"",
 
+    "tryit.title": "Try it with your own text",
+    "tryit.desc": "Paste a paragraph from your book and hear it instantly — no signup required.",
+    "tryit.placeholder": "Paste a paragraph here... (e.g., the opening of your book)",
+    "tryit.listen": "Listen",
+    "tryit.generating": "Generating...",
+
     "features.directed.title": "AI-Directed",
     "features.directed.desc": "An AI reads your text first and adds emotion, pacing, and dramatic beats — so the narration sounds natural, not robotic.",
     "features.casting.title": "Auto Character Casting",
@@ -142,6 +148,12 @@ const messages: Record<Locale, Record<string, string>> = {
     "demo.title": "Escucha en acción",
     "demo.desc": "Narrador IA con casting automático de voces de personajes — de texto a audiolibro en minutos.",
     "demo.text": "\"El viejo se sentó junto al fuego, con los ojos fijos en las llamas parpadeantes. Un golpe resonó en el salón vacío. Se levantó lentamente, agarrando su bastón. '¿Quién va?' gritó, con voz firme a pesar de su edad. 'No he sobrevivido ochenta inviernos para asustarme con sombras. ¡Muéstrate!' La puerta se abrió con un chirrido, dejando entrar una ráfaga de viento frío. Una joven entró, sacudiéndose la nieve de la capa. Bajó la capucha, revelando ojos brillantes y una cálida sonrisa. 'Soy yo, abuelo. Tu nieta. He viajado lejos para encontrarte. El fuego es tan cálido como lo recuerdo.' El viejo la miró un largo momento... luego abrió los brazos y ella corrió hacia él.\"",
+
+    "tryit.title": "Pruébalo con tu propio texto",
+    "tryit.desc": "Pega un párrafo de tu libro y escúchalo al instante — sin registro.",
+    "tryit.placeholder": "Pega un párrafo aquí... (por ejemplo, el inicio de tu libro)",
+    "tryit.listen": "Escuchar",
+    "tryit.generating": "Generando...",
 
     "features.directed.title": "Dirigido por IA",
     "features.directed.desc": "Una IA lee tu texto primero y añade emoción, ritmo y momentos dramáticos — para que la narración suene natural, no robótica.",
