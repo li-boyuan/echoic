@@ -96,9 +96,33 @@ export default function Studio() {
     const params = new URLSearchParams(window.location.search);
     const resumeJob = params.get("job") || localStorage.getItem("echoic_active_job");
     if (resumeJob) {
-      setJobId(resumeJob);
-      setStatus("pending");
       window.history.replaceState({}, "", "/studio");
+      fetch(`/api/jobs/${resumeJob}`)
+        .then((r) => r.ok ? r.json() : null)
+        .then((job) => {
+          if (!job) {
+            localStorage.removeItem("echoic_active_job");
+            return;
+          }
+          setJobId(resumeJob);
+          if (job.status === "completed") {
+            setStatus("completed");
+            setAudioUrl(job.audio_url);
+            if (job.cast) setCast(job.cast);
+            if (job.chapters) setChapters(job.chapters);
+            localStorage.removeItem("echoic_active_job");
+          } else if (job.status === "failed") {
+            setStatus("failed");
+            setError(job.error || "Processing failed");
+            localStorage.removeItem("echoic_active_job");
+          } else {
+            setStatus(job.status as JobStatus);
+            setProgress(job.progress);
+            if (job.cast) setCast(job.cast);
+            if (job.chapters) setChapters(job.chapters);
+          }
+        })
+        .catch(() => localStorage.removeItem("echoic_active_job"));
     }
   }, []);
 
