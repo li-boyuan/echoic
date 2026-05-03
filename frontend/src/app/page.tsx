@@ -142,12 +142,22 @@ export default function Home() {
           </div>
 
           <div className="pt-4">
-            <Link
-              href="/studio"
-              className="inline-block px-8 py-3.5 bg-blue-600 hover:bg-blue-500 rounded-xl font-medium text-lg transition-colors"
-            >
-              {t("hero.cta")}
-            </Link>
+            <SignedOut>
+              <Link
+                href="/studio"
+                className="inline-block px-8 py-3.5 bg-blue-600 hover:bg-blue-500 rounded-xl font-medium text-lg transition-colors"
+              >
+                {t("hero.cta")}
+              </Link>
+            </SignedOut>
+            <SignedIn>
+              <Link
+                href="/studio"
+                className="inline-block px-8 py-3.5 bg-blue-600 hover:bg-blue-500 rounded-xl font-medium text-lg transition-colors"
+              >
+                {t("hero.ctaSignedIn")}
+              </Link>
+            </SignedIn>
           </div>
         </div>
       </div>

@@ -16,6 +16,7 @@ const messages: Record<Locale, Record<string, string>> = {
     "hero.subtitle": "Turn any manuscript into a professional audiobook in minutes",
     "hero.description": "AI reads your text, identifies characters, casts voices to match their personality, then narrates it with emotion and pacing.",
     "hero.cta": "Try Free — No Sign-up Required",
+    "hero.ctaSignedIn": "Open Studio",
 
     "demo.title": "Hear it in action",
     "demo.desc": "AI narrator with automatic character voice casting — from text to audiobook in minutes.",
@@ -144,6 +145,7 @@ const messages: Record<Locale, Record<string, string>> = {
     "hero.subtitle": "Convierte cualquier manuscrito en un audiolibro profesional en minutos",
     "hero.description": "La IA lee tu texto, identifica personajes, asigna voces que coincidan con su personalidad y lo narra con emoción y ritmo.",
     "hero.cta": "Prueba Gratis — Sin Registro",
+    "hero.ctaSignedIn": "Abrir Estudio",
 
     "demo.title": "Escucha en acción",
     "demo.desc": "Narrador IA con casting automático de voces de personajes — de texto a audiolibro en minutos.",
