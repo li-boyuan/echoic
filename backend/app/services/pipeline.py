@@ -84,8 +84,8 @@ async def run_pipeline(
             async with director_sem:
                 logger.info("Job %s: directing chapter %d '%s' — %d chars", job.id, ch.index, ch.title, len(ch.text))
                 directed = await direct_text(ch.text, language=language)
-                if ch.title and ch.title != "Full Text":
-                    directed = f"Narrator: {ch.title}\n{directed}"
+                if ch.title and ch.title not in ("Full Text", "Preamble"):
+                    directed = f"Narrator: {ch.title}.\n{directed}"
                 logger.info("Job %s: chapter %d directed — %d chars → %d chars", job.id, ch.index, len(ch.text), len(directed))
                 job.chapters[ch.index].status = "directed"
                 job.progress = sum(1 for c in job.chapters if c.status != "pending") / (len(chapters) * 2)

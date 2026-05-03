@@ -227,7 +227,7 @@ def split_chapters(text: str) -> list[Chapter]:
         title = match.group(0).strip().rstrip(":—-. ")
         start = match.start()
         end = matches[i + 1].start() if i + 1 < len(matches) else len(text)
-        chapter_text = text[start:end].strip()
+        chapter_text = text[match.end():end].strip()
         if chapter_text:
             chapters.append(Chapter(title=title, text=chapter_text, index=i))
 
