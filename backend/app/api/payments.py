@@ -67,6 +67,11 @@ async def create_checkout(req: CheckoutRequest):
     product = PRODUCTS[req.product]
 
     if req.product == "pro":
+        coupon = stripe.Coupon.create(
+            percent_off=50,
+            duration="once",
+            name="50% Off First Month",
+        )
         session = stripe.checkout.Session.create(
             mode="subscription",
             line_items=[{
@@ -78,6 +83,7 @@ async def create_checkout(req: CheckoutRequest):
                 },
                 "quantity": 1,
             }],
+            discounts=[{"coupon": coupon.id}],
             metadata={"user_id": req.user_id, "product": req.product},
             success_url=f"{settings.frontend_url}/studio?payment=success",
             cancel_url=f"{settings.frontend_url}/studio?payment=cancelled",

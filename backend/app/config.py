@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     stripe_secret_key: str = ""
     stripe_webhook_secret: str = ""
     frontend_url: str = "http://localhost:3001"
-    free_word_limit: int = 5000
+    free_word_limit: int = 500
     admin_user_ids: str = ""
     resend_api_key: str = ""
 

@@ -12,7 +12,7 @@ const PLANS = [
     price: "$0",
     period: "",
     description: "Try it out",
-    features: ["1 free conversion", "Up to 5,000 words", "All voices included", "Auto character casting", "Instant processing only"],
+    features: ["1 free conversion", "Up to 500 words", "All voices included", "Auto character casting"],
     cta: "Get Started",
   },
   {
@@ -28,11 +28,13 @@ const PLANS = [
   {
     id: "pro",
     name: "Pro",
-    price: "$29.99",
-    period: "/mo",
+    price: "$14.99",
+    originalPrice: "$29.99",
+    period: "/first month",
     description: "For power users",
-    features: ["Unlimited conversions", "Unlimited words", "All voices included", "Auto character casting", "Chapter splitting", "Email notification when done", "Conversion history", "Priority processing"],
-    cta: "Subscribe",
+    features: ["Unlimited conversions", "Unlimited words", "Most powerful AI model", "Auto character casting", "Chapter splitting", "Email notification when done", "Conversion history", "Priority processing"],
+    cta: "Subscribe — 50% Off",
+    promo: true,
   },
 ];
 
@@ -92,11 +94,20 @@ export default function Pricing() {
             {PLANS.map((plan) => (
               <div
                 key={plan.id}
-                className="bg-zinc-900 border-2 border-zinc-800 rounded-2xl p-6 space-y-4 relative"
+                className={`bg-zinc-900 border-2 rounded-2xl p-6 space-y-4 relative ${
+                  "promo" in plan && plan.promo
+                    ? "border-violet-500"
+                    : "border-zinc-800"
+                }`}
               >
                 {"popular" in plan && plan.popular && (
                   <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 bg-blue-600 text-white text-xs font-medium rounded-full">
                     Most Popular
+                  </span>
+                )}
+                {"promo" in plan && plan.promo && (
+                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 bg-violet-600 text-white text-xs font-medium rounded-full">
+                    50% Off First Month
                   </span>
                 )}
 
@@ -105,8 +116,11 @@ export default function Pricing() {
                   <p className="text-sm text-zinc-500">{plan.description}</p>
                 </div>
 
-                <div className="flex items-baseline gap-1">
+                <div className="flex items-baseline gap-2">
                   <span className="text-3xl font-bold text-zinc-100">{plan.price}</span>
+                  {"originalPrice" in plan && plan.originalPrice && (
+                    <span className="text-lg text-zinc-600 line-through">{plan.originalPrice}</span>
+                  )}
                   {plan.period && (
                     <span className="text-zinc-500 text-sm">{plan.period}</span>
                   )}
