@@ -94,7 +94,7 @@ export default function Studio() {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const resumeJob = params.get("job");
+    const resumeJob = params.get("job") || localStorage.getItem("echoic_active_job");
     if (resumeJob) {
       setJobId(resumeJob);
       setStatus("pending");
@@ -122,6 +122,7 @@ export default function Studio() {
         if (res.status === 404) {
           setStatus("failed");
           setError("Job not found — the server may have restarted. Please try again.");
+          localStorage.removeItem("echoic_active_job");
           trackError("job_poll", "job_not_found_404");
           track("error", { context: "job_poll", message: "job_not_found_404" });
           return;
@@ -139,6 +140,7 @@ export default function Studio() {
           setAudioUrl(job.audio_url);
           if (job.cast) setCast(job.cast);
           if (job.chapters) setChapters(job.chapters);
+          localStorage.removeItem("echoic_active_job");
           trackConversion(file?.name || "unknown");
           track("conversion_completed");
         } else if (job.status === "failed") {
@@ -146,6 +148,7 @@ export default function Studio() {
           const msg = job.error || "Processing failed";
           const isCopyright = msg.includes("copyrighted") || msg.includes("copyright");
           setError(isCopyright ? t("studio.copyrightError") : msg);
+          localStorage.removeItem("echoic_active_job");
           trackError("pipeline", isCopyright ? "copyright_filter" : msg);
           track("error", { context: "pipeline", message: isCopyright ? "copyright_filter" : msg.slice(0, 100) });
         }
@@ -199,6 +202,7 @@ export default function Studio() {
       const job = await res.json();
       setJobId(job.id);
       setStatus("pending");
+      localStorage.setItem("echoic_active_job", job.id);
       trackUpload(uploadFile.name);
       track("generate_clicked", { voice: selectedVoice });
     } catch (err) {
