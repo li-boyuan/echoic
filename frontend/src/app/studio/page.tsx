@@ -21,7 +21,9 @@ export default function Studio() {
   const { t } = useI18n();
   const [credits, setCredits] = useState<Credits | null>(null);
   const [status, setStatus] = useState<JobStatus>("idle");
+  const [inputMode, setInputMode] = useState<"upload" | "text">("upload");
   const [file, setFile] = useState<File | null>(null);
+  const [textInput, setTextInput] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [jobId, setJobId] = useState<string | null>(null);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
@@ -168,13 +170,16 @@ export default function Studio() {
   }, []);
 
   const handleUpload = async () => {
-    if (!file) return;
+    const uploadFile = inputMode === "text"
+      ? new File([textInput], "pasted-text.txt", { type: "text/plain" })
+      : file;
+    if (!uploadFile) return;
     setStatus("uploading");
     setError(null);
 
     try {
       const formData = new FormData();
-      formData.append("file", file);
+      formData.append("file", uploadFile);
       formData.append("voice", selectedVoice);
       formData.append("user_id", userId);
       formData.append("language", selectedLanguage);
@@ -191,7 +196,7 @@ export default function Studio() {
       const job = await res.json();
       setJobId(job.id);
       setStatus("pending");
-      trackUpload(file.name);
+      trackUpload(uploadFile.name);
       track("generate_clicked", { voice: selectedVoice });
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Upload failed";
@@ -203,12 +208,15 @@ export default function Studio() {
   };
 
   const handlePreview = async () => {
-    if (!file) return;
+    const previewFile = inputMode === "text"
+      ? new File([textInput], "pasted-text.txt", { type: "text/plain" })
+      : file;
+    if (!previewFile) return;
     setBookPreview("loading");
     if (bookPreviewUrl) { URL.revokeObjectURL(bookPreviewUrl); setBookPreviewUrl(null); }
     try {
       const formData = new FormData();
-      formData.append("file", file);
+      formData.append("file", previewFile);
       formData.append("voice", selectedVoice);
       formData.append("language", selectedLanguage);
       const res = await fetch("/api/preview", { method: "POST", body: formData });
@@ -378,7 +386,72 @@ export default function Studio() {
                 )}
               </div>
 
-              {/* Upload Zone */}
+              {/* Input Mode Toggle */}
+              <div className="flex gap-2 justify-center">
+                <button
+                  onClick={() => setInputMode("upload")}
+                  className={`px-4 py-2 text-sm rounded-lg transition-colors ${
+                    inputMode === "upload"
+                      ? "bg-blue-600 text-white"
+                      : "bg-zinc-800 text-zinc-400 hover:bg-zinc-700"
+                  }`}
+                >
+                  {t("studio.uploadFile")}
+                </button>
+                <button
+                  onClick={() => setInputMode("text")}
+                  className={`px-4 py-2 text-sm rounded-lg transition-colors ${
+                    inputMode === "text"
+                      ? "bg-blue-600 text-white"
+                      : "bg-zinc-800 text-zinc-400 hover:bg-zinc-700"
+                  }`}
+                >
+                  {t("studio.pasteText")}
+                </button>
+              </div>
+
+              {inputMode === "text" ? (
+                <div className="space-y-3">
+                  <textarea
+                    value={textInput}
+                    onChange={(e) => { setTextInput(e.target.value); setBookPreview("idle"); }}
+                    placeholder={t("studio.textPlaceholder")}
+                    className="w-full h-48 bg-zinc-900 border-2 border-zinc-700 rounded-2xl p-4 text-sm text-zinc-200 placeholder-zinc-600 resize-y focus:border-blue-500 focus:outline-none"
+                  />
+                  {textInput.length > 0 && (
+                    <p className="text-xs text-zinc-500 text-center">
+                      {textInput.split(/\s+/).filter(Boolean).length} {t("studio.words")}
+                    </p>
+                  )}
+                  {error && status === "idle" && (
+                    <p className="text-red-400 text-sm text-center">{error}</p>
+                  )}
+                  {bookPreview === "ready" && bookPreviewUrl && (
+                    <div>
+                      <p className="text-xs text-zinc-500 mb-1">{t("studio.previewLabel")}</p>
+                      <audio controls className="w-full" src={bookPreviewUrl} />
+                    </div>
+                  )}
+                  {textInput.length > 20 && (
+                    <div className="flex gap-3 justify-center">
+                      <button
+                        onClick={handlePreview}
+                        disabled={bookPreview === "loading"}
+                        className="px-6 py-3 bg-zinc-800 hover:bg-zinc-700 rounded-xl font-medium transition-colors disabled:opacity-50"
+                      >
+                        {bookPreview === "loading" ? t("studio.generatingPreview") : t("studio.previewVoice")}
+                      </button>
+                      <button
+                        onClick={handleUpload}
+                        className="px-8 py-3 bg-blue-600 hover:bg-blue-500 rounded-xl font-medium transition-colors text-lg"
+                      >
+                        {t("studio.generate")}
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ) : (
+              /* Upload Zone */
               <div
                 className={`border-2 border-dashed rounded-2xl p-12 text-center transition-colors cursor-pointer ${
                   dragOver
@@ -419,7 +492,7 @@ export default function Studio() {
                     )}
                     {bookPreview === "ready" && bookPreviewUrl && (
                       <div className="pt-2" onClick={(e) => e.stopPropagation()}>
-                        <p className="text-xs text-zinc-500 mb-1">Preview (first 30 seconds)</p>
+                        <p className="text-xs text-zinc-500 mb-1">{t("studio.previewLabel")}</p>
                         <audio controls className="mx-auto" src={bookPreviewUrl} />
                       </div>
                     )}
@@ -455,6 +528,7 @@ export default function Studio() {
                   </div>
                 )}
               </div>
+              )}
             </div>
           )}
 

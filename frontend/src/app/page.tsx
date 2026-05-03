@@ -67,6 +67,20 @@ export default function Home() {
         </div>
       </div>
 
+      {/* Audio Demo */}
+      <div className="border-t border-zinc-800 py-16 px-4">
+        <div className="max-w-xl mx-auto text-center space-y-4">
+          <h2 className="text-xl font-semibold text-zinc-200">{t("demo.title")}</h2>
+          <p className="text-sm text-zinc-500">{t("demo.desc")}</p>
+          <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 space-y-3">
+            <p className="text-xs text-zinc-600 text-left leading-relaxed italic">
+              {t("demo.text")}
+            </p>
+            <audio controls className="w-full" src="/demo.wav" />
+          </div>
+        </div>
+      </div>
+
       {/* Features */}
       <div className="border-t border-zinc-800 py-16 px-4">
         <div className="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-8">

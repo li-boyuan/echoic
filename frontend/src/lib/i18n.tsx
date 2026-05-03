@@ -17,6 +17,10 @@ const messages: Record<Locale, Record<string, string>> = {
     "hero.description": "AI reads your text, identifies characters, casts voices to match their personality, then narrates it with emotion and pacing.",
     "hero.cta": "Try Free — No Sign-up Required",
 
+    "demo.title": "Hear it in action",
+    "demo.desc": "AI narrator with automatic character voice casting — from text to audiobook in minutes.",
+    "demo.text": "\"The old man sat by the fire, his eyes fixed on the flames. A knock echoed through the hall. 'Who goes there?' he called out, his voice firm despite his age. 'It is I, your granddaughter. I have traveled far to find you.' The door creaked open, and a young woman stepped inside, brushing snow from her cloak.\"",
+
     "features.directed.title": "AI-Directed",
     "features.directed.desc": "An AI reads your text first and adds emotion, pacing, and dramatic beats — so the narration sounds natural, not robotic.",
     "features.casting.title": "Auto Character Casting",
@@ -71,6 +75,10 @@ const messages: Record<Locale, Record<string, string>> = {
     "studio.voiceHint": "Character voices are automatically cast by AI",
     "studio.showAllVoices": "Show all {count} voices",
     "studio.showFewer": "Show fewer voices",
+    "studio.uploadFile": "Upload File",
+    "studio.pasteText": "Paste Text",
+    "studio.textPlaceholder": "Paste or type your text here...",
+    "studio.words": "words",
     "studio.dropzone": "Drop your manuscript here, or click to browse",
     "studio.formats": ".txt, .pdf, .epub, .docx, .mobi, .azw3",
     "studio.previewVoice": "Preview Voice",
@@ -127,6 +135,10 @@ const messages: Record<Locale, Record<string, string>> = {
     "hero.description": "La IA lee tu texto, identifica personajes, asigna voces que coincidan con su personalidad y lo narra con emoción y ritmo.",
     "hero.cta": "Prueba Gratis — Sin Registro",
 
+    "demo.title": "Escucha en acción",
+    "demo.desc": "Narrador IA con casting automático de voces de personajes — de texto a audiolibro en minutos.",
+    "demo.text": "\"El viejo se sentó junto al fuego, con los ojos fijos en las llamas. Un golpe resonó en el salón. '¿Quién va?' gritó, con voz firme a pesar de su edad. 'Soy yo, tu nieta. He viajado lejos para encontrarte.' La puerta se abrió con un chirrido y una joven entró, sacudiéndose la nieve de la capa.\"",
+
     "features.directed.title": "Dirigido por IA",
     "features.directed.desc": "Una IA lee tu texto primero y añade emoción, ritmo y momentos dramáticos — para que la narración suene natural, no robótica.",
     "features.casting.title": "Casting Automático",
@@ -181,6 +193,10 @@ const messages: Record<Locale, Record<string, string>> = {
     "studio.voiceHint": "Las voces de personajes se asignan automáticamente por IA",
     "studio.showAllVoices": "Mostrar las {count} voces",
     "studio.showFewer": "Mostrar menos voces",
+    "studio.uploadFile": "Subir Archivo",
+    "studio.pasteText": "Pegar Texto",
+    "studio.textPlaceholder": "Pega o escribe tu texto aquí...",
+    "studio.words": "palabras",
     "studio.dropzone": "Arrastra tu manuscrito aquí, o haz clic para buscar",
     "studio.formats": ".txt, .pdf, .epub, .docx, .mobi, .azw3",
     "studio.previewVoice": "Preescuchar Voz",

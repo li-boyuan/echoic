@@ -32,6 +32,7 @@ output/
 *.mp3
 *.wav
 !frontend/public/previews/*.wav
+!frontend/public/demo.wav
 
 # Python
 *.egg-info/
