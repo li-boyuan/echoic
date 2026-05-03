@@ -21,15 +21,15 @@ Upload (.txt/.pdf/.epub/.docx/.mobi/.azw3)
 - **AI Director** — Claude Haiku reads each chapter and splits it into speaker-tagged lines (Narrator vs. each character), preserving the original text faithfully. Language-aware: handles dialogue conventions for all supported languages (quotation marks, em-dashes,「」, «», etc.)
 - **Auto Character Casting** — Claude identifies every character by name and assigns each a unique voice that matches their personality
 - **Multi-Speaker TTS** — Gemini TTS renders audio with separate voices for narrator and characters, stitched together seamlessly
-- **Model Fallback Chain** — TTS tries Gemini 3.1 Flash → 2.5 Pro → 2.5 Flash, auto-falling back on errors or rate limits. Effectively triples daily API quota (100 + 100 + 50 = 250 RPD).
-- **Global Rate Limiter** — Serializes TTS calls with a configurable interval (default 7s) to stay within per-minute rate limits across all parallel chapters. Retry with backoff on both Claude (429) and Gemini (429/500/503) APIs.
-- **Parallel Chapter Processing** — Chapters are directed (up to 2 concurrent) and narrated (up to 3 concurrent) in parallel. Users can play/download completed chapters while others are still processing.
-- **Chapter Splitting** — Auto-detects chapter boundaries (Chapter X, Part X, Prologue, Epilogue) and generates per-chapter audio files with title narration
+- **Model Fallback Chain** — TTS tries Gemini 3.1 Flash → 2.5 Pro → 2.5 Flash, auto-falling back on errors or rate limits. Rate-limited models are remembered and skipped for remaining segments. Effectively triples daily API quota (100 + 100 + 50 = 250 RPD).
+- **Global Rate Limiter** — Serializes TTS calls with a configurable interval (default 7s) to stay within per-minute rate limits across all parallel chapters. Retry with backoff on Claude (429) and Gemini (500/503).
+- **Parallel Chapter Processing** — Chapters are directed (up to 2 concurrent, chunked at 3000 chars) and narrated (up to 3 concurrent) in parallel. Users can play/download completed chapters while others are still processing. Active job persists across page refresh via localStorage.
+- **Chapter Splitting** — Auto-detects chapter boundaries (Chapter X, Part X, Prologue, Epilogue). Title stripped from chapter text and narrated separately for clean output.
 - **Audio Preview** — Generate a ~30-second sample from the first page before committing to a full conversion. Try different voices instantly.
 - **Text Input** — Paste or type text directly in addition to uploading files
-- **Auto-split Oversized Segments** — Segments exceeding 5000 chars are recursively split at line boundaries to stay within TTS input limits
+- **Auto-split Oversized Segments** — Segments exceeding 2000 chars are recursively split at line boundaries to prevent TTS chatbot-mode behavior
 - **Copyright Detection** — Copyrighted content is detected immediately with a user-friendly error. No credit consumed, no broken audiobook with silence gaps.
-- **Content Safety Handling** — If Gemini's safety filter blocks a segment (violence, mature themes), tries the next model in the fallback chain. If all models block, inserts silence and continues.
+- **Content Safety Handling** — If Claude's content filter blocks the Director (dark themes), falls back to raw narrator text. If Gemini's safety filter blocks TTS, tries the next model then inserts silence.
 - **Format Conversion** — Download audiobooks in multiple formats, converted on-the-fly via ffmpeg
 
 ### Multi-Language Support (26 languages)
@@ -92,8 +92,8 @@ Upload (.txt/.pdf/.epub/.docx/.mobi/.azw3)
 - Locale persisted to localStorage
 
 ### Persistent Jobs & Storage
-- **Jobs persist to disk** — survive server restarts, users can return later
-- **Cloudflare R2 storage** — audio files persist across deploys, organized by user (`users/{user_id}/{job_id}/`)
+- **Full R2 persistence** — jobs.json, credits.json, and audio files all synced to Cloudflare R2. Downloaded on startup, uploaded on every save. Survives all Render deploys.
+- **Cloudflare R2 storage** — audio files organized by user (`users/{user_id}/{job_id}/`)
 - **Access control** — user ownership check on all audio endpoints, presigned URLs (1hr expiry)
 - **"My Audiobooks" tab** — dedicated library with per-chapter downloads
 - **Email notifications** via Resend — completion email with "Listen & Download" link, failure email with error details
