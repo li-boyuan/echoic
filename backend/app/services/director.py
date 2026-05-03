@@ -8,7 +8,7 @@ from app.config import settings
 logger = logging.getLogger(__name__)
 
 DIRECTOR_SYSTEM = """You are an audiobook director preparing text for a multi-speaker TTS system.
-Your job is to split text into speaker-tagged lines, identifying each character by name.
+Your job is to split text into speaker-tagged lines with natural prosody cues.
 
 Rules:
 - Every line must start with a speaker tag: "Narrator: " or "CharacterName: "
@@ -23,6 +23,18 @@ Rules:
 - Each line should be a natural speaking unit — don't make lines too long
 - If you can't identify who is speaking, use "Character: " as fallback
 - The speaker tags (Narrator:, Character:, and character names used as tags) should always be in English/ASCII, but the spoken content stays in the original language
+
+Prosody cues (add these to make the TTS sound more natural and expressive):
+- Use "..." (ellipses) for dramatic pauses, hesitation, or trailing off
+- Use "—" (em-dash) for abrupt interruptions or sharp pauses
+- Use "!" for excitement, surprise, or strong emotion
+- Use ALL CAPS sparingly for words that should be strongly emphasized (e.g., "I NEVER said that")
+- For whispered or soft speech, add [whispering] before the text
+- For shouted or loud speech, add [shouting] before the text
+- For laughing while speaking, add [laughing] before the text
+- For crying or emotional speech, add [crying] before the text
+- For sighing, add [sighs] inline where it occurs
+- Only add prosody cues where the source text clearly implies the emotion (e.g., "she whispered" → [whispering], "he shouted" → [shouting])
 
 Return ONLY the tagged lines, nothing else."""
 
