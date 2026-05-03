@@ -39,11 +39,27 @@ def upload_file(local_path: str, key: str) -> str | None:
             key,
             ExtraArgs={"ContentType": content_type},
         )
-        url = f"{settings.r2_public_url}/{key}" if settings.r2_public_url else None
-        logger.info("Uploaded %s to R2 (%s)", key, url or "no public URL")
-        return url
+        logger.info("Uploaded %s to R2", key)
+        return key
     except Exception as e:
         logger.error("R2 upload failed for %s: %s", key, e)
+        return None
+
+
+def get_presigned_url(key: str, expires_in: int = 3600) -> str | None:
+    if not is_configured() or not key:
+        return None
+
+    try:
+        client = _get_client()
+        url = client.generate_presigned_url(
+            "get_object",
+            Params={"Bucket": settings.r2_bucket_name, "Key": key},
+            ExpiresIn=expires_in,
+        )
+        return url
+    except Exception as e:
+        logger.error("Presigned URL generation failed for %s: %s", key, e)
         return None
 
 

@@ -7,6 +7,7 @@ from fastapi.responses import FileResponse, RedirectResponse
 from app.models.schemas import JobResponse, JobStatus, VoiceOption
 from app.services.jobstore import get_jobs, get_user_jobs, save_job
 from app.services.narrator import AVAILABLE_VOICES, LANGUAGES, generate_preview, get_voices_for_language
+from app.services.storage import get_presigned_url
 
 router = APIRouter()
 
@@ -64,18 +65,22 @@ async def get_job(job_id: str):
 
 
 @router.get("/jobs/{job_id}/audio")
-async def get_audio(job_id: str, format: str = Query(default="wav")):
+async def get_audio(job_id: str, format: str = Query(default="wav"), user_id: str = Query(default="")):
     job = jobs.get(job_id)
     if not job or job.status != JobStatus.COMPLETED:
         raise HTTPException(404, "Audio not ready")
+
+    if job.user_id != "anonymous" and user_id and job.user_id != user_id:
+        raise HTTPException(403, "Access denied")
 
     if format not in SUPPORTED_FORMATS:
         raise HTTPException(400, f"Unsupported format. Available: {list(SUPPORTED_FORMATS.keys())}")
 
     source = _find_source_wav(f"output/{job_id}", "full")
     if not source:
-        if job.r2_url:
-            return RedirectResponse(job.r2_url)
+        presigned = get_presigned_url(job.r2_url)
+        if presigned:
+            return RedirectResponse(presigned)
         raise HTTPException(404, "Audio file not found")
 
     fmt = SUPPORTED_FORMATS[format]
@@ -88,10 +93,13 @@ async def get_audio(job_id: str, format: str = Query(default="wav")):
 
 
 @router.get("/jobs/{job_id}/audio/{chapter_index}")
-async def get_chapter_audio(job_id: str, chapter_index: int, format: str = Query(default="wav")):
+async def get_chapter_audio(job_id: str, chapter_index: int, format: str = Query(default="wav"), user_id: str = Query(default="")):
     job = jobs.get(job_id)
     if not job:
         raise HTTPException(404, "Job not found")
+
+    if job.user_id != "anonymous" and user_id and job.user_id != user_id:
+        raise HTTPException(403, "Access denied")
 
     chapter = next((ch for ch in job.chapters if ch.index == chapter_index), None)
     if not chapter or chapter.status != "completed":
@@ -102,8 +110,9 @@ async def get_chapter_audio(job_id: str, chapter_index: int, format: str = Query
 
     source = _find_source_wav(f"output/{job_id}", f"chapter_{chapter_index}")
     if not source:
-        if chapter.r2_url:
-            return RedirectResponse(chapter.r2_url)
+        presigned = get_presigned_url(chapter.r2_url)
+        if presigned:
+            return RedirectResponse(presigned)
         raise HTTPException(404, "Chapter audio file not found")
 
     fmt = SUPPORTED_FORMATS[format]

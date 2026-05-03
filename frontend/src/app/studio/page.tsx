@@ -47,6 +47,7 @@ export default function Studio() {
   const pollRef = useRef<NodeJS.Timeout | null>(null);
 
   const voiceName = (id: string) => voices.find((v) => v.id === id)?.name || id;
+  const audioUrl2 = (url: string, format: string) => `${url}?format=${format}&user_id=${userId}`;
 
   useEffect(() => {
     fetch("/api/languages")
@@ -348,7 +349,7 @@ export default function Studio() {
                     </div>
                     {job.status === "completed" && job.audio_url && (
                       <a
-                        href={`${job.audio_url}?format=mp3`}
+                        href={audioUrl2(job.audio_url!, "mp3")}
                         download
                         className="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-500 rounded-lg transition-colors"
                       >
@@ -363,7 +364,7 @@ export default function Studio() {
                           <span className="text-xs text-zinc-300">{ch.title}</span>
                           {ch.audio_url && (
                             <a
-                              href={`${ch.audio_url}?format=mp3`}
+                              href={audioUrl2(ch.audio_url!, "mp3")}
                               download
                               className="text-xs text-blue-400 hover:underline"
                             >
@@ -688,7 +689,7 @@ export default function Studio() {
                                   {playingChapter === ch.index ? t("studio.hide") : t("studio.play")}
                                 </button>
                                 <a
-                                  href={`${ch.audio_url}?format=${downloadFormat}`}
+                                  href={audioUrl2(ch.audio_url!, downloadFormat)}
                                   download
                                   onClick={() => { trackDownload(downloadFormat); track("audio_downloaded", { format: downloadFormat }); }}
                                   className="text-xs px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 rounded-md transition-colors"
@@ -778,7 +779,7 @@ export default function Studio() {
                                 {playingChapter === ch.index ? t("studio.hide") : t("studio.play")}
                               </button>
                               <a
-                                href={`${ch.audio_url}?format=${downloadFormat}`}
+                                href={audioUrl2(ch.audio_url!, downloadFormat)}
                                 download
                                 onClick={() => { trackDownload(downloadFormat); track("audio_downloaded", { format: downloadFormat }); }}
                                 className="text-xs px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 rounded-md transition-colors"
@@ -818,7 +819,7 @@ export default function Studio() {
                 <div className="flex gap-3">
                   {audioUrl && (
                     <a
-                      href={`${audioUrl}?format=${downloadFormat}`}
+                      href={audioUrl2(audioUrl!, downloadFormat)}
                       download
                       onClick={() => { trackDownload(downloadFormat); track("audio_downloaded", { format: downloadFormat }); }}
                       className="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 rounded-lg font-medium transition-colors"
