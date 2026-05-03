@@ -42,6 +42,7 @@ export default function Studio() {
   const [bookPreview, setBookPreview] = useState<"idle" | "loading" | "ready">("idle");
   const [bookPreviewUrl, setBookPreviewUrl] = useState<string | null>(null);
   const [history, setHistory] = useState<HistoryJob[]>([]);
+  const [activeTab, setActiveTab] = useState<"create" | "library">("create");
   const previewAudioRef = useRef<HTMLAudioElement | null>(null);
   const pollRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -300,7 +301,88 @@ export default function Studio() {
         </div>
       </nav>
 
+      {/* Tabs */}
+      {user && (
+        <div className="flex justify-center gap-1 px-4 pt-6">
+          <button
+            onClick={() => setActiveTab("create")}
+            className={`px-6 py-2 text-sm rounded-lg transition-colors ${
+              activeTab === "create" ? "bg-blue-600 text-white" : "bg-zinc-800 text-zinc-400 hover:bg-zinc-700"
+            }`}
+          >
+            {t("studio.create")}
+          </button>
+          <button
+            onClick={() => setActiveTab("library")}
+            className={`px-6 py-2 text-sm rounded-lg transition-colors ${
+              activeTab === "library" ? "bg-blue-600 text-white" : "bg-zinc-800 text-zinc-400 hover:bg-zinc-700"
+            }`}
+          >
+            {t("studio.history")} {history.length > 0 && `(${history.length})`}
+          </button>
+        </div>
+      )}
+
+      {/* Library Tab */}
+      {activeTab === "library" && user && (
+        <div className="flex-1 px-4 py-12">
+          <div className="max-w-2xl mx-auto space-y-4">
+            {history.length === 0 ? (
+              <p className="text-center text-zinc-500 py-12">{t("studio.noAudiobooks")}</p>
+            ) : (
+              history.map((job) => (
+                <div
+                  key={job.id}
+                  className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 space-y-3"
+                >
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-zinc-200">{job.filename}</p>
+                      <p className="text-xs text-zinc-500">
+                        {job.created_at ? new Date(job.created_at).toLocaleDateString() : ""}
+                        {" — "}
+                        <span className={job.status === "completed" ? "text-green-400" : "text-red-400"}>
+                          {t(`studio.status.${job.status}`)}
+                        </span>
+                      </p>
+                    </div>
+                    {job.status === "completed" && job.audio_url && (
+                      <a
+                        href={`${job.audio_url}?format=mp3`}
+                        download
+                        className="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-500 rounded-lg transition-colors"
+                      >
+                        {t("studio.download")}
+                      </a>
+                    )}
+                  </div>
+                  {job.status === "completed" && job.chapters && job.chapters.length > 1 && (
+                    <div className="space-y-1">
+                      {job.chapters.map((ch) => (
+                        <div key={ch.index} className="flex items-center justify-between px-3 py-1.5 bg-zinc-800 rounded-lg">
+                          <span className="text-xs text-zinc-300">{ch.title}</span>
+                          {ch.audio_url && (
+                            <a
+                              href={`${ch.audio_url}?format=mp3`}
+                              download
+                              className="text-xs text-blue-400 hover:underline"
+                            >
+                              {t("studio.download")}
+                            </a>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Studio Content */}
+      {(activeTab === "create" || !user) && (
       <div className="flex-1 flex flex-col items-center justify-center px-4 py-12">
         <div className="max-w-2xl w-full space-y-8">
           {status === "idle" && (
@@ -780,42 +862,8 @@ export default function Studio() {
         </div>
       </div>
 
-      {/* Conversion History */}
-      {user && history.length > 0 && (
-        <div className="border-t border-zinc-800 px-4 py-8">
-          <div className="max-w-2xl mx-auto space-y-4">
-            <h3 className="text-lg font-semibold text-zinc-200">{t("studio.history")}</h3>
-            <div className="space-y-2">
-              {history.map((job) => (
-                <div
-                  key={job.id}
-                  className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 flex items-center justify-between"
-                >
-                  <div>
-                    <p className="text-sm font-medium text-zinc-200">{job.filename}</p>
-                    <p className="text-xs text-zinc-500">
-                      {job.created_at ? new Date(job.created_at).toLocaleDateString() : ""}
-                      {" — "}
-                      <span className={job.status === "completed" ? "text-green-400" : "text-red-400"}>
-                        {t(`studio.status.${job.status}`)}
-                      </span>
-                    </p>
-                  </div>
-                  {job.status === "completed" && job.audio_url && (
-                    <a
-                      href={`${job.audio_url}?format=mp3`}
-                      download
-                      className="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-500 rounded-lg transition-colors"
-                    >
-                      {t("studio.download")}
-                    </a>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
       )}
+
     </main>
   );
 }

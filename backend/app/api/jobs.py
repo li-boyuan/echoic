@@ -2,7 +2,7 @@ import subprocess
 from pathlib import Path
 
 from fastapi import APIRouter, HTTPException, Query
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, RedirectResponse
 
 from app.models.schemas import JobResponse, JobStatus, VoiceOption
 from app.services.jobstore import get_jobs, get_user_jobs, save_job
@@ -74,6 +74,8 @@ async def get_audio(job_id: str, format: str = Query(default="wav")):
 
     source = _find_source_wav(f"output/{job_id}", "full")
     if not source:
+        if job.r2_url:
+            return RedirectResponse(job.r2_url)
         raise HTTPException(404, "Audio file not found")
 
     fmt = SUPPORTED_FORMATS[format]
@@ -100,6 +102,8 @@ async def get_chapter_audio(job_id: str, chapter_index: int, format: str = Query
 
     source = _find_source_wav(f"output/{job_id}", f"chapter_{chapter_index}")
     if not source:
+        if chapter.r2_url:
+            return RedirectResponse(chapter.r2_url)
         raise HTTPException(404, "Chapter audio file not found")
 
     fmt = SUPPORTED_FORMATS[format]

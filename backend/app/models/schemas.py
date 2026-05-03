@@ -16,6 +16,7 @@ class ChapterInfo(BaseModel):
     title: str
     status: str = "pending"
     audio_url: str | None = None
+    r2_url: str | None = None
 
 
 class JobResponse(BaseModel):
@@ -31,6 +32,7 @@ class JobResponse(BaseModel):
     user_id: str = "anonymous"
     user_email: str | None = None
     created_at: str | None = None
+    r2_url: str | None = None
 
 
 class VoiceOption(BaseModel):

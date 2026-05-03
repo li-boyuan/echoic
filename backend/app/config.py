@@ -14,6 +14,11 @@ class Settings(BaseSettings):
     free_word_limit: int = 500
     admin_user_ids: str = ""
     resend_api_key: str = ""
+    r2_account_id: str = ""
+    r2_access_key_id: str = ""
+    r2_secret_access_key: str = ""
+    r2_bucket_name: str = "echoic-audio"
+    r2_public_url: str = ""
 
     model_config = {"env_file": ".env"}
 

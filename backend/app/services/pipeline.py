@@ -9,6 +9,7 @@ from app.services.director import direct_text
 from app.services.jobstore import save_job
 from app.services.narrator import generate_segment_audio, stitch_audio
 from app.services.notify import send_completion_email, send_failure_email
+from app.services.storage import upload_job_audio
 from app.services.parser import extract_text, split_chapters
 from app.services.segmenter import (
     assign_voices,
@@ -120,6 +121,14 @@ async def run_pipeline(
         stitch_audio(full_pcm, full_path)
 
         consume_credit(user_id, credit_tier)
+
+        r2_urls = upload_job_audio(job.id, "output")
+        if "full" in r2_urls:
+            job.r2_url = r2_urls["full"]
+        for ch in job.chapters:
+            ch_key = f"chapter_{ch.index}"
+            if ch_key in r2_urls:
+                ch.r2_url = r2_urls[ch_key]
 
         job.status = JobStatus.COMPLETED
         job.progress = 1.0
