@@ -8,6 +8,20 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Echoic — AI Audiobook Studio",
   description: "Turn manuscripts into audiobooks with AI-powered narration",
+  manifest: "/manifest.json",
+  themeColor: "#3b82f6",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Echoic",
+  },
+  openGraph: {
+    title: "Echoic — AI Audiobook Studio",
+    description: "Turn any manuscript into a professional audiobook in minutes with AI character voices.",
+    url: "https://echoic.studio",
+    siteName: "Echoic",
+    type: "website",
+  },
 };
 
 export default function RootLayout({
