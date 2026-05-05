@@ -147,6 +147,20 @@ async def stripe_webhook(request: Request):
     return {"status": "ok"}
 
 
+class GrantCreditRequest(BaseModel):
+    user_id: str
+    admin_id: str
+
+
+@router.post("/admin/grant-credit")
+async def grant_credit(req: GrantCreditRequest):
+    if req.admin_id not in settings.admin_user_ids.split(","):
+        raise HTTPException(403, "Not authorized")
+    add_single_credit(req.user_id)
+    user = get_user(req.user_id)
+    return {"status": "ok", "user_id": req.user_id, "single_credits": user.single_credits}
+
+
 @router.get("/pricing")
 async def get_pricing():
     return {
