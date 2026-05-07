@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Analytics } from "@vercel/analytics/react";
 import CookieConsent from "@/components/CookieConsent";
@@ -9,7 +9,6 @@ export const metadata: Metadata = {
   title: "Echoic — AI Audiobook Studio",
   description: "Turn manuscripts into audiobooks with AI-powered narration",
   manifest: "/manifest.json",
-  themeColor: "#3b82f6",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
@@ -22,6 +21,10 @@ export const metadata: Metadata = {
     siteName: "Echoic",
     type: "website",
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#3b82f6",
 };
 
 export default function RootLayout({

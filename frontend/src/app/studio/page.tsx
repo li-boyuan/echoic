@@ -68,14 +68,16 @@ export default function Studio() {
       .catch(() => {});
   }, [selectedLanguage]);
 
-  const userId = user?.id || (() => {
-    let anonId = localStorage.getItem("echoic_anon_id");
-    if (!anonId) {
-      anonId = "anon_" + Math.random().toString(36).slice(2, 12);
-      localStorage.setItem("echoic_anon_id", anonId);
+  const [anonId] = useState(() => {
+    if (typeof window === "undefined") return "anonymous";
+    let id = localStorage.getItem("echoic_anon_id");
+    if (!id) {
+      id = "anon_" + Math.random().toString(36).slice(2, 12);
+      localStorage.setItem("echoic_anon_id", id);
     }
-    return anonId;
-  })();
+    return id;
+  });
+  const userId = user?.id || anonId;
 
   useEffect(() => {
     if (!isLoaded) return;
