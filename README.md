@@ -75,14 +75,16 @@ Upload (.txt/.pdf/.epub/.docx/.mobi/.azw3)
 ### Payments (Stripe)
 | Tier | Price | What you get |
 |------|-------|-------------|
-| Free | $0 | 1 conversion up to 500 words |
+| Free | $0 | Unlimited conversions, up to 500 words per book |
 | Single Book | $9.99 | 1 book, unlimited words |
-| Pro | $14.99 first month (50% off), $29.99/mo after | Unlimited conversions, most powerful AI model |
+| Pro | $14.99 first month (50% off), $29.99/mo after | Unlimited conversions, unlimited words, most powerful AI model |
 
+- No credit tracking for free tier — just enforces 500 word limit
+- Anonymous users get unique IDs (no shared credit pool)
+- Clear error messages when word limit exceeded
 - Stripe Checkout for one-time and subscription payments
 - Credits persisted to disk (JSON file) with Stripe sync on startup
-- Admin user support via `ADMIN_USER_IDS` env var
-- Upload gated behind credit check
+- Admin endpoint to grant credits (`POST /api/admin/grant-credit`)
 - "Contact us" refund link on failure screen
 
 ### Localization
@@ -113,7 +115,9 @@ Upload (.txt/.pdf/.epub/.docx/.mobi/.azw3)
 - UI language switcher (English / Español)
 - Narrator voice selector with gender labels and instant audio previews (179 pre-generated samples)
 - Audio demo on landing page (multi-character showcase)
+- Instant text-to-speech demo on landing page (paste text, pick voice, listen)
 - Audio preview from uploaded manuscript before full conversion
+- PWA support (installable on mobile via Add to Home Screen)
 - Create / My Audiobooks tab system
 - Per-chapter progress with live play/download as chapters complete
 - Cast display showing character → voice assignments
