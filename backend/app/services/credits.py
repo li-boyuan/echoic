@@ -74,21 +74,21 @@ def can_convert(user_id: str, word_count: int) -> tuple[bool, str]:
             user.pro_subscription = False
             _save()
 
-    if not user.free_used and word_count <= settings.free_word_limit:
-        return True, "free"
-
     if user.single_credits > 0:
         return True, "single"
+
+    if word_count <= settings.free_word_limit:
+        return True, "free"
 
     return False, "none"
 
 
 def consume_credit(user_id: str, tier: str):
+    if tier == "free":
+        return
     user = get_user(user_id)
     with _lock:
-        if tier == "free":
-            user.free_used = True
-        elif tier == "single":
+        if tier == "single":
             user.single_credits -= 1
         _save()
 

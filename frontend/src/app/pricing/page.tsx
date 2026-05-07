@@ -12,7 +12,7 @@ const PLANS = [
     price: "$0",
     period: "",
     description: "Try it out",
-    features: ["1 free conversion", "Up to 500 words", "All voices included", "Auto character casting"],
+    features: ["Unlimited conversions", "Up to 500 words per book", "All voices included", "Auto character casting"],
     cta: "Get Started",
   },
   {

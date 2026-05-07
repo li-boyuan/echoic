@@ -304,23 +304,15 @@ export default function Studio() {
                 <span className="px-3 py-1.5 bg-violet-600/20 text-violet-300 border border-violet-500/30 rounded-full font-medium">{t("studio.pro")}</span>
               ) : (
                 <>
-                  {credits.free_available && (
-                    <span className="px-3 py-1.5 bg-emerald-600/20 text-emerald-300 border border-emerald-500/30 rounded-full font-medium">
-                      1 free conversion
-                    </span>
-                  )}
                   {credits.single_credits > 0 && (
                     <span className="px-3 py-1.5 bg-blue-600/20 text-blue-300 border border-blue-500/30 rounded-full font-medium">
                       {credits.single_credits} credit{credits.single_credits !== 1 ? "s" : ""}
                     </span>
                   )}
-                  {!credits.free_available && credits.single_credits === 0 && (
-                    <Link
-                      href="/pricing"
-                      className="px-3 py-1.5 bg-amber-600/20 text-amber-300 border border-amber-500/30 rounded-full font-medium hover:bg-amber-600/30 transition-colors"
-                    >
-                      Get credits
-                    </Link>
+                  {credits.single_credits === 0 && (
+                    <span className="px-3 py-1.5 bg-emerald-600/20 text-emerald-300 border border-emerald-500/30 rounded-full font-medium">
+                      {t("studio.freeMode")}
+                    </span>
                   )}
                 </>
               )}
@@ -438,18 +430,6 @@ export default function Studio() {
             <div className="space-y-6">
               <h2 className="text-2xl font-semibold text-center">{t("studio.create")}</h2>
 
-              {credits && !credits.pro_active && !credits.free_available && credits.single_credits === 0 && (
-                <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 text-center space-y-3">
-                  <p className="text-zinc-300">{t("studio.noCredits")}</p>
-                  <p className="text-sm text-zinc-500">{t("studio.noCredits.sub")}</p>
-                  <Link
-                    href="/pricing"
-                    className="inline-block px-6 py-2.5 bg-blue-600 hover:bg-blue-500 rounded-lg font-medium text-sm transition-colors"
-                  >
-                    View Pricing
-                  </Link>
-                </div>
-              )}
 
               {/* Language Selector */}
               <div className="space-y-2">

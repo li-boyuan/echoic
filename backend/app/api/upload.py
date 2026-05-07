@@ -35,8 +35,11 @@ async def demo_voice(req: DemoRequest):
     text = req.text.strip()
     if len(text) < 10:
         raise HTTPException(400, "Text too short — enter at least a sentence")
-    if len(text) > 500:
-        text = text[:500]
+    word_count = len(text.split())
+    if word_count > settings.free_word_limit:
+        raise HTTPException(400, f"Demo is limited to {settings.free_word_limit} words. Your text has {word_count} words.")
+    if len(text) > 2000:
+        text = text[:2000]
 
     pcm = await generate_simple_audio(text, req.voice)
 
@@ -122,11 +125,10 @@ async def upload_manuscript(
 
     allowed, tier = can_convert(user_id, word_count)
     if not allowed:
-        import os
         os.remove(filepath)
         raise HTTPException(
             402,
-            "No credits available. Purchase a Single Book or subscribe to Pro to continue.",
+            f"Your text has {word_count:,} words, which exceeds the free limit of {settings.free_word_limit} words. Purchase a Single Book credit ($9.99) for unlimited words.",
         )
 
     from datetime import datetime
