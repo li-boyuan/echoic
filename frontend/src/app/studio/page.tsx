@@ -68,7 +68,14 @@ export default function Studio() {
       .catch(() => {});
   }, [selectedLanguage]);
 
-  const userId = user?.id || "anonymous";
+  const userId = user?.id || (() => {
+    let anonId = localStorage.getItem("echoic_anon_id");
+    if (!anonId) {
+      anonId = "anon_" + Math.random().toString(36).slice(2, 12);
+      localStorage.setItem("echoic_anon_id", anonId);
+    }
+    return anonId;
+  })();
 
   useEffect(() => {
     if (!isLoaded) return;
