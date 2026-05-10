@@ -3,6 +3,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import PlainTextResponse, RedirectResponse
 
 from app.api import jobs, payments, upload
 from app.config import settings
@@ -35,3 +36,15 @@ app.include_router(payments.router, prefix="/api")
 @app.get("/api/health")
 async def health():
     return {"status": "ok"}
+
+
+@app.get("/")
+async def root():
+    return RedirectResponse(url=settings.frontend_url)
+
+
+@app.get("/robots.txt")
+async def robots():
+    return PlainTextResponse(
+        "User-agent: *\nAllow: /\nSitemap: https://echoic.studio/sitemap.xml\n"
+    )

@@ -35,7 +35,7 @@ Upload (.txt/.pdf/.epub/.docx/.mobi/.azw3)
 ### Multi-Language Support (26 languages)
 | Tier | Languages | Voices |
 |------|-----------|--------|
-| Full (30 voices) | English | 15 male, 15 female |
+| Full (30 voices) | English | 18 male, 12 female |
 | Major (8 voices) | Chinese, German, French, Hindi, Japanese, Korean, Portuguese, Spanish | 4 male, 4 female |
 | Core (5 voices) | Arabic, Bengali, Dutch, Gujarati, Indonesian, Italian, Kannada, Malayalam, Marathi, Polish, Russian, Tamil, Telugu, Thai, Turkish, Ukrainian, Vietnamese | 3 male, 2 female |
 
