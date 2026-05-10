@@ -50,10 +50,12 @@ function TryItNow() {
   };
 
   return (
-    <div className="border-t border-zinc-800 py-16 px-4">
-      <div className="max-w-xl mx-auto space-y-4">
-        <h2 className="text-xl font-semibold text-zinc-200 text-center">{t("tryit.title")}</h2>
-        <p className="text-sm text-zinc-500 text-center">{t("tryit.desc")}</p>
+    <div className="py-20 px-4">
+      <div className="max-w-xl mx-auto space-y-6">
+        <div className="text-center space-y-2">
+          <h2 className="text-2xl font-bold text-zinc-100">{t("tryit.title")}</h2>
+          <p className="text-zinc-400">{t("tryit.desc")}</p>
+        </div>
         <div className="space-y-3">
           <textarea
             value={text}
@@ -127,21 +129,37 @@ export default function Home() {
       </nav>
 
       {/* Hero */}
-      <div className="flex-1 flex flex-col items-center justify-center px-4 py-16">
-        <div className="max-w-2xl w-full space-y-8 text-center">
+      <div className="flex-1 flex flex-col items-center justify-center px-4 pt-16 pb-12">
+        <div className="max-w-3xl w-full space-y-8 text-center">
           <div className="space-y-4">
-            <h1 className="text-6xl font-bold tracking-tight bg-gradient-to-r from-blue-400 to-violet-400 bg-clip-text text-transparent">
+            <p className="text-sm font-medium text-blue-400 tracking-wide uppercase">
+              {t("hero.badge")}
+            </p>
+            <h1 className="text-5xl sm:text-6xl font-bold tracking-tight text-zinc-100 leading-tight">
               {t("hero.title")}
             </h1>
-            <p className="text-2xl text-zinc-300">
+            <p className="text-xl text-zinc-300 max-w-2xl mx-auto">
               {t("hero.subtitle")}
             </p>
-            <p className="text-lg text-zinc-500 max-w-lg mx-auto">
+            <p className="text-lg text-zinc-400 max-w-lg mx-auto">
               {t("hero.description")}
             </p>
           </div>
 
-          <div className="pt-4">
+          {/* Cost Anchor */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 py-2">
+            <div className="flex items-center gap-2">
+              <span className="text-zinc-600 line-through text-lg">{t("hero.oldCost")}</span>
+              <span className="text-zinc-500">{t("hero.oldCostLabel")}</span>
+            </div>
+            <div className="hidden sm:block w-px h-8 bg-zinc-700" />
+            <div className="flex items-center gap-2">
+              <span className="text-3xl font-bold text-emerald-400">{t("hero.newCost")}</span>
+              <span className="text-zinc-400">{t("hero.newCostLabel")}</span>
+            </div>
+          </div>
+
+          <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-4">
             <SignedOut>
               <Link
                 href="/studio"
@@ -158,20 +176,76 @@ export default function Home() {
                 {t("hero.ctaSignedIn")}
               </Link>
             </SignedIn>
+            <span className="text-sm text-zinc-500">{t("hero.ctaSub")}</span>
           </div>
         </div>
       </div>
 
-      {/* Audio Demo */}
-      <div className="border-t border-zinc-800 py-16 px-4">
-        <div className="max-w-xl mx-auto text-center space-y-4">
-          <h2 className="text-xl font-semibold text-zinc-200">{t("demo.title")}</h2>
-          <p className="text-sm text-zinc-500">{t("demo.desc")}</p>
-          <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 space-y-3">
-            <p className="text-xs text-zinc-600 text-left leading-relaxed italic">
+      {/* Audio Demo — hear it immediately */}
+      <div className="py-16 px-4 bg-zinc-900/50">
+        <div className="max-w-xl mx-auto text-center space-y-5">
+          <h2 className="text-2xl font-bold text-zinc-100">{t("demo.title")}</h2>
+          <p className="text-zinc-400">{t("demo.desc")}</p>
+          <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 space-y-4">
+            <p className="text-xs text-zinc-500 text-left leading-relaxed italic">
               {t("demo.text")}
             </p>
             <audio controls className="w-full" src="/demo.wav" />
+          </div>
+          <p className="text-xs text-zinc-600">{t("demo.note")}</p>
+        </div>
+      </div>
+
+      {/* How it Works */}
+      <div className="py-20 px-4">
+        <div className="max-w-4xl mx-auto space-y-12">
+          <h2 className="text-2xl font-bold text-zinc-100 text-center">{t("how.title")}</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
+            <div className="text-center space-y-3">
+              <div className="w-14 h-14 mx-auto bg-blue-600/20 border border-blue-500/30 rounded-2xl flex items-center justify-center text-2xl">
+                1
+              </div>
+              <h3 className="font-semibold text-zinc-200">{t("how.step1.title")}</h3>
+              <p className="text-sm text-zinc-500">{t("how.step1.desc")}</p>
+            </div>
+            <div className="text-center space-y-3">
+              <div className="w-14 h-14 mx-auto bg-violet-600/20 border border-violet-500/30 rounded-2xl flex items-center justify-center text-2xl">
+                2
+              </div>
+              <h3 className="font-semibold text-zinc-200">{t("how.step2.title")}</h3>
+              <p className="text-sm text-zinc-500">{t("how.step2.desc")}</p>
+            </div>
+            <div className="text-center space-y-3">
+              <div className="w-14 h-14 mx-auto bg-emerald-600/20 border border-emerald-500/30 rounded-2xl flex items-center justify-center text-2xl">
+                3
+              </div>
+              <h3 className="font-semibold text-zinc-200">{t("how.step3.title")}</h3>
+              <p className="text-sm text-zinc-500">{t("how.step3.desc")}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Social Proof */}
+      <div className="py-16 px-4 bg-zinc-900/50">
+        <div className="max-w-4xl mx-auto space-y-10">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 text-center">
+            <div>
+              <p className="text-3xl font-bold text-zinc-100">{t("proof.stat1.value")}</p>
+              <p className="text-sm text-zinc-500">{t("proof.stat1.label")}</p>
+            </div>
+            <div>
+              <p className="text-3xl font-bold text-zinc-100">{t("proof.stat2.value")}</p>
+              <p className="text-sm text-zinc-500">{t("proof.stat2.label")}</p>
+            </div>
+            <div>
+              <p className="text-3xl font-bold text-zinc-100">{t("proof.stat3.value")}</p>
+              <p className="text-sm text-zinc-500">{t("proof.stat3.label")}</p>
+            </div>
+            <div>
+              <p className="text-3xl font-bold text-zinc-100">{t("proof.stat4.value")}</p>
+              <p className="text-sm text-zinc-500">{t("proof.stat4.label")}</p>
+            </div>
           </div>
         </div>
       </div>
@@ -180,27 +254,69 @@ export default function Home() {
       <TryItNow />
 
       {/* Features */}
-      <div className="border-t border-zinc-800 py-16 px-4">
-        <div className="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-8">
-          <div className="space-y-2">
-            <h3 className="font-semibold text-zinc-200">{t("features.directed.title")}</h3>
-            <p className="text-sm text-zinc-500">{t("features.directed.desc")}</p>
-          </div>
-          <div className="space-y-2">
-            <h3 className="font-semibold text-zinc-200">{t("features.casting.title")}</h3>
-            <p className="text-sm text-zinc-500">{t("features.casting.desc")}</p>
-          </div>
-          <div className="space-y-2">
-            <h3 className="font-semibold text-zinc-200">{t("features.languages.title")}</h3>
-            <p className="text-sm text-zinc-500">{t("features.languages.desc")}</p>
+      <div className="py-20 px-4 bg-zinc-900/50">
+        <div className="max-w-4xl mx-auto space-y-12">
+          <h2 className="text-2xl font-bold text-zinc-100 text-center">{t("features.title")}</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
+            <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 space-y-3">
+              <div className="w-10 h-10 bg-blue-600/20 border border-blue-500/30 rounded-xl flex items-center justify-center text-lg">
+                <svg className="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                </svg>
+              </div>
+              <h3 className="font-semibold text-zinc-200">{t("features.directed.title")}</h3>
+              <p className="text-sm text-zinc-500">{t("features.directed.desc")}</p>
+            </div>
+            <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 space-y-3">
+              <div className="w-10 h-10 bg-violet-600/20 border border-violet-500/30 rounded-xl flex items-center justify-center text-lg">
+                <svg className="w-5 h-5 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+              </div>
+              <h3 className="font-semibold text-zinc-200">{t("features.casting.title")}</h3>
+              <p className="text-sm text-zinc-500">{t("features.casting.desc")}</p>
+            </div>
+            <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 space-y-3">
+              <div className="w-10 h-10 bg-emerald-600/20 border border-emerald-500/30 rounded-xl flex items-center justify-center text-lg">
+                <svg className="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <h3 className="font-semibold text-zinc-200">{t("features.languages.title")}</h3>
+              <p className="text-sm text-zinc-500">{t("features.languages.desc")}</p>
+            </div>
           </div>
         </div>
       </div>
 
+      {/* CTA Banner */}
+      <div className="py-16 px-4">
+        <div className="max-w-2xl mx-auto text-center space-y-6">
+          <h2 className="text-3xl font-bold text-zinc-100">{t("cta.title")}</h2>
+          <p className="text-zinc-400">{t("cta.desc")}</p>
+          <SignedOut>
+            <Link
+              href="/studio"
+              className="inline-block px-8 py-3.5 bg-blue-600 hover:bg-blue-500 rounded-xl font-medium text-lg transition-colors"
+            >
+              {t("hero.cta")}
+            </Link>
+          </SignedOut>
+          <SignedIn>
+            <Link
+              href="/studio"
+              className="inline-block px-8 py-3.5 bg-blue-600 hover:bg-blue-500 rounded-xl font-medium text-lg transition-colors"
+            >
+              {t("hero.ctaSignedIn")}
+            </Link>
+          </SignedIn>
+        </div>
+      </div>
+
       {/* FAQ */}
-      <div className="border-t border-zinc-800 py-16 px-4">
+      <div className="py-16 px-4 bg-zinc-900/50">
         <div className="max-w-2xl mx-auto space-y-8">
-          <h2 className="text-xl font-semibold text-zinc-200 text-center">{t("faq.title")}</h2>
+          <h2 className="text-2xl font-bold text-zinc-100 text-center">{t("faq.title")}</h2>
           <div className="space-y-6">
             <div className="space-y-2">
               <h3 className="font-medium text-zinc-200">{t("faq.publish.q")}</h3>
@@ -223,7 +339,7 @@ export default function Home() {
       </div>
 
       {/* Disclaimer */}
-      <div className="border-t border-zinc-800 py-8 px-4">
+      <div className="py-8 px-4">
         <p className="max-w-2xl mx-auto text-xs text-zinc-600 text-center leading-relaxed">
           {t("disclaimer")}
         </p>

@@ -11,29 +11,63 @@ const messages: Record<Locale, Record<string, string>> = {
     "nav.signIn": "Sign in",
     "nav.studio": "Studio",
 
-    // Landing
-    "hero.title": "Echoic",
-    "hero.subtitle": "Turn any manuscript into a professional audiobook in minutes",
-    "hero.description": "AI reads your text, identifies characters, casts voices to match their personality, then narrates it with emotion and pacing.",
+    // Landing — Hero
+    "hero.badge": "AI-Powered Audiobook Studio",
+    "hero.title": "Your Book Deserves a Voice",
+    "hero.subtitle": "Turn any manuscript into a professionally narrated audiobook — with unique character voices, emotion, and pacing.",
+    "hero.description": "Upload your book. AI reads it, casts each character a fitting voice, and narrates with natural expression.",
     "hero.cta": "Try Free — No Sign-up Required",
     "hero.ctaSignedIn": "Open Studio",
+    "hero.ctaSub": "Free for books under 500 words. No credit card needed.",
+    "hero.oldCost": "$2,000–$5,000",
+    "hero.oldCostLabel": "traditional narration",
+    "hero.newCost": "$9.99",
+    "hero.newCostLabel": "with Echoic",
 
-    "demo.title": "Hear it in action",
-    "demo.desc": "AI narrator with automatic character voice casting — from text to audiobook in minutes.",
+    // Landing — Demo
+    "demo.title": "Hear the difference",
+    "demo.desc": "This audiobook sample was generated entirely by AI — with distinct character voices cast automatically.",
     "demo.text": "\"The old man sat by the fire, his eyes fixed on the flickering flames. A sharp knock echoed through the empty hall. He rose slowly, gripping his cane. 'Who goes there?' he called out, his voice firm despite his age. 'I have not survived eighty winters to be frightened by shadows. Show yourself!' The door creaked open, letting in a gust of cold wind. A young woman stepped inside, brushing snow from her cloak. She lowered her hood, revealing bright eyes and a warm smile. 'It is I, grandfather. Your granddaughter. I have traveled far to find you. The fire is just as warm as I remember.' The old man stared at her for a long moment... then opened his arms, and she ran to him.\"",
+    "demo.note": "3 voices, 0 editing — generated in under 2 minutes",
 
+    // Landing — How it Works
+    "how.title": "How it works",
+    "how.step1.title": "Upload your manuscript",
+    "how.step1.desc": "Drop in a .txt, .pdf, .epub, .docx, or .mobi file — or just paste your text.",
+    "how.step2.title": "AI reads & casts voices",
+    "how.step2.desc": "AI analyzes your text, identifies every character, and assigns each one a unique voice that fits their personality.",
+    "how.step3.title": "Download your audiobook",
+    "how.step3.desc": "Get your finished audiobook in MP3, WAV, FLAC, or M4A — chapter by chapter or as one file.",
+
+    // Landing — Social Proof
+    "proof.stat1.value": "26",
+    "proof.stat1.label": "Languages supported",
+    "proof.stat2.value": "30+",
+    "proof.stat2.label": "AI voices available",
+    "proof.stat3.value": "< 5 min",
+    "proof.stat3.label": "Average processing time",
+    "proof.stat4.value": "$9.99",
+    "proof.stat4.label": "Per book, any length",
+
+    // Landing — Try It
     "tryit.title": "Try it with your own text",
     "tryit.desc": "Paste a paragraph from your book and hear it instantly — no signup required.",
     "tryit.placeholder": "Paste a paragraph here... (e.g., the opening of your book)",
     "tryit.listen": "Listen",
     "tryit.generating": "Generating...",
 
-    "features.directed.title": "AI-Directed",
-    "features.directed.desc": "An AI reads your text first and adds emotion, pacing, and dramatic beats — so the narration sounds natural, not robotic.",
+    // Landing — Features
+    "features.title": "Why authors choose Echoic",
+    "features.directed.title": "AI-Directed Narration",
+    "features.directed.desc": "AI reads your text first and adds emotion, pacing, and dramatic beats — so the narration sounds natural, not robotic.",
     "features.casting.title": "Auto Character Casting",
     "features.casting.desc": "AI identifies every character in your book and assigns each one a unique voice that matches their personality.",
-    "features.languages.title": "24+ Languages",
+    "features.languages.title": "26 Languages",
     "features.languages.desc": "Generate audiobooks in English, Chinese, Spanish, French, Japanese, Korean, Hindi, and many more languages.",
+
+    // Landing — CTA Banner
+    "cta.title": "Ready to hear your book come alive?",
+    "cta.desc": "Join authors who are turning manuscripts into audiobooks in minutes, not months.",
 
     // FAQ
     "faq.title": "FAQ",
@@ -141,29 +175,63 @@ const messages: Record<Locale, Record<string, string>> = {
     "nav.signIn": "Iniciar sesión",
     "nav.studio": "Estudio",
 
-    // Landing
-    "hero.title": "Echoic",
-    "hero.subtitle": "Convierte cualquier manuscrito en un audiolibro profesional en minutos",
-    "hero.description": "La IA lee tu texto, identifica personajes, asigna voces que coincidan con su personalidad y lo narra con emoción y ritmo.",
+    // Landing — Hero
+    "hero.badge": "Estudio de Audiolibros con IA",
+    "hero.title": "Tu libro merece una voz",
+    "hero.subtitle": "Convierte cualquier manuscrito en un audiolibro narrado profesionalmente — con voces únicas para cada personaje, emoción y ritmo.",
+    "hero.description": "Sube tu libro. La IA lo lee, asigna una voz a cada personaje y lo narra con expresión natural.",
     "hero.cta": "Prueba Gratis — Sin Registro",
     "hero.ctaSignedIn": "Abrir Estudio",
+    "hero.ctaSub": "Gratis para libros de hasta 500 palabras. Sin tarjeta de crédito.",
+    "hero.oldCost": "$2,000–$5,000",
+    "hero.oldCostLabel": "narración tradicional",
+    "hero.newCost": "$9.99",
+    "hero.newCostLabel": "con Echoic",
 
-    "demo.title": "Escucha en acción",
-    "demo.desc": "Narrador IA con casting automático de voces de personajes — de texto a audiolibro en minutos.",
+    // Landing — Demo
+    "demo.title": "Escucha la diferencia",
+    "demo.desc": "Esta muestra fue generada completamente por IA — con voces de personajes asignadas automáticamente.",
     "demo.text": "\"El viejo se sentó junto al fuego, con los ojos fijos en las llamas parpadeantes. Un golpe resonó en el salón vacío. Se levantó lentamente, agarrando su bastón. '¿Quién va?' gritó, con voz firme a pesar de su edad. 'No he sobrevivido ochenta inviernos para asustarme con sombras. ¡Muéstrate!' La puerta se abrió con un chirrido, dejando entrar una ráfaga de viento frío. Una joven entró, sacudiéndose la nieve de la capa. Bajó la capucha, revelando ojos brillantes y una cálida sonrisa. 'Soy yo, abuelo. Tu nieta. He viajado lejos para encontrarte. El fuego es tan cálido como lo recuerdo.' El viejo la miró un largo momento... luego abrió los brazos y ella corrió hacia él.\"",
+    "demo.note": "3 voces, 0 edición — generado en menos de 2 minutos",
 
+    // Landing — How it Works
+    "how.title": "Cómo funciona",
+    "how.step1.title": "Sube tu manuscrito",
+    "how.step1.desc": "Arrastra un archivo .txt, .pdf, .epub, .docx o .mobi — o simplemente pega tu texto.",
+    "how.step2.title": "La IA lee y asigna voces",
+    "how.step2.desc": "La IA analiza tu texto, identifica cada personaje y asigna una voz única que se ajusta a su personalidad.",
+    "how.step3.title": "Descarga tu audiolibro",
+    "how.step3.desc": "Obtén tu audiolibro en MP3, WAV, FLAC o M4A — capítulo por capítulo o como un solo archivo.",
+
+    // Landing — Social Proof
+    "proof.stat1.value": "26",
+    "proof.stat1.label": "Idiomas disponibles",
+    "proof.stat2.value": "30+",
+    "proof.stat2.label": "Voces de IA disponibles",
+    "proof.stat3.value": "< 5 min",
+    "proof.stat3.label": "Tiempo promedio de procesamiento",
+    "proof.stat4.value": "$9.99",
+    "proof.stat4.label": "Por libro, cualquier extensión",
+
+    // Landing — Try It
     "tryit.title": "Pruébalo con tu propio texto",
     "tryit.desc": "Pega un párrafo de tu libro y escúchalo al instante — sin registro.",
     "tryit.placeholder": "Pega un párrafo aquí... (por ejemplo, el inicio de tu libro)",
     "tryit.listen": "Escuchar",
     "tryit.generating": "Generando...",
 
-    "features.directed.title": "Dirigido por IA",
+    // Landing — Features
+    "features.title": "Por qué los autores eligen Echoic",
+    "features.directed.title": "Narración Dirigida por IA",
     "features.directed.desc": "Una IA lee tu texto primero y añade emoción, ritmo y momentos dramáticos — para que la narración suene natural, no robótica.",
     "features.casting.title": "Casting Automático",
     "features.casting.desc": "La IA identifica cada personaje de tu libro y asigna a cada uno una voz única que coincide con su personalidad.",
-    "features.languages.title": "24+ Idiomas",
+    "features.languages.title": "26 Idiomas",
     "features.languages.desc": "Genera audiolibros en español, inglés, chino, francés, japonés, coreano, hindi y muchos más idiomas.",
+
+    // Landing — CTA Banner
+    "cta.title": "¿Listo para escuchar tu libro cobrar vida?",
+    "cta.desc": "Únete a los autores que convierten manuscritos en audiolibros en minutos, no meses.",
 
     // FAQ
     "faq.title": "Preguntas Frecuentes",
