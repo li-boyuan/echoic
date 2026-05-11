@@ -43,9 +43,14 @@ export default function Studio() {
   const [bookPreviewUrl, setBookPreviewUrl] = useState<string | null>(null);
   const [history, setHistory] = useState<HistoryJob[]>([]);
   const [activeTab, setActiveTab] = useState<"create" | "library">("create");
+  const [capturedEmail, setCapturedEmail] = useState<string>("");
+  const [emailInput, setEmailInput] = useState("");
+  const [emailSubmitting, setEmailSubmitting] = useState(false);
   const previewAudioRef = useRef<HTMLAudioElement | null>(null);
   const pollRef = useRef<NodeJS.Timeout | null>(null);
 
+  const isAnonymous = !user;
+  const hasEmail = !!user || !!capturedEmail;
   const voiceName = (id: string) => voices.find((v) => v.id === id)?.name || id;
   const audioUrl2 = (url: string, format: string) => `${url}?format=${format}&user_id=${userId}`;
 
@@ -78,6 +83,11 @@ export default function Studio() {
     return id;
   });
   const userId = user?.id || anonId;
+
+  useEffect(() => {
+    const saved = localStorage.getItem("echoic_email");
+    if (saved) setCapturedEmail(saved);
+  }, []);
 
   useEffect(() => {
     if (!isLoaded) return;
@@ -274,6 +284,24 @@ export default function Studio() {
       trackError("preview", "preview_generation_failed");
       track("error", { context: "preview", message: "preview_generation_failed" });
     }
+  };
+
+  const handleClaimEmail = async () => {
+    if (!emailInput.trim() || !jobId) return;
+    setEmailSubmitting(true);
+    try {
+      const res = await fetch(`/api/jobs/${jobId}/claim`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: emailInput.trim() }),
+      });
+      if (res.ok) {
+        setCapturedEmail(emailInput.trim());
+        localStorage.setItem("echoic_email", emailInput.trim());
+        track("email_captured");
+      }
+    } catch {}
+    setEmailSubmitting(false);
   };
 
   const reset = () => {
@@ -777,14 +805,46 @@ export default function Studio() {
                 </div>
               )}
 
-              {/* Full audiobook player */}
+              {/* Email gate for anonymous users */}
+              {isAnonymous && !hasEmail && (
+                <div className="max-w-sm mx-auto bg-zinc-900 border border-zinc-800 rounded-2xl p-6 space-y-4">
+                  <p className="font-semibold text-zinc-200">{t("studio.emailGate.title")}</p>
+                  <p className="text-sm text-zinc-400">{t("studio.emailGate.desc")}</p>
+                  <div className="flex gap-2">
+                    <input
+                      type="email"
+                      value={emailInput}
+                      onChange={(e) => setEmailInput(e.target.value)}
+                      placeholder={t("studio.emailGate.placeholder")}
+                      className="flex-1 bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2.5 text-sm text-zinc-200 placeholder-zinc-600 focus:border-blue-500 focus:outline-none"
+                      onKeyDown={(e) => { if (e.key === "Enter") handleClaimEmail(); }}
+                    />
+                    <button
+                      onClick={handleClaimEmail}
+                      disabled={emailSubmitting || !emailInput.includes("@")}
+                      className="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 rounded-lg font-medium text-sm transition-colors disabled:opacity-50"
+                    >
+                      {emailSubmitting ? "..." : t("studio.emailGate.submit")}
+                    </button>
+                  </div>
+                  <p className="text-xs text-zinc-600">{t("studio.emailGate.privacy")}</p>
+                  <div className="border-t border-zinc-800 pt-3">
+                    <SignInButton mode="modal">
+                      <button className="text-sm text-blue-400 hover:text-blue-300 transition-colors">
+                        {t("studio.emailGate.signIn")}
+                      </button>
+                    </SignInButton>
+                  </div>
+                </div>
+              )}
+
+              {/* Audio players — always visible so they can preview */}
               {audioUrl && chapters.length <= 1 && (
                 <audio controls className="mx-auto" src={audioUrl}>
                   Your browser does not support the audio element.
                 </audio>
               )}
 
-              {/* Chapter list with individual players */}
               {chapters.length > 1 && (
                 <div className="max-w-md mx-auto space-y-2 text-left">
                   <p className="text-xs text-zinc-500 mb-2 text-center">Chapters</p>
@@ -808,14 +868,16 @@ export default function Studio() {
                               >
                                 {playingChapter === ch.index ? t("studio.hide") : t("studio.play")}
                               </button>
-                              <a
-                                href={audioUrl2(ch.audio_url!, downloadFormat)}
-                                download
-                                onClick={() => { trackDownload(downloadFormat); track("audio_downloaded", { format: downloadFormat }); }}
-                                className="text-xs px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 rounded-md transition-colors"
-                              >
-                                {t("studio.download")}
-                              </a>
+                              {hasEmail && (
+                                <a
+                                  href={audioUrl2(ch.audio_url!, downloadFormat)}
+                                  download
+                                  onClick={() => { trackDownload(downloadFormat); track("audio_downloaded", { format: downloadFormat }); }}
+                                  className="text-xs px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 rounded-md transition-colors"
+                                >
+                                  {t("studio.download")}
+                                </a>
+                              )}
                             </>
                           )}
                         </div>
@@ -830,41 +892,66 @@ export default function Studio() {
                 </div>
               )}
 
-              {/* Format selector + download */}
-              <div className="flex flex-col items-center gap-3">
-                <div className="flex items-center gap-2">
-                  <label className="text-xs text-zinc-500">Format:</label>
-                  <select
-                    value={downloadFormat}
-                    onChange={(e) => setDownloadFormat(e.target.value)}
-                    className="bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-1.5 text-sm text-zinc-200 cursor-pointer"
-                  >
-                    <option value="mp3">MP3 — universal</option>
-                    <option value="wav">WAV — uncompressed</option>
-                    <option value="m4a">M4A — Apple devices</option>
-                    <option value="flac">FLAC — lossless</option>
-                    <option value="ogg">OGG — open format</option>
-                  </select>
-                </div>
-                <div className="flex gap-3">
-                  {audioUrl && (
-                    <a
-                      href={audioUrl2(audioUrl!, downloadFormat)}
-                      download
-                      onClick={() => { trackDownload(downloadFormat); track("audio_downloaded", { format: downloadFormat }); }}
-                      className="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 rounded-lg font-medium transition-colors"
+              {/* Format selector + download — only when email captured or signed in */}
+              {hasEmail && (
+                <div className="flex flex-col items-center gap-3">
+                  <div className="flex items-center gap-2">
+                    <label className="text-xs text-zinc-500">Format:</label>
+                    <select
+                      value={downloadFormat}
+                      onChange={(e) => setDownloadFormat(e.target.value)}
+                      className="bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-1.5 text-sm text-zinc-200 cursor-pointer"
                     >
-                      {chapters.length > 1 ? t("studio.downloadFull") : t("studio.download")}
-                    </a>
-                  )}
-                  <button
-                    onClick={reset}
-                    className="px-6 py-2.5 bg-zinc-800 hover:bg-zinc-700 rounded-lg font-medium transition-colors"
-                  >
-                    {t("studio.convertAnother")}
-                  </button>
+                      <option value="mp3">MP3 — universal</option>
+                      <option value="wav">WAV — uncompressed</option>
+                      <option value="m4a">M4A — Apple devices</option>
+                      <option value="flac">FLAC — lossless</option>
+                      <option value="ogg">OGG — open format</option>
+                    </select>
+                  </div>
+                  <div className="flex gap-3">
+                    {audioUrl && (
+                      <a
+                        href={audioUrl2(audioUrl!, downloadFormat)}
+                        download
+                        onClick={() => { trackDownload(downloadFormat); track("audio_downloaded", { format: downloadFormat }); }}
+                        className="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 rounded-lg font-medium transition-colors"
+                      >
+                        {chapters.length > 1 ? t("studio.downloadFull") : t("studio.download")}
+                      </a>
+                    )}
+                    <button
+                      onClick={reset}
+                      className="px-6 py-2.5 bg-zinc-800 hover:bg-zinc-700 rounded-lg font-medium transition-colors"
+                    >
+                      {t("studio.convertAnother")}
+                    </button>
+                  </div>
                 </div>
-              </div>
+              )}
+
+              {/* Sign-in benefits nudge for anonymous users */}
+              {isAnonymous && hasEmail && (
+                <div className="max-w-sm mx-auto bg-zinc-900/50 border border-zinc-800 rounded-xl p-4 space-y-3">
+                  <p className="text-sm font-medium text-zinc-300">{t("studio.signInBenefits.title")}</p>
+                  <ul className="text-xs text-zinc-500 space-y-1.5 text-left">
+                    <li className="flex items-center gap-2">
+                      <span className="text-blue-400">+</span> {t("studio.signInBenefits.history")}
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="text-blue-400">+</span> {t("studio.signInBenefits.email")}
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="text-blue-400">+</span> {t("studio.signInBenefits.priority")}
+                    </li>
+                  </ul>
+                  <SignInButton mode="modal">
+                    <button className="w-full py-2 bg-blue-600 hover:bg-blue-500 rounded-lg text-sm font-medium transition-colors">
+                      {t("studio.signInBenefits.cta")}
+                    </button>
+                  </SignInButton>
+                </div>
+              )}
             </div>
           )}
 

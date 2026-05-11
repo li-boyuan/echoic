@@ -3,10 +3,12 @@ from pathlib import Path
 
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import FileResponse, RedirectResponse
+from pydantic import BaseModel, EmailStr
 
 from app.models.schemas import JobResponse, JobStatus, VoiceOption
 from app.services.jobstore import delete_job, get_jobs, get_user_jobs, save_job
 from app.services.narrator import AVAILABLE_VOICES, LANGUAGES, generate_preview, get_voices_for_language
+from app.services.notify import send_completion_email
 from app.services.storage import delete_prefix, get_presigned_url
 
 router = APIRouter()
@@ -78,6 +80,25 @@ async def get_job(job_id: str):
     if not job:
         raise HTTPException(404, "Job not found")
     return job
+
+
+class ClaimRequest(BaseModel):
+    email: str
+
+
+@router.post("/jobs/{job_id}/claim")
+async def claim_job(job_id: str, req: ClaimRequest):
+    job = jobs.get(job_id)
+    if not job:
+        raise HTTPException(404, "Job not found")
+
+    job.user_email = req.email
+    save_job(job_id, job)
+
+    if job.status == JobStatus.COMPLETED:
+        send_completion_email(req.email, job.filename, job_id)
+
+    return {"status": "ok", "job": job}
 
 
 @router.get("/jobs/{job_id}/audio")

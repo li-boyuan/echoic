@@ -158,6 +158,21 @@ const messages: Record<Locale, Record<string, string>> = {
     "studio.play": "Play",
     "studio.hide": "Hide",
 
+    // Email gate
+    "studio.emailGate.title": "Enter your email to download",
+    "studio.emailGate.desc": "We'll send you the download link — so you can access it anytime.",
+    "studio.emailGate.placeholder": "your@email.com",
+    "studio.emailGate.submit": "Get Download",
+    "studio.emailGate.privacy": "No spam, ever. We only email you about your audiobooks.",
+    "studio.emailGate.signIn": "Or sign in for the full experience",
+
+    // Sign-in benefits
+    "studio.signInBenefits.title": "Get more with a free account:",
+    "studio.signInBenefits.history": "Save your audiobooks & re-download anytime",
+    "studio.signInBenefits.email": "Get notified when long conversions finish",
+    "studio.signInBenefits.priority": "Access conversion history across devices",
+    "studio.signInBenefits.cta": "Create Free Account",
+
     "studio.status.done": "done",
     "studio.status.narrating": "narrating...",
     "studio.status.failed": "failed",
@@ -321,6 +336,21 @@ const messages: Record<Locale, Record<string, string>> = {
     "studio.stop": "Detener",
     "studio.play": "Reproducir",
     "studio.hide": "Ocultar",
+
+    // Email gate
+    "studio.emailGate.title": "Ingresa tu email para descargar",
+    "studio.emailGate.desc": "Te enviaremos el enlace de descarga para que puedas acceder en cualquier momento.",
+    "studio.emailGate.placeholder": "tu@email.com",
+    "studio.emailGate.submit": "Obtener Descarga",
+    "studio.emailGate.privacy": "Sin spam, nunca. Solo te contactamos sobre tus audiolibros.",
+    "studio.emailGate.signIn": "O inicia sesión para la experiencia completa",
+
+    // Sign-in benefits
+    "studio.signInBenefits.title": "Obtén más con una cuenta gratuita:",
+    "studio.signInBenefits.history": "Guarda tus audiolibros y descárgalos cuando quieras",
+    "studio.signInBenefits.email": "Recibe notificaciones cuando terminen las conversiones",
+    "studio.signInBenefits.priority": "Accede a tu historial desde cualquier dispositivo",
+    "studio.signInBenefits.cta": "Crear Cuenta Gratis",
 
     "studio.status.done": "listo",
     "studio.status.narrating": "narrando...",
