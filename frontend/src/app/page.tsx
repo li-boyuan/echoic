@@ -190,7 +190,7 @@ export default function Home() {
             <p className="text-xs text-zinc-500 text-left leading-relaxed italic">
               {t("demo.text")}
             </p>
-            <audio controls className="w-full" src="/demo.wav" />
+            <audio controls className="w-full" src="/demo.mp3" />
           </div>
           <p className="text-xs text-zinc-600">{t("demo.note")}</p>
         </div>
