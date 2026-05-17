@@ -3,26 +3,26 @@
 import { useUser, SignInButton, SignedIn, SignedOut } from "@clerk/nextjs";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { trackPricingView } from "@/lib/tracking";
+import { trackInitiateCheckout, trackPricingView } from "@/lib/tracking";
 
 const PLANS = [
   {
     id: "free",
-    name: "Free",
+    name: "Free Sample",
     price: "$0",
     period: "",
-    description: "Try it out",
-    features: ["Unlimited conversions", "Up to 500 words per book", "All voices included", "Auto character casting"],
-    cta: "Get Started",
+    description: "Test your book's voice",
+    features: ["1 short sample", "Up to 500 words", "All voices included", "Auto character casting", "No credit card required"],
+    cta: "Create Sample",
   },
   {
     id: "single",
     name: "Single Book",
     price: "$9.99",
     period: "",
-    description: "Perfect for one book",
-    features: ["1 book conversion", "Unlimited words", "All voices included", "Auto character casting", "Chapter splitting", "Email notification when done", "Conversion history"],
-    cta: "Buy Now",
+    description: "Best for one finished audiobook",
+    features: ["1 full audiobook", "Unlimited words", "All voices included", "Auto character casting", "Chapter splitting", "Commercial use for content you own", "Email notification when done", "Conversion history"],
+    cta: "Convert One Book",
     popular: true,
   },
   {
@@ -31,12 +31,17 @@ const PLANS = [
     price: "$14.99",
     originalPrice: "$29.99",
     period: "/first month",
-    description: "For power users",
-    features: ["Unlimited conversions", "Unlimited words", "Most powerful AI model", "Auto character casting", "Chapter splitting", "Email notification when done", "Conversion history", "Priority processing"],
-    cta: "Subscribe — 50% Off",
+    description: "For authors with a catalog",
+    features: ["Unlimited full audiobooks", "Unlimited words", "Most powerful AI model", "Auto character casting", "Chapter splitting", "Commercial use for content you own", "Email notification when done", "Priority processing"],
+    cta: "Go Pro - 50% Off",
     promo: true,
   },
 ];
+
+const CHECKOUT_VALUES: Record<string, number> = {
+  single: 9.99,
+  pro: 14.99,
+};
 
 export default function Pricing() {
   const { user } = useUser();
@@ -47,6 +52,7 @@ export default function Pricing() {
   const handlePurchase = async (productId: string) => {
     if (!user) return;
     setLoading(productId);
+    trackInitiateCheckout(productId, CHECKOUT_VALUES[productId] ?? 0);
 
     try {
       const res = await fetch("/api/checkout", {
@@ -86,8 +92,25 @@ export default function Pricing() {
       <div className="flex-1 flex flex-col items-center justify-center px-4 py-16">
         <div className="max-w-4xl w-full space-y-8">
           <div className="text-center space-y-2">
-            <h1 className="text-3xl font-bold">Simple pricing</h1>
-            <p className="text-zinc-400">Pay only for what you need</p>
+            <h1 className="text-3xl font-bold">Start with a sample. Pay for the full book.</h1>
+            <p className="text-zinc-400">
+              Hear your first pages for free, then turn the entire manuscript into a downloadable audiobook.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-center">
+            <div className="bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3">
+              <p className="text-sm font-semibold text-zinc-100">$2,000+</p>
+              <p className="text-xs text-zinc-500">typical studio narration</p>
+            </div>
+            <div className="bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3">
+              <p className="text-sm font-semibold text-zinc-100">$9.99</p>
+              <p className="text-xs text-zinc-500">one Echoic audiobook</p>
+            </div>
+            <div className="bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3">
+              <p className="text-sm font-semibold text-zinc-100">26 languages</p>
+              <p className="text-xs text-zinc-500">voices and character casting</p>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -139,11 +162,12 @@ export default function Pricing() {
                   {plan.id === "free" ? (
                     <>
                       <SignedOut>
-                        <SignInButton mode="modal">
-                          <button className="w-full py-2.5 bg-zinc-700 hover:bg-zinc-600 text-zinc-100 rounded-lg font-medium text-sm transition-colors cursor-pointer">
-                            {plan.cta}
-                          </button>
-                        </SignInButton>
+                        <Link
+                          href="/studio"
+                          className="block w-full py-2.5 bg-zinc-700 hover:bg-zinc-600 text-zinc-100 rounded-lg font-medium text-sm transition-colors text-center"
+                        >
+                          {plan.cta}
+                        </Link>
                       </SignedOut>
                       <SignedIn>
                         <Link

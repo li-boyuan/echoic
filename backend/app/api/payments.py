@@ -18,12 +18,12 @@ PRODUCTS = {
     "single": {
         "name": "Single Book",
         "price_cents": 999,
-        "description": "Convert 1 book (unlimited words)",
+        "description": "Convert one full audiobook with unlimited words",
     },
     "pro": {
         "name": "Pro Monthly",
         "price_cents": 2999,
-        "description": "Unlimited conversions for 30 days",
+        "description": "Unlimited full audiobook conversions for 30 days",
     },
 }
 
@@ -85,7 +85,10 @@ async def create_checkout(req: CheckoutRequest):
             }],
             discounts=[{"coupon": coupon.id}],
             metadata={"user_id": req.user_id, "product": req.product},
-            success_url=f"{settings.frontend_url}/studio?payment=success",
+            subscription_data={
+                "metadata": {"user_id": req.user_id, "product": req.product},
+            },
+            success_url=f"{settings.frontend_url}/studio?payment=success&product={req.product}",
             cancel_url=f"{settings.frontend_url}/studio?payment=cancelled",
         )
     else:
@@ -100,7 +103,7 @@ async def create_checkout(req: CheckoutRequest):
                 "quantity": 1,
             }],
             metadata={"user_id": req.user_id, "product": req.product},
-            success_url=f"{settings.frontend_url}/studio?payment=success",
+            success_url=f"{settings.frontend_url}/studio?payment=success&product={req.product}",
             cancel_url=f"{settings.frontend_url}/studio?payment=cancelled",
         )
 
@@ -139,10 +142,15 @@ async def stripe_webhook(request: Request):
             activate_pro(user_id, datetime.utcnow() + timedelta(days=30))
 
     elif event["type"] == "invoice.paid":
-        subscription = event["data"]["object"]
-        if subscription.get("metadata", {}).get("user_id"):
-            user_id = subscription["metadata"]["user_id"]
-            activate_pro(user_id, datetime.utcnow() + timedelta(days=30))
+        invoice = event["data"]["object"]
+        metadata = invoice.get("metadata", {}) or {}
+
+        if not metadata.get("user_id") and invoice.get("subscription"):
+            subscription = stripe.Subscription.retrieve(invoice["subscription"])
+            metadata = subscription.get("metadata", {}) or {}
+
+        if metadata.get("user_id"):
+            activate_pro(metadata["user_id"], datetime.utcnow() + timedelta(days=30))
 
     return {"status": "ok"}
 
@@ -167,16 +175,16 @@ async def get_pricing():
         "free": {
             "name": "Free",
             "price": "$0",
-            "description": f"1 free conversion up to {settings.free_word_limit:,} words",
+            "description": f"1 short sample up to {settings.free_word_limit:,} words",
         },
         "single": {
             "name": "Single Book",
             "price": "$9.99",
-            "description": "1 book conversion, unlimited words",
+            "description": "1 full audiobook, unlimited words",
         },
         "pro": {
             "name": "Pro",
             "price": "$29.99/mo",
-            "description": "Unlimited conversions",
+            "description": "Unlimited full audiobooks",
         },
     }

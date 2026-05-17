@@ -12,13 +12,13 @@ const messages: Record<Locale, Record<string, string>> = {
     "nav.studio": "Studio",
 
     // Landing — Hero
-    "hero.badge": "AI-Powered Audiobook Studio",
-    "hero.title": "Your Book Deserves a Voice",
-    "hero.subtitle": "Turn any manuscript into a professionally narrated audiobook — with unique character voices, emotion, and pacing.",
+    "hero.badge": "For self-published authors",
+    "hero.title": "Turn Your Manuscript Into a Sellable Audiobook",
+    "hero.subtitle": "Create a free sample, then convert the full book for $9.99 with character voices, emotion, and chapter downloads.",
     "hero.description": "Upload your book. AI reads it, casts each character a fitting voice, and narrates with natural expression.",
-    "hero.cta": "Try Free — No Sign-up Required",
+    "hero.cta": "Create Free Sample",
     "hero.ctaSignedIn": "Open Studio",
-    "hero.ctaSub": "Free for books under 500 words. No credit card needed.",
+    "hero.ctaSub": "One free sample up to 500 words. Full books start at $9.99.",
     "hero.oldCost": "$2,000–$5,000",
     "hero.oldCostLabel": "traditional narration",
     "hero.newCost": "$9.99",
@@ -47,17 +47,17 @@ const messages: Record<Locale, Record<string, string>> = {
     "proof.stat3.value": "< 5 min",
     "proof.stat3.label": "Average processing time",
     "proof.stat4.value": "$9.99",
-    "proof.stat4.label": "Per book, any length",
+    "proof.stat4.label": "Full audiobook, any length",
 
     // Landing — Try It
     "tryit.title": "Try it with your own text",
-    "tryit.desc": "Paste a paragraph from your book and hear it instantly — no signup required.",
+    "tryit.desc": "Paste a paragraph from your book and hear a sample instantly - no signup required.",
     "tryit.placeholder": "Paste a paragraph here... (e.g., the opening of your book)",
     "tryit.listen": "Listen",
     "tryit.generating": "Generating...",
 
     // Landing — Features
-    "features.title": "Why authors choose Echoic",
+    "features.title": "Why authors pay for Echoic",
     "features.directed.title": "AI-Directed Narration",
     "features.directed.desc": "AI reads your text first and adds emotion, pacing, and dramatic beats — so the narration sounds natural, not robotic.",
     "features.casting.title": "Auto Character Casting",
@@ -66,8 +66,8 @@ const messages: Record<Locale, Record<string, string>> = {
     "features.languages.desc": "Generate audiobooks in English, Chinese, Spanish, French, Japanese, Korean, Hindi, and many more languages.",
 
     // Landing — CTA Banner
-    "cta.title": "Ready to hear your book come alive?",
-    "cta.desc": "Join authors who are turning manuscripts into audiobooks in minutes, not months.",
+    "cta.title": "Ready to finish the full audiobook?",
+    "cta.desc": "Start with a free sample. If the voice fits your book, unlock the full conversion for $9.99.",
 
     // FAQ
     "faq.title": "FAQ",
@@ -107,7 +107,7 @@ const messages: Record<Locale, Record<string, string>> = {
 
     // Studio
     "studio.create": "Create an audiobook",
-    "studio.noCredits": "You've used your free conversion",
+    "studio.noCredits": "You've used your free sample",
     "studio.noCredits.sub": "Purchase credits or subscribe to Pro to continue",
     "studio.viewPricing": "View Pricing",
     "studio.getCredits": "Get credits",
@@ -149,8 +149,21 @@ const messages: Record<Locale, Record<string, string>> = {
     "studio.noAudiobooks": "No audiobooks yet. Create your first one!",
     "studio.delete": "Delete",
     "studio.deleteConfirm": "Are you sure you want to delete this audiobook? This cannot be undone.",
-    "studio.freeConversion": "1 free conversion",
-    "studio.freeMode": "Free (up to 500 words)",
+    "studio.freeConversion": "1 free sample",
+    "studio.freeMode": "Free sample available",
+    "studio.freeUsed": "Free sample used",
+    "studio.freeLimit": "free sample limit: {count} words",
+    "studio.fileFreeHint": "Free samples are limited to {count} words. Full books start at $9.99.",
+    "studio.needsPaid": "This is longer than the free sample. Convert the full audiobook with a Single Book credit.",
+    "studio.upgradeNow": "Unlock full book",
+    "studio.upgradeToConvert": "Unlock Full Book",
+    "studio.plan.free": "Your free sample is available",
+    "studio.plan.freeDesc": "Generate one sample up to {count} words before paying.",
+    "studio.plan.used": "Your free sample has been used",
+    "studio.plan.usedDesc": "Full audiobook conversion starts at $9.99 with unlimited words.",
+    "studio.plan.credit": "Single Book credit ready",
+    "studio.plan.pro": "Pro plan active",
+    "studio.plan.paidDesc": "You can convert full manuscripts with unlimited words.",
     "studio.credits": "{count} credit | {count} credits",
     "studio.pro": "Pro",
     "studio.preview": "Preview",
@@ -191,13 +204,13 @@ const messages: Record<Locale, Record<string, string>> = {
     "nav.studio": "Estudio",
 
     // Landing — Hero
-    "hero.badge": "Estudio de Audiolibros con IA",
-    "hero.title": "Tu libro merece una voz",
-    "hero.subtitle": "Convierte cualquier manuscrito en un audiolibro narrado profesionalmente — con voces únicas para cada personaje, emoción y ritmo.",
+    "hero.badge": "Para autores independientes",
+    "hero.title": "Convierte tu manuscrito en un audiolibro vendible",
+    "hero.subtitle": "Crea una muestra gratis y convierte el libro completo por $9.99 con voces de personajes, emoción y descargas por capítulo.",
     "hero.description": "Sube tu libro. La IA lo lee, asigna una voz a cada personaje y lo narra con expresión natural.",
-    "hero.cta": "Prueba Gratis — Sin Registro",
+    "hero.cta": "Crear Muestra Gratis",
     "hero.ctaSignedIn": "Abrir Estudio",
-    "hero.ctaSub": "Gratis para libros de hasta 500 palabras. Sin tarjeta de crédito.",
+    "hero.ctaSub": "Una muestra gratis de hasta 500 palabras. Libros completos desde $9.99.",
     "hero.oldCost": "$2,000–$5,000",
     "hero.oldCostLabel": "narración tradicional",
     "hero.newCost": "$9.99",
@@ -226,17 +239,17 @@ const messages: Record<Locale, Record<string, string>> = {
     "proof.stat3.value": "< 5 min",
     "proof.stat3.label": "Tiempo promedio de procesamiento",
     "proof.stat4.value": "$9.99",
-    "proof.stat4.label": "Por libro, cualquier extensión",
+    "proof.stat4.label": "Audiolibro completo, cualquier extensión",
 
     // Landing — Try It
     "tryit.title": "Pruébalo con tu propio texto",
-    "tryit.desc": "Pega un párrafo de tu libro y escúchalo al instante — sin registro.",
+    "tryit.desc": "Pega un párrafo de tu libro y escucha una muestra al instante - sin registro.",
     "tryit.placeholder": "Pega un párrafo aquí... (por ejemplo, el inicio de tu libro)",
     "tryit.listen": "Escuchar",
     "tryit.generating": "Generando...",
 
     // Landing — Features
-    "features.title": "Por qué los autores eligen Echoic",
+    "features.title": "Por qué los autores pagan por Echoic",
     "features.directed.title": "Narración Dirigida por IA",
     "features.directed.desc": "Una IA lee tu texto primero y añade emoción, ritmo y momentos dramáticos — para que la narración suene natural, no robótica.",
     "features.casting.title": "Casting Automático",
@@ -245,8 +258,8 @@ const messages: Record<Locale, Record<string, string>> = {
     "features.languages.desc": "Genera audiolibros en español, inglés, chino, francés, japonés, coreano, hindi y muchos más idiomas.",
 
     // Landing — CTA Banner
-    "cta.title": "¿Listo para escuchar tu libro cobrar vida?",
-    "cta.desc": "Únete a los autores que convierten manuscritos en audiolibros en minutos, no meses.",
+    "cta.title": "¿Listo para terminar el audiolibro completo?",
+    "cta.desc": "Empieza con una muestra gratis. Si la voz encaja con tu libro, desbloquea la conversión completa por $9.99.",
 
     // FAQ
     "faq.title": "Preguntas Frecuentes",
@@ -286,7 +299,7 @@ const messages: Record<Locale, Record<string, string>> = {
 
     // Studio
     "studio.create": "Crear un audiolibro",
-    "studio.noCredits": "Has usado tu conversión gratuita",
+    "studio.noCredits": "Ya usaste tu muestra gratis",
     "studio.noCredits.sub": "Compra créditos o suscríbete a Pro para continuar",
     "studio.viewPricing": "Ver Precios",
     "studio.getCredits": "Obtener créditos",
@@ -328,9 +341,22 @@ const messages: Record<Locale, Record<string, string>> = {
     "studio.noAudiobooks": "Aún no tienes audiolibros. ¡Crea el primero!",
     "studio.delete": "Eliminar",
     "studio.deleteConfirm": "¿Estás seguro de que deseas eliminar este audiolibro? Esta acción no se puede deshacer.",
-    "studio.freeConversion": "1 conversión gratis",
+    "studio.freeConversion": "1 muestra gratis",
     "studio.credits": "{count} crédito | {count} créditos",
-    "studio.freeMode": "Gratis (hasta 500 palabras)",
+    "studio.freeMode": "Muestra gratis disponible",
+    "studio.freeUsed": "Muestra gratis usada",
+    "studio.freeLimit": "límite de muestra gratis: {count} palabras",
+    "studio.fileFreeHint": "Las muestras gratis están limitadas a {count} palabras. Los libros completos empiezan en $9.99.",
+    "studio.needsPaid": "Este texto supera la muestra gratis. Convierte el audiolibro completo con un crédito de Single Book.",
+    "studio.upgradeNow": "Desbloquear libro completo",
+    "studio.upgradeToConvert": "Desbloquear Libro Completo",
+    "studio.plan.free": "Tu muestra gratis está disponible",
+    "studio.plan.freeDesc": "Genera una muestra de hasta {count} palabras antes de pagar.",
+    "studio.plan.used": "Ya usaste tu muestra gratis",
+    "studio.plan.usedDesc": "La conversión completa empieza en $9.99 con palabras ilimitadas.",
+    "studio.plan.credit": "Crédito de Single Book disponible",
+    "studio.plan.pro": "Plan Pro activo",
+    "studio.plan.paidDesc": "Puedes convertir manuscritos completos con palabras ilimitadas.",
     "studio.pro": "Pro",
     "studio.preview": "Preescuchar",
     "studio.stop": "Detener",

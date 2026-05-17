@@ -126,9 +126,20 @@ async def upload_manuscript(
     allowed, tier = can_convert(user_id, word_count)
     if not allowed:
         os.remove(filepath)
+        if word_count <= settings.free_word_limit:
+            detail = (
+                "You've used your free sample. Purchase a Single Book credit "
+                "($9.99) to convert a full audiobook with unlimited words."
+            )
+        else:
+            detail = (
+                f"Your text has {word_count:,} words, which exceeds the free sample "
+                f"limit of {settings.free_word_limit} words. Purchase a Single Book "
+                "credit ($9.99) for unlimited words."
+            )
         raise HTTPException(
             402,
-            f"Your text has {word_count:,} words, which exceeds the free limit of {settings.free_word_limit} words. Purchase a Single Book credit ($9.99) for unlimited words.",
+            detail,
         )
 
     from datetime import datetime

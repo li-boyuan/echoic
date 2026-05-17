@@ -15,7 +15,16 @@ export function trackSignUp() {
 }
 
 export function trackUpload(filename: string) {
-  trackEvent("InitiateCheckout", { content_name: filename });
+  trackEvent("Lead", { content_name: "manuscript_uploaded", filename });
+}
+
+export function trackInitiateCheckout(product: string, value: number) {
+  trackEvent("InitiateCheckout", {
+    content_name: product,
+    content_ids: [product],
+    value,
+    currency: "USD",
+  });
 }
 
 export function trackConversion(filename: string) {

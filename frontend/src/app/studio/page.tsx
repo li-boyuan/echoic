@@ -53,6 +53,16 @@ export default function Studio() {
   const hasEmail = !!user || !!capturedEmail;
   const voiceName = (id: string) => voices.find((v) => v.id === id)?.name || id;
   const audioUrl2 = (url: string, format: string) => `${url}?format=${format}&user_id=${userId}`;
+  const textWordCount = textInput.split(/\s+/).filter(Boolean).length;
+  const hasPaidAccess = !!credits && (credits.pro_active || credits.single_credits > 0);
+  const freeSampleUsed = !!credits && !credits.free_available && !hasPaidAccess;
+  const textNeedsPaid = !!credits && inputMode === "text" && textWordCount > credits.free_word_limit && !hasPaidAccess;
+  const shouldUpgradeBeforeUpload = freeSampleUsed || textNeedsPaid;
+  const showPaywallError = !!error && (
+    error.includes("$9.99") ||
+    error.toLowerCase().includes("free sample") ||
+    error.toLowerCase().includes("free limit")
+  );
 
   useEffect(() => {
     fetch("/api/languages")
@@ -148,7 +158,9 @@ export default function Studio() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get("payment") === "success") {
-      trackPurchase(9.99);
+      const product = params.get("product") || "single";
+      trackPurchase(product === "pro" ? 14.99 : 9.99);
+      track("purchase_success", { product });
       window.history.replaceState({}, "", "/studio");
     }
   }, []);
@@ -219,6 +231,14 @@ export default function Studio() {
   }, []);
 
   const handleUpload = async () => {
+    if (shouldUpgradeBeforeUpload) {
+      track("paywall_cta_clicked", {
+        reason: freeSampleUsed ? "free_sample_used" : "word_limit",
+      });
+      window.location.href = "/pricing";
+      return;
+    }
+
     const uploadFile = inputMode === "text"
       ? new File([textInput], "pasted-text.txt", { type: "text/plain" })
       : file;
@@ -239,6 +259,9 @@ export default function Studio() {
       const res = await fetch("/api/upload", { method: "POST", body: formData });
       if (!res.ok) {
         const data = await res.json();
+        if (res.status === 402) {
+          track("paywall_hit", { source: "upload", words: inputMode === "text" ? textWordCount : 0 });
+        }
         throw new Error(data.detail || "Upload failed");
       }
 
@@ -340,8 +363,12 @@ export default function Studio() {
                     </span>
                   )}
                   {credits.single_credits === 0 && (
-                    <span className="px-3 py-1.5 bg-emerald-600/20 text-emerald-300 border border-emerald-500/30 rounded-full font-medium">
-                      {t("studio.freeMode")}
+                    <span className={`px-3 py-1.5 border rounded-full font-medium ${
+                      credits.free_available
+                        ? "bg-emerald-600/20 text-emerald-300 border-emerald-500/30"
+                        : "bg-zinc-800 text-zinc-400 border-zinc-700"
+                    }`}>
+                      {credits.free_available ? t("studio.freeMode") : t("studio.freeUsed")}
                     </span>
                   )}
                 </>
@@ -460,6 +487,33 @@ export default function Studio() {
             <div className="space-y-6">
               <h2 className="text-2xl font-semibold text-center">{t("studio.create")}</h2>
 
+              {credits && (
+                <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <div>
+                    <p className="text-sm font-medium text-zinc-200">
+                      {hasPaidAccess
+                        ? credits.pro_active ? t("studio.plan.pro") : t("studio.plan.credit")
+                        : credits.free_available ? t("studio.plan.free") : t("studio.plan.used")}
+                    </p>
+                    <p className="text-xs text-zinc-500">
+                      {hasPaidAccess
+                        ? t("studio.plan.paidDesc")
+                        : credits.free_available
+                          ? t("studio.plan.freeDesc", { count: credits.free_word_limit })
+                          : t("studio.plan.usedDesc")}
+                    </p>
+                  </div>
+                  {!hasPaidAccess && (
+                    <Link
+                      href="/pricing"
+                      onClick={() => track("pricing_clicked", { source: "studio_plan_banner" })}
+                      className="px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg text-sm font-medium text-center transition-colors"
+                    >
+                      {credits.free_available ? t("studio.viewPricing") : t("studio.upgradeNow")}
+                    </Link>
+                  )}
+                </div>
+              )}
 
               {/* Language Selector */}
               <div className="space-y-2">
@@ -561,8 +615,21 @@ export default function Studio() {
                   />
                   {textInput.length > 0 && (
                     <p className="text-xs text-zinc-500 text-center">
-                      {textInput.split(/\s+/).filter(Boolean).length} {t("studio.words")}
+                      {textWordCount} {t("studio.words")}
+                      {!hasPaidAccess && credits && ` - ${t("studio.freeLimit", { count: credits.free_word_limit })}`}
                     </p>
+                  )}
+                  {textNeedsPaid && (
+                    <div className="bg-blue-600/10 border border-blue-500/30 rounded-xl p-3 text-center space-y-2">
+                      <p className="text-sm text-blue-200">{t("studio.needsPaid")}</p>
+                      <Link
+                        href="/pricing"
+                        onClick={() => track("pricing_clicked", { source: "text_word_limit" })}
+                        className="inline-block px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg text-sm font-medium transition-colors"
+                      >
+                        {t("studio.upgradeNow")}
+                      </Link>
+                    </div>
                   )}
                   {error && status === "idle" && (
                     <p className="text-red-400 text-sm text-center">{error}</p>
@@ -586,7 +653,7 @@ export default function Studio() {
                         onClick={handleUpload}
                         className="px-8 py-3 bg-blue-600 hover:bg-blue-500 rounded-xl font-medium transition-colors text-lg"
                       >
-                        {t("studio.generate")}
+                        {shouldUpgradeBeforeUpload ? t("studio.upgradeToConvert") : t("studio.generate")}
                       </button>
                     </div>
                   )}
@@ -628,6 +695,13 @@ export default function Studio() {
                     <p className="text-sm text-zinc-500">
                       {(file.size / 1024 / 1024).toFixed(1)} MB
                     </p>
+                    {!hasPaidAccess && credits && (
+                      <p className="text-xs text-zinc-500 max-w-sm mx-auto">
+                        {credits.free_available
+                          ? t("studio.fileFreeHint", { count: credits.free_word_limit })
+                          : t("studio.plan.usedDesc")}
+                      </p>
+                    )}
                     {error && status === "idle" && (
                       <p className="text-red-400 text-sm">{error}</p>
                     )}
@@ -655,7 +729,7 @@ export default function Studio() {
                         }}
                         className="px-8 py-3 bg-blue-600 hover:bg-blue-500 rounded-xl font-medium transition-colors text-lg"
                       >
-                        {t("studio.generate")}
+                        {shouldUpgradeBeforeUpload ? t("studio.upgradeToConvert") : t("studio.generate")}
                       </button>
                     </div>
                   </div>
@@ -975,7 +1049,18 @@ export default function Studio() {
           )}
 
           {error && status === "idle" && (
-            <p className="text-red-400 text-sm text-center">{error}</p>
+            <div className="text-center space-y-3">
+              <p className="text-red-400 text-sm">{error}</p>
+              {showPaywallError && (
+                <Link
+                  href="/pricing"
+                  onClick={() => track("pricing_clicked", { source: "paywall_error" })}
+                  className="inline-block px-5 py-2.5 bg-blue-600 hover:bg-blue-500 rounded-lg text-sm font-medium transition-colors"
+                >
+                  {t("studio.viewPricing")}
+                </Link>
+              )}
+            </div>
           )}
         </div>
       </div>

@@ -75,11 +75,11 @@ Upload (.txt/.pdf/.epub/.docx/.mobi/.azw3)
 ### Payments (Stripe)
 | Tier | Price | What you get |
 |------|-------|-------------|
-| Free | $0 | Unlimited conversions, up to 500 words per book |
-| Single Book | $9.99 | 1 book, unlimited words |
-| Pro | $14.99 first month (50% off), $29.99/mo after | Unlimited conversions, unlimited words, most powerful AI model |
+| Free Sample | $0 | 1 short sample, up to 500 words |
+| Single Book | $9.99 | 1 full audiobook, unlimited words |
+| Pro | $14.99 first month (50% off), $29.99/mo after | Unlimited full audiobooks, unlimited words, most powerful AI model |
 
-- No credit tracking for free tier — just enforces 500 word limit
+- Free tier is tracked per user and limited to one short sample
 - Anonymous users get unique IDs (no shared credit pool)
 - Clear error messages when word limit exceeded
 - Stripe Checkout for one-time and subscription payments
