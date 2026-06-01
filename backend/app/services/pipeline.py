@@ -46,14 +46,14 @@ async def _narrate_chapter(job, jobs, ch, directed, voice_map, semaphore):
             job.chapters[ch.index].audio_url = f"/api/jobs/{job.id}/audio/{ch.index}"
             completed = sum(1 for c in job.chapters if c.status == "completed")
             job.progress = 0.5 + (completed / len(job.chapters)) * 0.5
-            save_job(job.id, job); jobs[job.id] = job
+            save_job(job.id, job, sync_to_r2=False); jobs[job.id] = job
 
             logger.info("Job %s: chapter %d completed", job.id, ch.index)
             return chapter_path
         except Exception as e:
             logger.exception("Job %s: chapter %d failed", job.id, ch.index)
             job.chapters[ch.index].status = "failed"
-            save_job(job.id, job); jobs[job.id] = job
+            save_job(job.id, job, sync_to_r2=False); jobs[job.id] = job
             raise
 
 
@@ -94,7 +94,7 @@ async def run_pipeline(
                 logger.info("Job %s: chapter %d directed — %d chars, %d chunks → %d chars", job.id, ch.index, len(ch.text), len(chunks), len(directed))
                 job.chapters[ch.index].status = "directed"
                 job.progress = sum(1 for c in job.chapters if c.status != "pending") / (len(chapters) * 2)
-                save_job(job.id, job); jobs[job.id] = job
+                save_job(job.id, job, sync_to_r2=False); jobs[job.id] = job
                 return ch, directed
 
         all_directed = await asyncio.gather(*[direct_chapter(ch) for ch in chapters])
@@ -125,8 +125,8 @@ async def run_pipeline(
         full_path = f"output/{job.id}/full.wav"
         stitch_audio(full_pcm, full_path)
 
-        consume_credit(user_id, credit_tier)
-
+        # Upload to R2 BEFORE consuming credit. If R2 fails, the customer
+        # keeps their credit and can retry without paying twice.
         r2_urls = upload_job_audio(job.id, "output", user_id=user_id)
         if "full" in r2_urls:
             job.r2_url = r2_urls["full"]
@@ -134,6 +134,8 @@ async def run_pipeline(
             ch_key = f"chapter_{ch.index}"
             if ch_key in r2_urls:
                 ch.r2_url = r2_urls[ch_key]
+
+        consume_credit(user_id, credit_tier)
 
         job.status = JobStatus.COMPLETED
         job.progress = 1.0

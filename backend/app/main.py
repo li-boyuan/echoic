@@ -8,6 +8,7 @@ from fastapi.responses import PlainTextResponse, RedirectResponse
 from app.api import jobs, payments, upload
 from app.config import settings
 from app.services.credits import grant_admin_access, sync_from_stripe
+from app.services.jobstore import fail_orphaned_jobs
 
 
 @asynccontextmanager
@@ -16,6 +17,7 @@ async def lifespan(app: FastAPI):
     os.makedirs(settings.output_dir, exist_ok=True)
     sync_from_stripe()
     grant_admin_access()
+    fail_orphaned_jobs()
     yield
 
 

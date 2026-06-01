@@ -128,38 +128,20 @@ export default function Home() {
         </div>
       </nav>
 
-      {/* Hero */}
-      <div className="flex-1 flex flex-col items-center justify-center px-4 pt-16 pb-12">
-        <div className="max-w-3xl w-full space-y-8 text-center">
-          <div className="space-y-4">
-            <p className="text-sm font-medium text-blue-400 tracking-wide uppercase">
-              {t("hero.badge")}
-            </p>
-            <h1 className="text-5xl sm:text-6xl font-bold tracking-tight text-zinc-100 leading-tight">
-              {t("hero.title")}
-            </h1>
-            <p className="text-xl text-zinc-300 max-w-2xl mx-auto">
-              {t("hero.subtitle")}
-            </p>
-            <p className="text-lg text-zinc-400 max-w-lg mx-auto">
-              {t("hero.description")}
-            </p>
-          </div>
+      {/* Hero — tight, single CTA */}
+      <div className="flex flex-col items-center justify-center px-4 pt-12 pb-8">
+        <div className="max-w-3xl w-full space-y-6 text-center">
+          <p className="text-sm font-medium text-blue-400 tracking-wide uppercase">
+            {t("hero.badge")}
+          </p>
+          <h1 className="text-5xl sm:text-6xl font-bold tracking-tight text-zinc-100 leading-tight">
+            {t("hero.title")}
+          </h1>
+          <p className="text-xl text-zinc-300 max-w-2xl mx-auto">
+            {t("hero.subtitle")}
+          </p>
 
-          {/* Cost Anchor */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 py-2">
-            <div className="flex items-center gap-2">
-              <span className="text-zinc-600 line-through text-lg">{t("hero.oldCost")}</span>
-              <span className="text-zinc-500">{t("hero.oldCostLabel")}</span>
-            </div>
-            <div className="hidden sm:block w-px h-8 bg-zinc-700" />
-            <div className="flex items-center gap-2">
-              <span className="text-3xl font-bold text-emerald-400">{t("hero.newCost")}</span>
-              <span className="text-zinc-400">{t("hero.newCostLabel")}</span>
-            </div>
-          </div>
-
-          <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-4">
+          <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
             <SignedOut>
               <Link
                 href="/studio"
@@ -176,28 +158,74 @@ export default function Home() {
                 {t("hero.ctaSignedIn")}
               </Link>
             </SignedIn>
-            <span className="text-sm text-zinc-500">{t("hero.ctaSub")}</span>
           </div>
+          <p className="text-sm text-zinc-500">{t("hero.ctaSub")}</p>
         </div>
       </div>
 
-      {/* Audio Demo — hear it immediately */}
-      <div className="py-16 px-4 bg-zinc-900/50">
-        <div className="max-w-xl mx-auto text-center space-y-5">
-          <h2 className="text-2xl font-bold text-zinc-100">{t("demo.title")}</h2>
+      {/* Real Chapter Demo — first thing after hero, the proof point */}
+      <div className="py-12 px-4">
+        <div className="max-w-2xl mx-auto text-center space-y-5">
+          <h2 className="text-2xl sm:text-3xl font-bold text-zinc-100">{t("demo.title")}</h2>
           <p className="text-zinc-400">{t("demo.desc")}</p>
-          <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 space-y-4">
-            <p className="text-xs text-zinc-500 text-left leading-relaxed italic">
+          <div className="bg-gradient-to-b from-zinc-900 to-zinc-900/40 border border-zinc-800 rounded-2xl p-6 space-y-4 shadow-xl">
+            <audio controls className="w-full" src="/demo.mp3" />
+            <div className="space-y-2 pt-2 border-t border-zinc-800">
+              <p className="text-xs uppercase tracking-wide text-zinc-500">{t("demo.cast.label")}</p>
+              <div className="flex flex-wrap gap-2 justify-center">
+                <span className="px-3 py-1 bg-zinc-800 border border-zinc-700 rounded-lg text-xs">
+                  <span className="text-zinc-300">{t("demo.cast.narrator")}</span>
+                  <span className="text-zinc-500"> — Kore</span>
+                </span>
+                <span className="px-3 py-1 bg-zinc-800 border border-zinc-700 rounded-lg text-xs">
+                  <span className="text-zinc-300">{t("demo.cast.oldman")}</span>
+                  <span className="text-zinc-500"> — Charon</span>
+                </span>
+                <span className="px-3 py-1 bg-zinc-800 border border-zinc-700 rounded-lg text-xs">
+                  <span className="text-zinc-300">{t("demo.cast.granddaughter")}</span>
+                  <span className="text-zinc-500"> — Leda</span>
+                </span>
+              </div>
+            </div>
+            <p className="text-xs text-zinc-500 text-left leading-relaxed italic pt-2">
               {t("demo.text")}
             </p>
-            <audio controls className="w-full" src="/demo.mp3" />
           </div>
           <p className="text-xs text-zinc-600">{t("demo.note")}</p>
         </div>
       </div>
 
+      {/* Where you can publish — addresses #1 objection */}
+      <div className="py-14 px-4 bg-zinc-900/50">
+        <div className="max-w-4xl mx-auto text-center space-y-6">
+          <h2 className="text-2xl font-bold text-zinc-100">{t("publish.title")}</h2>
+          <p className="text-zinc-400 max-w-xl mx-auto">{t("publish.desc")}</p>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 pt-2">
+            {[
+              "publish.platform.google",
+              "publish.platform.apple",
+              "publish.platform.kobo",
+              "publish.platform.spotify",
+              "publish.platform.gumroad",
+              "publish.platform.direct",
+            ].map((k) => (
+              <div
+                key={k}
+                className="px-3 py-3 bg-zinc-900 border border-zinc-800 rounded-xl text-sm font-medium text-zinc-300"
+              >
+                {t(k)}
+              </div>
+            ))}
+          </div>
+          <p className="text-xs text-zinc-500 max-w-xl mx-auto pt-2">{t("publish.note")}</p>
+        </div>
+      </div>
+
+      {/* Try It Now — moved up to capture intent */}
+      <TryItNow />
+
       {/* How it Works */}
-      <div className="py-20 px-4">
+      <div className="py-20 px-4 bg-zinc-900/50">
         <div className="max-w-4xl mx-auto space-y-12">
           <h2 className="text-2xl font-bold text-zinc-100 text-center">{t("how.title")}</h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
@@ -226,32 +254,40 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Social Proof */}
-      <div className="py-16 px-4 bg-zinc-900/50">
-        <div className="max-w-4xl mx-auto space-y-10">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 text-center">
+      {/* Cost anchor + at-a-glance stats — replaces the bare stats wall */}
+      <div className="py-12 px-4">
+        <div className="max-w-4xl mx-auto space-y-8">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-10">
+            <div className="flex items-center gap-2">
+              <span className="text-zinc-600 line-through text-lg">{t("hero.oldCost")}</span>
+              <span className="text-zinc-500 text-sm">{t("hero.oldCostLabel")}</span>
+            </div>
+            <div className="hidden sm:block w-px h-8 bg-zinc-700" />
+            <div className="flex items-center gap-2">
+              <span className="text-3xl font-bold text-emerald-400">{t("hero.newCost")}</span>
+              <span className="text-zinc-400">{t("hero.newCostLabel")}</span>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 text-center pt-4 border-t border-zinc-800">
             <div>
-              <p className="text-3xl font-bold text-zinc-100">{t("proof.stat1.value")}</p>
-              <p className="text-sm text-zinc-500">{t("proof.stat1.label")}</p>
+              <p className="text-2xl font-bold text-zinc-100">{t("proof.stat1.value")}</p>
+              <p className="text-xs text-zinc-500">{t("proof.stat1.label")}</p>
             </div>
             <div>
-              <p className="text-3xl font-bold text-zinc-100">{t("proof.stat2.value")}</p>
-              <p className="text-sm text-zinc-500">{t("proof.stat2.label")}</p>
+              <p className="text-2xl font-bold text-zinc-100">{t("proof.stat2.value")}</p>
+              <p className="text-xs text-zinc-500">{t("proof.stat2.label")}</p>
             </div>
             <div>
-              <p className="text-3xl font-bold text-zinc-100">{t("proof.stat3.value")}</p>
-              <p className="text-sm text-zinc-500">{t("proof.stat3.label")}</p>
+              <p className="text-2xl font-bold text-zinc-100">{t("proof.stat3.value")}</p>
+              <p className="text-xs text-zinc-500">{t("proof.stat3.label")}</p>
             </div>
             <div>
-              <p className="text-3xl font-bold text-zinc-100">{t("proof.stat4.value")}</p>
-              <p className="text-sm text-zinc-500">{t("proof.stat4.label")}</p>
+              <p className="text-2xl font-bold text-zinc-100">{t("proof.stat4.value")}</p>
+              <p className="text-xs text-zinc-500">{t("proof.stat4.label")}</p>
             </div>
           </div>
         </div>
       </div>
-
-      {/* Try It Now */}
-      <TryItNow />
 
       {/* Features */}
       <div className="py-20 px-4 bg-zinc-900/50">
@@ -286,6 +322,22 @@ export default function Home() {
               <p className="text-sm text-zinc-500">{t("features.languages.desc")}</p>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Founder Note — replaces fake social proof; builds personal trust */}
+      <div className="py-14 px-4 bg-zinc-900/40">
+        <div className="max-w-xl mx-auto text-center space-y-4">
+          <p className="text-zinc-200 leading-relaxed">{t("founder.message")}</p>
+          <p className="text-sm text-zinc-500">
+            {t("founder.byline")} ·{" "}
+            <a
+              href="mailto:hello@echoic.studio"
+              className="text-blue-400 hover:text-blue-300 transition-colors"
+            >
+              hello@echoic.studio
+            </a>
+          </p>
         </div>
       </div>
 

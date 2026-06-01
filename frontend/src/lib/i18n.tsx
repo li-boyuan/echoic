@@ -13,22 +13,41 @@ const messages: Record<Locale, Record<string, string>> = {
 
     // Landing — Hero
     "hero.badge": "For self-published authors",
-    "hero.title": "Turn Your Manuscript Into a Sellable Audiobook",
-    "hero.subtitle": "Create a free sample, then convert the full book for $9.99 with character voices, emotion, and chapter downloads.",
-    "hero.description": "Upload your book. AI reads it, casts each character a fitting voice, and narrates with natural expression.",
-    "hero.cta": "Create Free Sample",
+    "hero.title": "Your Manuscript. A Real Audiobook.",
+    "hero.subtitle": "Upload your book. AI narrates it with distinct character voices for $9.99. Listen below — every voice you hear was AI-generated.",
+    "hero.description": "",
+    "hero.cta": "Convert My Book",
     "hero.ctaSignedIn": "Open Studio",
-    "hero.ctaSub": "One free sample up to 500 words. Full books start at $9.99.",
+    "hero.ctaSub": "Free sample first. No credit card. Download MP3, M4A, or FLAC.",
     "hero.oldCost": "$2,000–$5,000",
     "hero.oldCostLabel": "traditional narration",
     "hero.newCost": "$9.99",
     "hero.newCostLabel": "with Echoic",
 
-    // Landing — Demo
-    "demo.title": "Hear the difference",
-    "demo.desc": "This audiobook sample was generated entirely by AI — with distinct character voices cast automatically.",
+    // Landing — Demo (Real Chapter)
+    "demo.title": "Here's a real chapter Echoic generated",
+    "demo.desc": "Three characters. Three voices. Auto-cast by AI in under 2 minutes — zero editing.",
     "demo.text": "\"The old man sat by the fire, his eyes fixed on the flickering flames. A sharp knock echoed through the empty hall. He rose slowly, gripping his cane. 'Who goes there?' he called out, his voice firm despite his age. 'I have not survived eighty winters to be frightened by shadows. Show yourself!' The door creaked open, letting in a gust of cold wind. A young woman stepped inside, brushing snow from her cloak. She lowered her hood, revealing bright eyes and a warm smile. 'It is I, grandfather. Your granddaughter. I have traveled far to find you. The fire is just as warm as I remember.' The old man stared at her for a long moment... then opened his arms, and she ran to him.\"",
-    "demo.note": "3 voices, 0 editing — generated in under 2 minutes",
+    "demo.note": "Generated entirely by AI. Try it with your own paragraph below.",
+    "demo.cast.label": "Voice cast",
+    "demo.cast.narrator": "Narrator",
+    "demo.cast.oldman": "The Old Man",
+    "demo.cast.granddaughter": "The Granddaughter",
+
+    // Landing — Where to Publish
+    "publish.title": "Sell your audiobook anywhere",
+    "publish.desc": "You own the file. Distribute it the way you sell your books.",
+    "publish.platform.google": "Google Play Books",
+    "publish.platform.apple": "Apple Books",
+    "publish.platform.kobo": "Kobo",
+    "publish.platform.spotify": "Spotify",
+    "publish.platform.gumroad": "Gumroad",
+    "publish.platform.direct": "Your own site",
+    "publish.note": "Note: Audible / ACX currently restricts AI-narrated audiobooks. Most other platforms allow it — see FAQ.",
+
+    // Landing — Founder
+    "founder.message": "I'm Boyuan. I built Echoic because narrating an indie book costs $2,000+ — and most authors skip audio entirely. If you have a manuscript and want an audiobook this week, reply and tell me about your book. I read every email.",
+    "founder.byline": "— Boyuan, founder",
 
     // Landing — How it Works
     "how.title": "How it works",
@@ -39,15 +58,15 @@ const messages: Record<Locale, Record<string, string>> = {
     "how.step3.title": "Download your audiobook",
     "how.step3.desc": "Get your finished audiobook in MP3, WAV, FLAC, or M4A — chapter by chapter or as one file.",
 
-    // Landing — Social Proof
+    // Landing — Social Proof (Stats)
     "proof.stat1.value": "26",
-    "proof.stat1.label": "Languages supported",
+    "proof.stat1.label": "Languages",
     "proof.stat2.value": "30+",
-    "proof.stat2.label": "AI voices available",
+    "proof.stat2.label": "AI voices",
     "proof.stat3.value": "< 5 min",
-    "proof.stat3.label": "Average processing time",
+    "proof.stat3.label": "To finish a book",
     "proof.stat4.value": "$9.99",
-    "proof.stat4.label": "Full audiobook, any length",
+    "proof.stat4.label": "Any length",
 
     // Landing — Try It
     "tryit.title": "Try it with your own text",
@@ -205,22 +224,41 @@ const messages: Record<Locale, Record<string, string>> = {
 
     // Landing — Hero
     "hero.badge": "Para autores independientes",
-    "hero.title": "Convierte tu manuscrito en un audiolibro vendible",
-    "hero.subtitle": "Crea una muestra gratis y convierte el libro completo por $9.99 con voces de personajes, emoción y descargas por capítulo.",
-    "hero.description": "Sube tu libro. La IA lo lee, asigna una voz a cada personaje y lo narra con expresión natural.",
-    "hero.cta": "Crear Muestra Gratis",
+    "hero.title": "Tu manuscrito. Un audiolibro real.",
+    "hero.subtitle": "Sube tu libro. La IA lo narra con voces de personajes distintas por $9.99. Escucha abajo — todas las voces son generadas por IA.",
+    "hero.description": "",
+    "hero.cta": "Convertir Mi Libro",
     "hero.ctaSignedIn": "Abrir Estudio",
-    "hero.ctaSub": "Una muestra gratis de hasta 500 palabras. Libros completos desde $9.99.",
+    "hero.ctaSub": "Muestra gratis primero. Sin tarjeta. Descarga MP3, M4A o FLAC.",
     "hero.oldCost": "$2,000–$5,000",
     "hero.oldCostLabel": "narración tradicional",
     "hero.newCost": "$9.99",
     "hero.newCostLabel": "con Echoic",
 
-    // Landing — Demo
-    "demo.title": "Escucha la diferencia",
-    "demo.desc": "Esta muestra fue generada completamente por IA — con voces de personajes asignadas automáticamente.",
+    // Landing — Demo (Capítulo Real)
+    "demo.title": "Un capítulo real generado por Echoic",
+    "demo.desc": "Tres personajes. Tres voces. Asignadas automáticamente por IA en menos de 2 minutos — sin edición.",
     "demo.text": "\"El viejo se sentó junto al fuego, con los ojos fijos en las llamas parpadeantes. Un golpe resonó en el salón vacío. Se levantó lentamente, agarrando su bastón. '¿Quién va?' gritó, con voz firme a pesar de su edad. 'No he sobrevivido ochenta inviernos para asustarme con sombras. ¡Muéstrate!' La puerta se abrió con un chirrido, dejando entrar una ráfaga de viento frío. Una joven entró, sacudiéndose la nieve de la capa. Bajó la capucha, revelando ojos brillantes y una cálida sonrisa. 'Soy yo, abuelo. Tu nieta. He viajado lejos para encontrarte. El fuego es tan cálido como lo recuerdo.' El viejo la miró un largo momento... luego abrió los brazos y ella corrió hacia él.\"",
-    "demo.note": "3 voces, 0 edición — generado en menos de 2 minutos",
+    "demo.note": "Generado completamente por IA. Pruébalo con tu propio párrafo abajo.",
+    "demo.cast.label": "Reparto de voces",
+    "demo.cast.narrator": "Narrador",
+    "demo.cast.oldman": "El Viejo",
+    "demo.cast.granddaughter": "La Nieta",
+
+    // Landing — Dónde Publicar
+    "publish.title": "Vende tu audiolibro donde quieras",
+    "publish.desc": "El archivo es tuyo. Distribúyelo como vendas tus libros.",
+    "publish.platform.google": "Google Play Books",
+    "publish.platform.apple": "Apple Books",
+    "publish.platform.kobo": "Kobo",
+    "publish.platform.spotify": "Spotify",
+    "publish.platform.gumroad": "Gumroad",
+    "publish.platform.direct": "Tu propio sitio",
+    "publish.note": "Nota: Audible / ACX actualmente restringe audiolibros narrados por IA. La mayoría de otras plataformas lo permiten — ver FAQ.",
+
+    // Landing — Fundador
+    "founder.message": "Soy Boyuan. Construí Echoic porque narrar un libro indie cuesta $2,000+ — y la mayoría de autores omite el audio. Si tienes un manuscrito y quieres un audiolibro esta semana, respóndeme y cuéntame de tu libro. Leo todos los correos.",
+    "founder.byline": "— Boyuan, fundador",
 
     // Landing — How it Works
     "how.title": "Cómo funciona",
@@ -231,15 +269,15 @@ const messages: Record<Locale, Record<string, string>> = {
     "how.step3.title": "Descarga tu audiolibro",
     "how.step3.desc": "Obtén tu audiolibro en MP3, WAV, FLAC o M4A — capítulo por capítulo o como un solo archivo.",
 
-    // Landing — Social Proof
+    // Landing — Social Proof (Estadísticas)
     "proof.stat1.value": "26",
-    "proof.stat1.label": "Idiomas disponibles",
+    "proof.stat1.label": "Idiomas",
     "proof.stat2.value": "30+",
-    "proof.stat2.label": "Voces de IA disponibles",
+    "proof.stat2.label": "Voces de IA",
     "proof.stat3.value": "< 5 min",
-    "proof.stat3.label": "Tiempo promedio de procesamiento",
+    "proof.stat3.label": "Por libro",
     "proof.stat4.value": "$9.99",
-    "proof.stat4.label": "Audiolibro completo, cualquier extensión",
+    "proof.stat4.label": "Cualquier extensión",
 
     // Landing — Try It
     "tryit.title": "Pruébalo con tu propio texto",
