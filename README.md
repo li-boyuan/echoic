@@ -1,5 +1,13 @@
 # Echoic
 
+> **⚠️ Status: PAUSED as of 2026-06-05.** Launched but did not gain
+> traction; hosting torn down to stop recurring costs. Code, repo, R2
+> data, and domain preserved — revivable in under 10 minutes. See
+> [Post-mortem](#post-mortem) below.
+>
+> `echoic.studio` currently shows a paused notice. If you previously
+> converted a book and need your files, email **hello@echoic.studio**.
+
 **AI-powered audiobook generation** — [echoic.studio](https://echoic.studio)
 
 Upload a manuscript in any language, and Echoic's AI reads it, identifies characters, casts voices to match their personality, and narrates it with emotion and pacing.
@@ -259,3 +267,18 @@ NEXT_PUBLIC_FB_PIXEL_ID=...         # Meta Pixel for ad conversion tracking
 | Analytics | Meta Pixel (with consent), Vercel Analytics |
 | Hosting | Vercel + Render (Docker) |
 | Domain | Cloudflare |
+
+## Post-mortem
+
+**Outcome:** Built and shipped a working product; failed to find users at scale. Paused 2026-06-05.
+
+**What worked technically:** 26 languages, 30+ voices, multi-character casting, model fallback chain, persistent jobs across deploys, Stripe live mode, R2 storage. The pipeline successfully converted manuscripts end-to-end.
+
+**What didn't work commercially:**
+- Paid Facebook/Instagram ads: zero conversions. Static image ads couldn't sell an audio product, and a $9.99 unit couldn't sustain Meta CAC at small scale (Meta optimizer needs ~50 purchases/week per ad set to learn; budget was an order of magnitude below that).
+- Cold landing-page traffic bounced — the "where can I sell an AI audiobook?" objection (Audible/ACX restriction on AI narration) was under-addressed above the fold.
+- Direct community outreach to indie authors was not attempted at scale before shutdown.
+
+**Key learning:** Validate the distribution channel *before* polishing the product. A pre-launch waitlist test in r/selfpublish or a manual outreach round to 30 indie authors would have surfaced the true demand level in a week, instead of after months of building.
+
+**If revived:** Lead with direct community outreach (see `outreach/OUTREACH_KIT.md`), not paid ads. Address the publishing-platform objection above the fold on the landing page. Build relationships with authors who'd actually pay before opening up self-serve checkout. The product is solid — the go-to-market wasn't.
