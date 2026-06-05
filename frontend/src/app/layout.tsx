@@ -6,8 +6,8 @@ import { I18nProvider } from "@/lib/i18n";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Echoic — AI Audiobook Studio",
-  description: "Turn manuscripts into audiobooks with AI-powered narration",
+  title: "Echoic — Paused",
+  description: "Echoic is currently paused. Contact hello@echoic.studio for past conversions or restart updates.",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
@@ -15,8 +15,8 @@ export const metadata: Metadata = {
     title: "Echoic",
   },
   openGraph: {
-    title: "Echoic — AI Audiobook Studio",
-    description: "Turn any manuscript into a professional audiobook in minutes with AI character voices.",
+    title: "Echoic — Paused",
+    description: "Echoic is currently paused. Contact hello@echoic.studio for past conversions or restart updates.",
     url: "https://echoic.studio",
     siteName: "Echoic",
     type: "website",
